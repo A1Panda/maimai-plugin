@@ -6,8 +6,8 @@
     <img src="[maimai项目logo图片链接]" width="80%" />
 </picture>
 
-[![maimai-plugin](https://img.shields.io/badge/GitHub仓库-maimai--plugin-9cf?style=for-the-badge&logo=github)](https://github.com/[你的用户名]/maimai-plugin)
-[![maimai-plugin](https://img.shields.io/badge/Gitee仓库-maimai--plugin-9cf?style=for-the-badge&logo=gitee)](https://gitee.com/[你的用户名]/maimai-plugin)
+[![maimai-plugin](https://img.shields.io/badge/GitHub仓库-maimai--plugin-9cf?style=for-the-badge&logo=github)](https://github.com/a1panda/maimai-plugin)
+[![maimai-plugin](https://img.shields.io/badge/Gitee仓库-maimai--plugin-9cf?style=for-the-badge&logo=gitee)](https://gitee.com/a1_panda/maimai-plugin)
 
 ![version](https://img.shields.io/badge/版本-0.1.0-9cf?style=for-the-badge)
 ![version](https://img.shields.io/badge/maimai-2024.03-9cf?style=for-the-badge)
