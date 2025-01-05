@@ -2,7 +2,7 @@
 
 <a href="">
   <picture>
-    <source srcset="[maimai项目logo图片链接]" type="image/avif" width="80%" />
+    <source srcset="[.\resources\image]" type="image/avif" width="80%" />
     <img src="[maimai项目logo图片链接]" width="80%" />
 </picture>
 
@@ -91,6 +91,11 @@ pnpm install -P
 [在这里添加一些功能截图预览]
 
 ------
+### 致谢名单
+
+* 感谢[Catrong](https://gitee.com/catrong)提供的插件开发思路
+
+------
 
 ### 免责声明
 
@@ -100,4 +105,4 @@ pnpm install -P
 
 ------
 
-如有问题请提issue或加入QQ交流群:[你的QQ群号]
+如有问题请提issue或加入QQ交流群:[511802473](https://qm.qq.com/cgi-bin/qm/qr?k=_ijLWFUaVZcbFZo4plw8TTrlKYA6_z8o&jump_from=webapi&authKey=IUMFkY4CWqXcnS75X6tQZ5pmVfx5X3SDpmfqDqGnmNJDAdUyrj+x7a1fWOQ3mOQ4)

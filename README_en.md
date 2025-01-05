@@ -92,6 +92,12 @@ Commands can start with either # or /. Command prefix can be customized.
 
 ------
 
+### Acknowledgments
+
+* Thanks to [Catrong](https://gitee.com/catrong) for providing plugin development ideas
+
+------
+
 ### Disclaimer
 
 1. This functionality is intended for internal communication and small-scale use only. Do not use `Yunzai-Bot` and `maimai-Plugin` for any profit-driven purposes.
@@ -100,4 +106,4 @@ Commands can start with either # or /. Command prefix can be customized.
 
 ------
 
-For issues or questions, please submit an issue or join our QQ group: [Your QQ Group Number]
+For issues or questions, please submit an issue or join our QQ group: [511802473](https://qm.qq.com/cgi-bin/qm/qr?k=_ijLWFUaVZcbFZo4plw8TTrlKYA6_z8o&jump_from=webapi&authKey=IUMFkY4CWqXcnS75X6tQZ5pmVfx5X3SDpmfqDqGnmNJDAdUyrj+x7a1fWOQ3mOQ4)
