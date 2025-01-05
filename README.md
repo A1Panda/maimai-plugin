@@ -30,7 +30,7 @@
 > 使用Github
 
 ```
-git clone --depth=1 https://github.com/[你的用户名]/maimai-plugin.git ./plugins/maimai-plugin/ 
+git clone --depth=1 https://github.com/A1Panda/maimai-plugin.git ./plugins/maimai-plugin/ 
 cd ./plugins/maimai-plugin/
 pnpm install -P
 ```
@@ -38,7 +38,7 @@ pnpm install -P
 > 使用Gitee
 
 ```
-git clone --depth=1 https://gitee.com/[你的用户名]/maimai-plugin.git ./plugins/maimai-plugin/
+git clone --depth=1 https://gitee.com/A1Panda/maimai-plugin.git ./plugins/maimai-plugin/
 cd ./plugins/maimai-plugin/
 pnpm install -P
 ```
