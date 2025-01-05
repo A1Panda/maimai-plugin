@@ -2,8 +2,8 @@
 
 <a href="">
   <picture>
-    <source srcset="[maimai project logo url]" type="image/avif" width="80%" />
-    <img src="[maimai project logo url]" width="80%" />
+    <source srcset="https://raw.githubusercontent.com/A1Panda/maimai-plugin/main/resources/image/kv_pc.png" type="image/avif" width="80%" />
+    <img src="https://raw.githubusercontent.com/A1Panda/maimai-plugin/main/resources/image/kv_pc.png" width="80%" />
 </picture>
 
 [![maimai-plugin](https://img.shields.io/badge/GitHub-maimai--plugin-9cf?style=for-the-badge&logo=github)](https://github.com/a1panda/maimai-plugin)
