@@ -9,8 +9,8 @@
 [![maimai-plugin](https://img.shields.io/badge/GitHub-maimai--plugin-9cf?style=for-the-badge&logo=github)](https://github.com/a1panda/maimai-plugin)
 [![maimai-plugin](https://img.shields.io/badge/Gitee-maimai--plugin-9cf?style=for-the-badge&logo=gitee)](https://gitee.com/a1_panda/maimai-plugin)
 
-![version](https://img.shields.io/badge/version-0.1.0-9cf?style=for-the-badge)
-![version](https://img.shields.io/badge/maimai-2024.03-9cf?style=for-the-badge)
+![version](https://img.shields.io/badge/version-0.0.1-9cf?style=for-the-badge)
+![version](https://img.shields.io/badge/maimai-2025.01-6cf?style=for-the-badge)
 
 [![YunzaiBot](https://img.shields.io/badge/Yunzai-v3.0-9cf?style=for-the-badge&logo=dependabot)](https://gitee.com/yoimiya-kokomi/Yunzai-Bot)
 [![MiaoYunzai](https://img.shields.io/badge/Miao--Yunzai-v3.0-9cf?style=for-the-badge&logo=dependabot)](https://gitee.com/yoimiya-kokomi/Miao-Yunzai)
@@ -30,7 +30,7 @@ Run in Yunzai directory:
 > Using Github
 
 ```
-git clone --depth=1 https://github.com/a1panda/maimai-plugin.git ./plugins/maimai-plugin/
+git clone --depth=1 https://github.com/A1Panda/maimai-plugin.git ./plugins/maimai-plugin/
 cd ./plugins/maimai-plugin/
 pnpm install -P
 ```
@@ -38,7 +38,7 @@ pnpm install -P
 > Using Gitee
 
 ```
-git clone --depth=1 https://gitee.com/a1_panda/maimai-plugin.git ./plugins/maimai-plugin/
+git clone --depth=1 https://gitee.com/A1Panda/maimai-plugin.git ./plugins/maimai-plugin/
 cd ./plugins/maimai-plugin/
 pnpm install -P
 ```
