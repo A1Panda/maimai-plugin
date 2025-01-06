@@ -1,4 +1,8 @@
 import plugin from '../../../lib/plugins/plugin.js'
+import { ScreenshotManager } from '../utils/screenshot.js'
+import { ConfigManager } from '../utils/config.js'
+import fs from 'fs'
+import path from 'path'
 
 export class MaimaiHelp extends plugin {
     constructor() {
@@ -9,41 +13,52 @@ export class MaimaiHelp extends plugin {
             priority: 5000,
             rule: [
                 {
-                    reg: '^#mai(mai)?(帮助|help)$',
+                    reg: '^#mai(mai)? ?(帮助|help)$',
                     fnc: 'help'
                 }
             ]
         })
+        this.config = new ConfigManager()
     }
 
     async help(e) {
-        const helpText = `maimai-plugin 帮助菜单
-————————
-指令列表：
-1. 基础功能
-  #mai help      - 显示帮助菜单
-  #mai info      - 查看个人信息
-  #mai bind      - 绑定好友码
-  #mai unbind    - 解绑好友码
+        try {
+            // 获取帮助菜单配置
+            const helpConfig = this.config.getHelpConfig()
+            
+            // 生成图片
+            const imageBuffer = await ScreenshotManager.makeImage(helpConfig, 'help.html')
+            
+            // 创建临时文件目录
+            const tempDir = path.join('./plugins/maimai-plugin/temp')
+            if (!fs.existsSync(tempDir)) {
+                fs.mkdirSync(tempDir, { recursive: true })
+            }
 
-2. 查分功能
-  #mai b50       - 查看B50成绩
-  #mai recent    - 查看最近游玩记录
-  #mai score     - 查询单曲成绩
-  #mai search    - 搜索歌曲(支持难度、等级等)
-  #mai random    - 随机一首歌
-  #mai plate     - 查看名牌进度
-  #mai rank      - 查看排行榜
+            // 生成临时文件路径
+            const tempFile = path.join(tempDir, `help_${Date.now()}.png`)
+            
+            // 写入图片数据
+            fs.writeFileSync(tempFile, imageBuffer)
 
-3. 管理功能
-  #mai 更新      - 更新插件
-  #mai 设置      - 修改插件设置
-  #mai 封禁      - 封禁用户使用权限
-  #mai 解封      - 解除用户封禁
-————————
-注：以上指令中的mai也可以使用maimai`
+            // 发送图片
+            await e.reply(segment.image(tempFile))
 
-        await e.reply(helpText)
-        return true
+            // 延迟删除临时文件
+            setTimeout(() => {
+                try {
+                    if (fs.existsSync(tempFile)) {
+                        fs.unlinkSync(tempFile)
+                    }
+                } catch (err) {
+                    console.error('删除临时文件失败:', err)
+                }
+            }, 5000)
+
+            return true
+        } catch (error) {
+            await e.reply('获取帮助菜单失败：' + error.message)
+            return false
+        }
     }
 } 

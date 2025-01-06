@@ -32,16 +32,34 @@ export class ScreenshotManager {
             const { height } = await bodyHandle.boundingBox()
             await bodyHandle.dispose()
 
+            // 根据不同模板设置不同的视窗宽度
+            let viewportWidth = 600  // 默认宽度
+            if (template === 'player-info.html') {
+                viewportWidth = 800  // 玩家信息页面使用更宽的视窗
+            } else if (template === 'b50-info.html') {
+                viewportWidth = 700  // B50页面使用中等宽度
+            }
+
             // 设置视窗大小
             await page.setViewport({
-                width: 800,
+                width: viewportWidth,
                 height: Math.ceil(height)
             })
+
+            // 获取实际内容区域
+            const containerHandle = await page.$('.container')
+            const containerBox = await containerHandle.boundingBox()
+            await containerHandle.dispose()
 
             // 截图
             const screenshot = await page.screenshot({
                 type: 'png',
-                fullPage: true
+                clip: {
+                    x: containerBox.x,
+                    y: containerBox.y,
+                    width: Math.ceil(containerBox.width),
+                    height: Math.ceil(containerBox.height)
+                }
             })
 
             return screenshot
@@ -98,13 +116,34 @@ export class ScreenshotManager {
             template = template.replace(/{{#songs}}[\s\S]*?{{\/songs}}/g, songsHtml)
         }
 
+        // 处理帮助菜单数据
+        if (data.sections) {
+            // 生成帮助菜单HTML
+            const sectionsHtml = data.sections.map(section => `
+                <div class="section">
+                    <div class="section-title">${section.title}</div>
+                    <div class="command-list">
+                        ${section.commands.map(cmd => `
+                            <div class="command-item">
+                                <span class="command">${cmd.cmd}</span>
+                                <span class="description">${cmd.desc}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('')
+
+            // 替换帮助菜单标记
+            template = template.replace(/{{#sections}}[\s\S]*?{{\/sections}}/g, sectionsHtml)
+        }
+
         // 扩展数据
         const extendedData = {
             ...data,
             course_ranks: courseRanks,
             class_ranks: classRanks,
             // 格式化时间
-            upload_time: new Date(data.upload_time).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })
+            upload_time: data.upload_time ? new Date(data.upload_time).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' }) : ''
         }
 
         // 替换其他变量
@@ -127,7 +166,7 @@ export class ScreenshotManager {
             for (const k of keys) {
                 value = value?.[k]
             }
-            return value ?? '未知'
+            return value ?? ''
         })
     }
 

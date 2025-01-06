@@ -60,4 +60,30 @@ export class ConfigManager {
             return null
         }
     }
+
+    /**
+     * 获取帮助菜单配置
+     * @returns {Object} 帮助菜单配置
+     */
+    getHelpConfig() {
+        try {
+            const defaultPath = `${this.basePath}/default_config/help.yaml`
+            const configPath = `${this.basePath}/help.yaml`
+            
+            // 确保配置文件存在
+            if (!fs.existsSync(configPath)) {
+                if (fs.existsSync(defaultPath)) {
+                    fs.copyFileSync(defaultPath, configPath)
+                } else {
+                    throw new Error('默认帮助菜单配置文件不存在')
+                }
+            }
+
+            const config = YAML.parse(fs.readFileSync(configPath, 'utf8'))
+            return config?.help_menu || {}
+        } catch (error) {
+            console.error('读取帮助菜单配置失败:', error)
+            throw error
+        }
+    }
 } 
