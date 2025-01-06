@@ -45,26 +45,25 @@
             padding-bottom: 5px;
         }
         .command-list {
-            display: grid;
-            gap: 8px;
+            display: table;
+            width: 100%;
         }
         .command-item {
-            background: #4a4a4a;
-            padding: 10px;
-            border-radius: 5px;
-            display: grid;
-            grid-template-columns: minmax(120px, auto) 1fr;
-            gap: 15px;
-            align-items: center;
+            display: table-row;
         }
         .command {
+            display: table-cell;
             color: #ffd700;
             font-weight: bold;
             white-space: nowrap;
+            padding: 5px 10px;
         }
         .description {
+            display: table-cell;
             color: #aaaaaa;
             font-size: 14px;
+            text-align: right;
+            padding: 5px 10px;
         }
         .note {
             text-align: center;

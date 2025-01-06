@@ -24,7 +24,7 @@ help_menu:
         - cmd: "#mai search"
           desc: "搜索歌曲(支持难度、等级等)"
         - cmd: "#mai random"
-          desc: "随机一首歌"
+          desc: "随机一首歌(支持难度、等级等)"
         - cmd: "#mai plate"
           desc: "查看名牌进度"
         - cmd: "#mai rank"

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>歌曲信息</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #2b2b2b;
+            color: #ffffff;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            width: 600px;
+            margin: 0 auto;
+            background: #363636;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        .song-title {
+            font-size: 24px;
+            color: #ffd700;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        .info-item {
+            background: #404040;
+            padding: 12px;
+            border-radius: 8px;
+        }
+        .info-label {
+            color: #00ffcc;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        .info-value {
+            color: #ffffff;
+            font-size: 16px;
+        }
+        .chart-info {
+            margin-top: 20px;
+            background: #404040;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .chart-title {
+            color: #00ffcc;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            text-align: center;
+        }
+        .chart-item {
+            background: #4a4a4a;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .chart-type {
+            color: #ffd700;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        .chart-level {
+            color: #ffffff;
+            font-size: 16px;
+        }
+        .chart-type.Basic { color: #84b9cb; }
+        .chart-type.Advanced { color: #f7b547; }
+        .chart-type.Expert { color: #ec4c4c; }
+        .chart-type.Master { color: #9e45e2; }
+        .chart-type.Re\:Master { color: #e6e6e6; }
+        .note-designer {
+            color: #888;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        .chart-type::after {
+            content: attr(data-dx);
+            margin-left: 4px;
+            font-size: 12px;
+            color: #ffcc00;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="song-title">{{title}}</div>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">艺术家</div>
+                <div class="info-value">{{artist}}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">分类</div>
+                <div class="info-value">{{genre}}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">BPM</div>
+                <div class="info-value">{{bpm}}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">ID</div>
+                <div class="info-value">{{id}}</div>
+            </div>
+        </div>
+        <div class="chart-info">
+            <div class="chart-title">难度信息</div>
+            <div class="chart-grid">
+                {{#charts}}
+                <div class="chart-item">
+                    <div class="chart-type {{type}}">{{type}}{{#is_dx}} DX{{/is_dx}}</div>
+                    <div class="chart-level">{{level}}</div>
+                    {{#note_designer}}
+                    <div class="note-designer">{{note_designer}}</div>
+                    {{/note_designer}}
+                </div>
+                {{/charts}}
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

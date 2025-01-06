@@ -75,6 +75,20 @@ export class ScreenshotManager {
      * @returns {string} 替换后的字符串
      */
     static replaceTemplateVars(template, data) {
+        // 处理难度信息
+        if (data.charts) {
+            const chartsHtml = data.charts.map(chart => `
+                <div class="chart-item">
+                    <div class="chart-type ${chart.type}">${chart.type}${chart.is_dx ? ' DX' : ''}</div>
+                    <div class="chart-level">${chart.level}</div>
+                    ${chart.note_designer ? `<div class="note-designer">${chart.note_designer}</div>` : ''}
+                </div>
+            `).join('')
+
+            // 替换难度信息标记
+            template = template.replace(/{{#charts}}[\s\S]*?{{\/charts}}/g, chartsHtml)
+        }
+
         // 处理歌曲数据
         if (data.songs) {
             // 生成歌曲列表HTML
@@ -135,11 +149,6 @@ export class ScreenshotManager {
 
             // 替换帮助菜单标记
             template = template.replace(/{{#sections}}[\s\S]*?{{\/sections}}/g, sectionsHtml)
-
-            // 替换注释
-            if (data.note) {
-                template = template.replace('{{note}}', data.note)
-            }
         }
 
         // 扩展数据
