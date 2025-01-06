@@ -110,10 +110,11 @@ export class MaimaiRandomSong {
         // 处理标准谱面
         if (difficulties.standard) {
             difficulties.standard.forEach(diff => {
+                const levelValue = parseFloat(diff.level_value).toFixed(1)
                 const difficultyInfo = {
                     type: this.getDifficultyName(diff.difficulty),
                     level: diff.level,
-                    level_value: diff.level_value,
+                    level_value: levelValue,
                     note_designer: diff.note_designer !== '-' ? diff.note_designer : '',
                     is_dx: false,
                     color: this.getDifficultyColor(diff.difficulty)
@@ -125,10 +126,11 @@ export class MaimaiRandomSong {
         // 处理DX谱面
         if (difficulties.dx) {
             difficulties.dx.forEach(diff => {
+                const levelValue = parseFloat(diff.level_value).toFixed(1)
                 const difficultyInfo = {
                     type: this.getDifficultyName(diff.difficulty),
                     level: diff.level,
-                    level_value: diff.level_value,
+                    level_value: levelValue,
                     note_designer: diff.note_designer !== '-' ? diff.note_designer : '',
                     is_dx: true,
                     color: this.getDifficultyColor(diff.difficulty)
@@ -138,7 +140,7 @@ export class MaimaiRandomSong {
         }
 
         // 按难度值排序
-        const sortedCharts = charts.sort((a, b) => a.level_value - b.level_value)
+        const sortedCharts = charts.sort((a, b) => parseFloat(a.level_value) - parseFloat(b.level_value))
         return sortedCharts
     }
 

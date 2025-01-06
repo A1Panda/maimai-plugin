@@ -80,7 +80,7 @@ export class ScreenshotManager {
             const chartsHtml = data.charts.map(chart => `
                 <div class="chart-item">
                     <div class="chart-type ${chart.type}">${chart.type}${chart.is_dx ? ' DX' : ''}</div>
-                    <div class="chart-level">${chart.level}</div>
+                    <div class="chart-level">${chart.level} (${chart.level_value})</div>
                     ${chart.note_designer ? `<div class="note-designer">${chart.note_designer}</div>` : ''}
                 </div>
             `).join('')
