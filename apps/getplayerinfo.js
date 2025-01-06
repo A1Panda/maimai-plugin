@@ -10,7 +10,7 @@ export class GetPlayerInfo extends plugin {
             priority: 5000,
             rule: [
                 {
-                    reg: '^#mai info$',
+                    reg: '^#mai(mai)? ?info$',
                     fnc: 'getInfo'
                 }
             ]
