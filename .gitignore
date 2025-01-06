@@ -1,4 +1,3 @@
-
 lain.support.js# 忽略数据文件
 /data/*
 
@@ -42,3 +41,6 @@ plugin-ill/
 /apps/chart.js
 /apps/chart.js
 plugin-ill/
+
+# 忽略 config/API_Token.yaml
+config/friendCode.yaml

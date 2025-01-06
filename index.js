@@ -40,6 +40,9 @@ ret = await Promise.allSettled(ret)
 // 存储所有成功导入的应用
 let apps = {}
 
+// 记录成功加载的插件数量
+let successCount = 0
+
 // 处理导入结果
 for (let i in files) {
     // 获取文件名（不含.js后缀）
@@ -55,6 +58,7 @@ for (let i in files) {
     }
     // 导入成功，将模块添加到 apps 对象中
     apps[name] = ret[i].value[Object.keys(ret[i].value)[0]]
+    successCount++
 }
 
 // 导出 apps 对象，供其他模块使用
@@ -63,5 +67,6 @@ export { apps }
 // 如果没有发生错误，显示成功信息
 if (!errvis) {
     logger.mark(` MaiMai查分器插件载入成功~`)
+    logger.mark(` 成功加载了 ${successCount} 个插件~`)
     logger.mark(` 欢迎使用MaiMai查分器插件！`)
 }

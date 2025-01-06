@@ -43,6 +43,8 @@ cd ./plugins/maimai-plugin/
 pnpm install -P
 ```
 
+> 注意：插件已内置 maimai.lxns.net 的公共 API Token，无需额外配置即可使用。
+
 ------
 
 ### 功能
