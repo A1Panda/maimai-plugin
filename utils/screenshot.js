@@ -57,6 +57,47 @@ export class ScreenshotManager {
      * @returns {string} 替换后的字符串
      */
     static replaceTemplateVars(template, data) {
+        // 处理歌曲数据
+        if (data.songs) {
+            // 生成歌曲列表HTML
+            const songsHtml = data.songs.map(song => `
+                <div class="song-item">
+                    <div class="song-title">
+                        <span>#${song.index}</span>
+                        <span>${song.song_name}</span>
+                    </div>
+                    <div class="song-info">
+                        <div class="info-item">
+                            <div class="info-label">难度</div>
+                            <div class="info-value">${song.level} (${song.type})</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">成绩</div>
+                            <div class="info-value">${Number(song.achievements).toFixed(4)}% [${song.rate.toUpperCase()}]</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">评价</div>
+                            <div class="info-value">${Number(song.dx_rating).toFixed(2)} (${this.formatFCStatus(song.fc, song.fs)})</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">游玩时间</div>
+                            <div class="info-value">${song.play_time ? new Date(song.play_time).toLocaleString('zh-CN', {
+                                timeZone: 'Asia/Shanghai',
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            }) : '未知'}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('')
+
+            // 替换歌曲列表标记
+            template = template.replace(/{{#songs}}[\s\S]*?{{\/songs}}/g, songsHtml)
+        }
+
         // 扩展数据
         const extendedData = {
             ...data,
@@ -66,11 +107,9 @@ export class ScreenshotManager {
             upload_time: new Date(data.upload_time).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })
         }
 
+        // 替换其他变量
         return template.replace(/\{\{([^}]+)\}\}/g, (match, key) => {
-            const keys = key.trim().split('.')
-            let value = extendedData
-            
-            // 特殊处理数组访问
+            // 处理数组访问
             if (key.includes('[') && key.includes(']')) {
                 const [arrayName, indexName] = key.split('[')
                 const index = parseInt(indexName.replace(']', ''))
@@ -83,10 +122,25 @@ export class ScreenshotManager {
             }
 
             // 常规属性访问
+            const keys = key.trim().split('.')
+            let value = extendedData
             for (const k of keys) {
                 value = value?.[k]
             }
             return value ?? '未知'
         })
+    }
+
+    /**
+     * 格式化 FC/FS 状态
+     * @param {string} fc FC状态
+     * @param {string} fs FS状态
+     * @returns {string} 格式化后的状态
+     */
+    static formatFCStatus(fc, fs) {
+        const status = []
+        if (fc) status.push(fc.toUpperCase())
+        if (fs) status.push(fs.toUpperCase())
+        return status.length ? status.join('/') : '-'
     }
 } 

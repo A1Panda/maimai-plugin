@@ -1,6 +1,7 @@
 import plugin from '../../../lib/plugins/plugin.js'
 import { MaimaiB50 } from '../model/getb50.js'
-import common from '../../../lib/common/common.js'
+import fs from 'fs'
+import path from 'path'
 
 export class GetB50 extends plugin {
     constructor() {
@@ -27,24 +28,38 @@ export class GetB50 extends plugin {
 
         try {
             const { data: b50Data, friendCode } = await this.maimaiApi.getB50(e.user_id)
-            const messages = this.maimaiApi.formatB50(b50Data, friendCode)
+            const imageBuffer = await this.maimaiApi.formatB50(b50Data, friendCode)
             
-            // 使用合并转发
-            await this.reply_forward_msg(e, messages)
+            // 创建临时文件目录
+            const tempDir = path.join('./plugins/maimai-plugin/temp')
+            if (!fs.existsSync(tempDir)) {
+                fs.mkdirSync(tempDir, { recursive: true })
+            }
+
+            // 生成临时文件路径
+            const tempFile = path.join(tempDir, `b50_${e.user_id}_${Date.now()}.png`)
+            
+            // 写入图片数据
+            fs.writeFileSync(tempFile, imageBuffer)
+
+            // 发送图片
+            await e.reply(segment.image(tempFile))
+
+            // 延迟删除临时文件
+            setTimeout(() => {
+                try {
+                    if (fs.existsSync(tempFile)) {
+                        fs.unlinkSync(tempFile)
+                    }
+                } catch (err) {
+                    console.error('删除临时文件失败:', err)
+                }
+            }, 5000)
+
             return true
         } catch (error) {
             await e.reply(`获取B50数据失败: ${error.message}`)
             return false
-        }
-    }
-
-    async reply_forward_msg(e, messages) {
-        try {
-            const msg = await common.makeForwardMsg(e, messages, 'B50成绩查询')
-            await e.reply(msg)
-        } catch (error) {
-            console.error('发送转发消息失败:', error)
-            await e.reply('发送消息失败，请稍后重试')
         }
     }
 } 
