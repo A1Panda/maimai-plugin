@@ -1,8 +1,11 @@
-lain.support.js# 忽略数据文件
+# 忽略数据文件
 /data/*
 
 # 忽略配置文件
 /config/config/*
+config/API_Token.yaml
+config/help.yaml
+config/friendCode.yaml
 
 # 忽略备份文件
 /backup/
@@ -41,10 +44,4 @@ plugins/maimai-plugin/temp/
 # 忽略 apps 目录中的特定文件
 /apps/guessName.js
 /apps/chart.js
-/apps/chart.js
 plugin-ill/
-
-# 忽略 config/API_Token.yaml
-config/friendCode.yaml
-config/API_Token.yaml
-config/help.yaml
