@@ -80,7 +80,12 @@ export class ConfigManager {
             }
 
             const config = YAML.parse(fs.readFileSync(configPath, 'utf8'))
-            return config?.help_menu || {}
+            const helpMenu = config.help_menu || {}
+
+            return {
+                ...helpMenu,
+                note: config.note || ''
+            }
         } catch (error) {
             console.error('读取帮助菜单配置失败:', error)
             throw error

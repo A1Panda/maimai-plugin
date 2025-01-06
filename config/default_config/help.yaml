@@ -41,4 +41,4 @@ help_menu:
         - cmd: "#mai 解封"
           desc: "解除用户封禁"
 
-note: "注：以上指令中的mai也可以使用maimai" 
+note: "Powered by maimai-plugin" 

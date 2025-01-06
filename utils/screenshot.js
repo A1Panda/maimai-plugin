@@ -135,6 +135,11 @@ export class ScreenshotManager {
 
             // 替换帮助菜单标记
             template = template.replace(/{{#sections}}[\s\S]*?{{\/sections}}/g, sectionsHtml)
+
+            // 替换注释
+            if (data.note) {
+                template = template.replace('{{note}}', data.note)
+            }
         }
 
         // 扩展数据

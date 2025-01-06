@@ -46,3 +46,5 @@ plugin-ill/
 
 # 忽略 config/API_Token.yaml
 config/friendCode.yaml
+config/API_Token.yaml
+config/help.yaml
