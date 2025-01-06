@@ -75,7 +75,7 @@ export class MaimaiB50 {
             const messages = []
             
             // 添加总览信息
-            messages.push(`玩家 ${friendCode} \nStandard: ${data.standard_total}\nDX: ${data.dx_total}`)
+            messages.push(`玩家 ${friendCode} \nStandard: ${data.standard_total}\nDX: ${data.dx_total}\nDX Rating 总和: ${data.standard_total + data.dx_total}`)
 
             // 每5首歌为一组
             for (let i = 0; i < allSongs.length; i += 5) {
