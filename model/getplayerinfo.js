@@ -1,35 +1,15 @@
 import fetch from 'node-fetch'
-import fs from 'fs'
-import YAML from 'yaml'
-import { CryptoUtil } from '../utils/crypto.js'
+import { ConfigManager } from '../utils/config.js'
 
 export class MaimaiPlayerInfo {
     constructor() {
-        // 读取配置文件
-        const tokenFile = fs.readFileSync('./plugins/maimai-plugin/config/API_Token.yaml', 'utf8')
-        const encryptedToken = YAML.parse(tokenFile).maimai_token
-        // 解密token
-        this.token = CryptoUtil.decrypt(encryptedToken)
+        this.config = new ConfigManager()
+        this.token = this.config.getToken()
         this.baseUrl = 'https://maimai.lxns.net/api/v0/maimai'
     }
 
-    /**
-     * 获取好友码
-     * @param {string} qq QQ号
-     * @returns {string|null} 好友码
-     */
     getFriendCode(qq) {
-        try {
-            const configPath = './plugins/maimai-plugin/config/friendCode.yaml'
-            if (!fs.existsSync(configPath)) {
-                return null
-            }
-            const config = YAML.parse(fs.readFileSync(configPath, 'utf8'))
-            return config[qq]
-        } catch (error) {
-            console.error('读取好友码配置失败:', error)
-            return null
-        }
+        return this.config.getFriendCode(qq)
     }
 
     /**
