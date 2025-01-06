@@ -1,12 +1,15 @@
 import fetch from 'node-fetch'
 import fs from 'fs'
 import YAML from 'yaml'
+import { CryptoUtil } from '../utils/crypto.js'
 
 export class MaimaiPlayerInfo {
     constructor() {
         // 读取配置文件
         const tokenFile = fs.readFileSync('./plugins/maimai-plugin/config/API_Token.yaml', 'utf8')
-        this.token = YAML.parse(tokenFile).maimai_token
+        const encryptedToken = YAML.parse(tokenFile).maimai_token
+        // 解密token
+        this.token = CryptoUtil.decrypt(encryptedToken)
         this.baseUrl = 'https://maimai.lxns.net/api/v0/maimai'
     }
 
