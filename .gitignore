@@ -27,6 +27,8 @@ lain.support.js
 tem/
 chart/
 plugin-ill/
+temp/
+plugins/maimai-plugin/temp/
 
 # 忽略 model 目录中的特定文件
 /model/233.js
