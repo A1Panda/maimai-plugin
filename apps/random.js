@@ -51,6 +51,9 @@ export class RandomSong extends plugin {
             // 发送图片
             await e.reply(segment.image(tempFile))
 
+            // 获取并发送曲绘和音乐
+            await this.randomSong.getSongAssets(data, e)
+
             // 延迟删除临时文件
             setTimeout(() => {
                 try {

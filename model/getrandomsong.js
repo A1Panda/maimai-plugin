@@ -1,10 +1,36 @@
 import fetch from 'node-fetch'
 import { ScreenshotManager } from '../utils/screenshot.js'
+import { AssetsManager } from '../utils/assets.js'
+import { segment } from 'oicq'
+import fs from 'fs'
+import path from 'path'
+import { exec } from 'child_process'
+import { promisify } from 'util'
+
+const execAsync = promisify(exec)
 
 export class MaimaiRandomSong {
     constructor() {
         this.baseUrl = 'https://maimai.lxns.net/api/v0/maimai'
         this.songList = null
+        this.assets = new AssetsManager()
+    }
+
+    /**
+     * 转换音频为 AMR 格式
+     * @param {string} inputPath 输入文件路径
+     * @returns {Promise<string>} AMR 文件路径
+     */
+    async convertToAmr(inputPath) {
+        const amrPath = inputPath.replace('.mp3', '.amr')
+        try {
+            // 使用 FFmpeg 转换为 AMR 格式
+            await execAsync(`ffmpeg -i "${inputPath}" -ar 8000 -ab 12.2k -ac 1 "${amrPath}"`)
+            return amrPath
+        } catch (error) {
+            console.error('音频转换失败:', error)
+            throw error
+        }
     }
 
     /**
@@ -215,6 +241,55 @@ export class MaimaiRandomSong {
         } catch (error) {
             console.error('格式化歌曲信息失败:', error)
             throw error
+        }
+    }
+
+    /**
+     * 获取歌曲资源
+     * @param {Object} songData 歌曲数据
+     * @param {Object} e 事件对象
+     * @returns {Promise<boolean>} 是否成功
+     */
+    async getSongAssets(songData, e) {
+        try {
+            if (!songData?.data?.id) {
+                throw new Error('歌曲数据格式不正确')
+            }
+
+            const songId = songData.data.id
+
+            // 获取曲绘
+            const jacketPath = await this.assets.getJacket(songId)
+            await e.reply(segment.image(jacketPath))
+
+            // 获取音乐文件
+            const musicPath = await this.assets.getMusic(songId)
+            
+            try {
+                // 转换为 AMR 格式
+                const amrPath = await this.convertToAmr(musicPath)
+                // 读取 AMR 文件并转为 base64
+                const amrBuffer = fs.readFileSync(amrPath)
+                const base64Data = amrBuffer.toString('base64')
+                // 发送语音消息
+                await e.reply(segment.record(`base64://${base64Data}`))
+                // 删除临时 AMR 文件
+                fs.unlinkSync(amrPath)
+            } catch (error) {
+                console.error('音频转换失败，尝试直接发送文件:', error)
+                // 如果转换失败，退回到发送文件
+                await e.reply([{
+                    type: 'file',
+                    name: `${songData.data.title}.mp3`,
+                    file: musicPath
+                }])
+            }
+
+            return true
+        } catch (error) {
+            console.error('获取歌曲资源失败:', error)
+            await e.reply(`获取资源失败: ${error.message}`)
+            return false
         }
     }
 } 

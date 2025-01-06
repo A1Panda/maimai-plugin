@@ -64,6 +64,7 @@ Commands can start with either # or /. Command prefix can be customized.
 | `#mai random` | Get a random song
 | `#mai plate` | View plate progress
 | `#mai rank` | View leaderboard
+| `#mai search <type> <id>` | Search game resources (jacket/music/icon/plate)
 
 #### **Admin Commands**
 
@@ -73,6 +74,8 @@ Commands can start with either # or /. Command prefix can be customized.
 | `#mai settings` | Modify plugin settings
 | `#mai ban @user` | Ban user from using the plugin
 | `#mai unban @user` | Unban user
+| `#mai clean cache` | Clean expired cache files (Master only)
+| `#mai force clean cache` | Force clean all cache files (Master only)
 
 ------
 
@@ -83,6 +86,8 @@ Commands can start with either # or /. Command prefix can be customized.
 * [ ] Support custom themes
 * [ ] Add achievement system
 * [ ] Add competition features
+* [x] Add resource management features
+* [x] Add cache cleaning features
 
 ------
 
