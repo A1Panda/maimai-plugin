@@ -1,5 +1,6 @@
 import plugin from '../../../lib/plugins/plugin.js'
 import { AssetsManager } from '../utils/assets.js'
+import { MaimaiAssetInfo } from '../model/getassetinfo.js'
 import { segment } from 'oicq'
 import path from 'path'
 import fs from 'fs'
@@ -54,8 +55,57 @@ export class Assets extends plugin {
 
         const [, typeZh, id] = matches
         const type = this.typeMap[typeZh]
+        const assetInfo = new MaimaiAssetInfo()
 
         try {
+            // 获取资源详细信息
+            let info
+            switch (type) {
+                case 'icon':
+                    info = await assetInfo.getIconInfo(id)
+                    break
+                case 'plate':
+                    info = await assetInfo.getPlateInfo(id)
+                    break
+                case 'jacket':
+                case 'music':
+                    info = await assetInfo.getSongInfo(id)
+                    break
+                default:
+                    await e.reply('不支持的资源类型')
+                    return false
+            }
+
+            // 构建详细信息消息
+            let infoMsg = []
+            const data = info.data
+
+            if (type === 'jacket' || type === 'music') {
+                infoMsg.push(
+                    `歌曲ID: ${data.id}`,
+                    `标题: ${data.title}`,
+                    `艺术家: ${data.artist}`,
+                    `分类: ${data.genre}`,
+                    `BPM: ${data.bpm}`,
+                    `版本: ${data.version}`
+                )
+            } else if (type === 'icon') {
+                infoMsg.push(
+                    `头像ID: ${data.id}`,
+                    `名称: ${data.name}`,
+                    `描述: ${data.description || '无'}`,
+                    `获取方式: ${data.type || '未知'}`
+                )
+            } else if (type === 'plate') {
+                infoMsg.push(
+                    `姓名框ID: ${data.id}`,
+                    `名称: ${data.name}`,
+                    `描述: ${data.description || '无'}`,
+                    `获取方式: ${data.type || '未知'}`
+                )
+            }
+
+            // 获取资源文件
             let filePath
             switch (type) {
                 case 'icon':
@@ -70,12 +120,11 @@ export class Assets extends plugin {
                 case 'music':
                     filePath = await this.assets.getMusic(id)
                     break
-                default:
-                    await e.reply('不支持的资源类型')
-                    return false
             }
 
-            // 发送资源
+            // 发送详细信息和资源
+            await e.reply(infoMsg.join('\n'))
+            
             if (type === 'music') {
                 await e.reply([{
                     type: 'file',
