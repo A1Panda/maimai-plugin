@@ -16,7 +16,7 @@ if (!global.segment) {
 //如果有什么好的建议欢迎提出
 
 // 在控制台打印插件标题
-logger.mark('------舞萌DX查分器------')
+logger.mark(logger.green('[maimai-plugin]------舞萌DX查分器------'))
 
 // 读取 apps 目录下所有的 .js 文件
 // 使用 fs.readdirSync 同步读取目录内容
@@ -64,9 +64,18 @@ for (let i in files) {
 // 导出 apps 对象，供其他模块使用
 export { apps }
 
+// 初始化配置文件
+// 导入配置初始化函数
+import { initConfig } from './utils/config.js'
+
+// 初始化配置文件
+initConfig()
+
+
 // 如果没有发生错误，显示成功信息
 if (!errvis) {
-    logger.mark(` MaiMai查分器插件载入成功~`)
-    logger.mark(` 成功加载了 ${successCount} 个插件~`)
-    logger.mark(` 欢迎使用MaiMai查分器插件！`)
+    logger.mark(logger.green(`[maimai-plugin] MaiMai查分器插件载入成功~`))
+    logger.mark(logger.green(`[maimai-plugin] 成功加载了 ${successCount} 个插件~`))
+    logger.mark(logger.green(`[maimai-plugin] 欢迎使用MaiMai查分器插件！`))
+    logger.mark(logger.green('[maimai-plugin]------Q群:511802473------'))
 }

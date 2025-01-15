@@ -1,6 +1,6 @@
 {
   "name": "maimai-plugin",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "maimai辅助插件",
   "main": "index.js",
   "directories": {
