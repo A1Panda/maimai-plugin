@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>帮助菜单</title>
+    <style>
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        .title {
+            text-align: center;
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+        .command-group {
+            margin-bottom: 20px;
+        }
+        .group-title {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .command-list {
+            list-style: none;
+            padding: 0;
+        }
+        .command-item {
+            padding: 8px 0;
+            border-bottom: 1px dashed #eee;
+        }
+        .command {
+            color: #1a73e8;
+            font-weight: bold;
+        }
+        .description {
+            color: #666;
+            margin-left: 10px;
+        }
+        .footer {
+            text-align: center;
+            color: #999;
+            font-size: 14px;
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">{{title}}</div>
+        {{#groups}}
+        <div class="command-group">
+            <div class="group-title">{{groupTitle}}</div>
+            <ul class="command-list">
+                {{#commands}}
+                <li class="command-item">
+                    <span class="command">{{command}}</span>
+                    <span class="description">{{description}}</span>
+                </li>
+                {{/commands}}
+            </ul>
+        </div>
+        {{/groups}}
+        <div class="footer">{{footer}}</div>
+    </div>
+</body>
+</html>
