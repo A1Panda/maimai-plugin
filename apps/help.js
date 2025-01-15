@@ -10,7 +10,7 @@ export class help extends plugin {
             priority: 5000,
             rule: [
                 {
-                    reg: '^#mai帮助$',
+                    reg: '^#mai(mai)? ?帮助$',
                     fnc: 'help'
                 }
             ]

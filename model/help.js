@@ -5,8 +5,8 @@ import path from 'path'
 
 export class Help {
     static async render() {
-        // 使用Yunzai-Bot的临时文件夹
-        const helpImagePath = path.join(process.cwd(), 'temp', 'maimai-plugin', `help_${Date.now()}.jpg`)
+        // 使用Yunzai-Bot的临时文件夹，改为.png后缀
+        const helpImagePath = path.join(process.cwd(), 'temp', 'maimai-plugin', `help_${Date.now()}.png`)
         
         // 读取帮助配置文件
         const helpConfig = yaml.parse(fs.readFileSync('./plugins/maimai-plugin/configs/help.yaml', 'utf8'))
@@ -25,7 +25,7 @@ export class Help {
             
             // 替换标题和页脚
             template = template.replace('{{title}}', helpConfig.title)
-                             .replace('{{footer}}', helpConfig.footer)
+                             .replace('{{footer}}', helpConfig.footer + ' v' + JSON.parse(fs.readFileSync('./plugins/maimai-plugin/package.json', 'utf8')).version)
             
             // 处理命令组模板
             let groupsSection = template.match(/{{#groups}}([\s\S]*?){{\/groups}}/)?.[1] || ''
@@ -54,7 +54,7 @@ export class Help {
             
             // 设置视口大小
             await page.setViewport({
-                width: 800,
+                width: 700,
                 height: 1000
             })
             
@@ -66,7 +66,7 @@ export class Help {
                 return document.querySelector('.container').offsetHeight
             })
             await page.setViewport({
-                width: 800,
+                width: 700,
                 height: bodyHeight + 40
             })
             
@@ -78,9 +78,9 @@ export class Help {
             
             // 截图
             await page.screenshot({
-                type: 'jpeg',
+                type: 'png',  // 改为png格式
                 fullPage: true,
-                quality: 100,
+                // 移除quality选项，因为PNG是无损格式
                 path: helpImagePath
             })
             
