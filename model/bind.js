@@ -34,44 +34,83 @@ class Bind {
 
     // 设置好友码
     async setFriendCode(userId, friendCode) {
-        const userData = this.getUserData()
-        if (!userData[userId]) {
-            userData[userId] = {}
+        try {
+            // 检查好友码格式
+            if (!/^\d{15}$/.test(friendCode)) {
+                return '绑定失败：好友码必须为15位数字'
+            }
+
+            const userData = this.getUserData()
+            if (!userData[userId]) {
+                userData[userId] = {}
+            }
+
+            // 直接存储数字格式的好友码
+            userData[userId].friendCode = Number(friendCode)
+            if (this.saveUserData(userData)) {
+                return `绑定成功！\n好友码：${friendCode}`
+            }
+            return '绑定失败：保存数据时出错'
+        } catch (err) {
+            logger.error('[maimai-plugin] 绑定好友码失败')
+            logger.error(err)
+            return '绑定失败：请检查控制台输出'
         }
-        userData[userId].friendCode = friendCode
-        if (this.saveUserData(userData)) {
-            return '好友码绑定成功'
-        }
-        return '好友码绑定失败'
     }
 
     // 设置用户令牌
     async setUserToken(userId, userToken) {
-        const userData = this.getUserData()
-        if (!userData[userId]) {
-            userData[userId] = {}
+        try {
+            // 验证token格式
+            if (!/^[A-Za-z0-9+/=]+$/.test(userToken)) {
+                return '绑定失败：无效的用户令牌格式'
+            }
+
+            const userData = this.getUserData()
+            if (!userData[userId]) {
+                userData[userId] = {}
+            }
+            userData[userId].userToken = userToken
+            if (this.saveUserData(userData)) {
+                return `用户令牌绑定成功\n令牌：${userToken}`
+            }
+            return '绑定失败：保存数据时出错'
+        } catch (err) {
+            logger.error('[maimai-plugin] 绑定用户令牌失败')
+            logger.error(err)
+            return '绑定失败：请检查控制台输出'
         }
-        userData[userId].userToken = userToken
-        if (this.saveUserData(userData)) {
-            return '用户令牌绑定成功'
-        }
-        return '用户令牌绑定失败'
     }
 
     // 自动绑定好友码
     async autoBindFriendCode(userId) {
-        const userData = this.getUserData()
-        if (!userData[userId]) {
-            userData[userId] = {}
+        try {
+            const userData = this.getUserData()
+            if (!userData[userId]) {
+                userData[userId] = {}
+            }
+            
+            const adapter = new APIAdapter()
+            const response = await adapter.getPlayerInfoByQQ(userId)
+            
+            // 检查API响应
+            if (!response.success) {
+                if (response.code === 404) {
+                    return '绑定失败：请先在落雪官网绑定QQ号\nhttps://maimai.lxns.net/user/bind'
+                }
+                return `绑定失败：${response.data || '未知错误'}`
+            }
+
+            userData[userId].friendCode = response.data.friend_code
+            if (this.saveUserData(userData)) {
+                return `绑定成功！\n玩家名：${response.data.name}\n好友码：${response.data.friend_code}`
+            }
+            return '绑定失败：保存数据时出错'
+        } catch (err) {
+            logger.error('[maimai-plugin] 自动绑定失败')
+            logger.error(err)
+            return '绑定失败：请在落雪平台绑定QQ号后在尝试'
         }
-        
-        const adapter = new APIAdapter()
-        const response = await adapter.getPlayerInfoByQQ(userId)
-        userData[userId].friendCode = response.data.friend_code
-        if (this.saveUserData(userData)) {
-            return '自动绑定成功'
-        }
-        return '自动绑定失败'
     }
 }
 

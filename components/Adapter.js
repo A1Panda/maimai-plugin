@@ -18,7 +18,9 @@ export default class APIAdapter {
         }
     }
 
-    // 代理所有API方法
+// 代理所有API方法
+// 公共API类
+    // 获取玩家信息
     async getPlayerInfo(friendCode) {
         return await this.api.getPlayerInfo(friendCode)
     }
@@ -33,5 +35,46 @@ export default class APIAdapter {
     // 获取玩家Best 50
     async getPlayerBest50(friendCode) {
         return await this.api.getPlayerBest50(friendCode)
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//资源类
+    // 获取头像资源
+    async getIconAsset(iconId) {
+        return await this.api.getIconAsset(iconId)
+    }
+    // 获取姓名框资源
+    async getPlateAsset(plateId) {
+        return await this.api.getPlateAsset(plateId)
+    }
+    // 获取曲绘资源
+    async getJacketAsset(songId) {
+        return await this.api.getJacketAsset(songId)
+    }
+    // 获取音频资源
+    async getMusicAsset(songId) {
+        return await this.api.getMusicAsset(songId)
     }
 }

@@ -6,16 +6,14 @@ export default class LXAPI {
     constructor() {
         // 从配置文件中读取API基础配置
         const config = yaml.parse(fs.readFileSync('./plugins/maimai-plugin/configs/API_Token.yaml', 'utf8'))
-        const userdata = yaml.parse(fs.readFileSync('./plugins/maimai-plugin/configs/userdata.yaml', 'utf8'))
+        // 从配置文件中读取临时文件路径
+        const mainConfig = yaml.parse(fs.readFileSync('./plugins/maimai-plugin/configs/config.yaml', 'utf8'))
+        this.tempPath = mainConfig.tempPath || './plugins/maimai-plugin/temp'
         this.baseURL = config.LXapi.baseURL
-        this.token = config.LXapi.token
-        // 如果token未配置，使用默认token
-        if (!this.token) {
-            this.token = 'O-0yIEngnVsHgid6m5M2wlvQvmoDDLKIwEIfHtt0HEM='
-        }
+        this.token = config.LXapi.token || 'O-0yIEngnVsHgid6m5M2wlvQvmoDDLKIwEIfHtt0HEM='
     }
 
-    //开发者功能列表 需要开发者Token
+//开发者功能列表 需要开发者Token
     //1.创建或修改玩家信息
     // POST /api/v0/maimai/player
 
@@ -30,6 +28,7 @@ export default class LXAPI {
                 }
             })
             if (!response.ok) {
+                
                 throw new Error(`API请求失败: ${response.status}`)
             }
             const rawData = await response.json()
@@ -211,20 +210,40 @@ export default class LXAPI {
             const rawData = response.data
             const data = {
                 code: 200,
-                data: rawData.data.map(score => ({
-                    achievements: score.achievements || 0,
-                    fc: score.fc || '',
-                    fs: score.fs || '',
-                    dx_score: score.dx_score || 0,
-                    play_time: score.play_time || '',
-                    type: score.type || '',
-                    level: score.level || '',
-                    level_index: score.level_index || 0,
-                    level_label: score.level_label || '',
-                    song_id: score.song_id || 0,
-                    title: score.title || '',
-                    upload_time: score.upload_time || ''
-                }))
+                data: {
+                    standard_total: rawData.data.standard_total || 0,
+                    dx_total: rawData.data.dx_total || 0,
+                    standard: (rawData.data.standard || []).map(score => ({
+                        id: score.id || 0,
+                        song_name: score.song_name || '',
+                        level: score.level || '',
+                        level_index: score.level_index || 0,
+                        achievements: score.achievements || 0,
+                        fc: score.fc || '',
+                        fs: score.fs || '',
+                        dx_score: score.dx_score || 0,
+                        dx_rating: score.dx_rating || 0,
+                        rate: score.rate || '',
+                        type: score.type || '',
+                        play_time: score.play_time || '',
+                        upload_time: score.upload_time || ''
+                    })),
+                    dx: (rawData.data.dx || []).map(score => ({
+                        id: score.id || 0,
+                        song_name: score.song_name || '',
+                        level: score.level || '',
+                        level_index: score.level_index || 0,
+                        achievements: score.achievements || 0,
+                        fc: score.fc || '',
+                        fs: score.fs || '',
+                        dx_score: score.dx_score || 0,
+                        dx_rating: score.dx_rating || 0,
+                        rate: score.rate || '',
+                        type: score.type || '',
+                        play_time: score.play_time || '',
+                        upload_time: score.upload_time || ''
+                    }))
+                }
             }
             return data
         } catch (error) {
@@ -233,8 +252,40 @@ export default class LXAPI {
         }
     }
 
-    //6.获取玩家缓存的 All Perfect 50。
-    // GET /api/v0/maimai/player/{friend_code}/bests/ap
+    // //6.获取玩家缓存的 All Perfect 50。
+    // // GET /api/v0/maimai/player/{friend_code}/bests/ap
+    // async getPlayerAP50(friendCode) {
+    //     try {
+    //         const response = await axios.get(`${this.baseURL}/api/v0/maimai/player/${friendCode}/bests/ap`, {
+    //             headers: {
+    //                 'Authorization': this.token
+    //             }
+    //         })
+
+    //         const rawData = response.data
+    //         const data = {
+    //             code: 200,
+    //             data: rawData.data.map(score => ({
+    //                 achievements: score.achievements || 0,
+    //                 fc: score.fc || '',
+    //                 fs: score.fs || '',
+    //                 dx_score: score.dx_score || 0,
+    //                 play_time: score.play_time || '',
+    //                 type: score.type || '',
+    //                 level: score.level || '',
+    //                 level_index: score.level_index || 0,
+    //                 level_label: score.level_label || '',
+    //                 song_id: score.song_id || 0,
+    //                 title: score.title || '',
+    //                 upload_time: score.upload_time || ''
+    //             }))
+    //         }
+    //         return data
+    //     } catch (error) {
+    //         logger.error(`获取玩家AP 50失败: ${error}`)
+    //         throw error
+    //     }
+    // }
 
     //7.获取玩家缓存单曲所有谱面的成绩
     // GET /api/v0/maimai/player/{friend_code}/bests
@@ -260,8 +311,111 @@ export default class LXAPI {
     //14.通过 NET 的 HTML 源代码上传玩家数据。
     // POST /api/v0/maimai/player/{friend_code}/html
 
-    //个人API需要个人Token
-    //1.获取玩家姓名框进度。
-    // GET /api/v0/maimai/player/{friend_code}/plate/{plate_id}
+//个人API需要个人Token 
+    //1.获取玩家信息。
+    // GET /api/v0/user/maimai/player
+
+    //2.获取玩家所有成绩。
+    //GET /api/v0/user/maimai/player/scores
+
+    //3.上传玩家成绩。
+    //POST /api/v0/user/maimai/player/scores
+
+    //4.获取玩家成绩上传历史记录。
+    //GET /api/v0/user/maimai/player/score/history
+
+//公共API无需任何Token  
+    //1.获取曲目列表
+    //GET /api/v0/maimai/song/list
+
+    //2.获取曲目信息。
+    //GET /api/v0/maimai/song/{song_id}
+
+    //3.获取曲目别名列表。
+    //GET /api/v0/maimai/alias/list
+
+    //4.获取头像列表。
+    //GET /api/v0/maimai/icon/list
+
+    //5.获取头像信息。
+    //GET /api/v0/maimai/icon/{icon_id}
+
+    //6.获取姓名框列表。
+    //GET /api/v0/maimai/plate/list
+
+    //7.获取姓名框信息。
+    //GET /api/v0/maimai/plate/{plate_id}
+
+    //8.获取背景框列表。
+    //GET /api/v0/maimai/frame/list
+
+    //9.获取背景框信息。
+    //GET /api/v0/maimai/frame/{frame_id}
+
+    //10.获取收藏品分类列表
+    //GET /api/v0/maimai/collection-genre/list
+
+    //11.获取收藏品分类信息。
+    //GET /api/v0/maimai/collection-genre/{collection_genre_id}
+
+//游戏资源类基础 URL：https://assets2.lxns.net/maimai
+// 路径：
+
+// 头像：/icon/{icon_id}.png
+// 姓名框：/plate/{plate_id}.png
+// 曲绘：/jacket/{song_id}.png
+// 音频：/music/{song_id}.mp3
+
+    // 获取头像资源 icon
+    async getIconAsset(iconId) {
+        const path = `${this.tempPath}/LX_assets/icons/${iconId}.png`
+        if (!fs.existsSync(path)) {
+            const url = `https://assets2.lxns.net/maimai/icon/${iconId}.png`
+            const response = await fetch(url)
+            const buffer = await response.arrayBuffer()
+            await fs.promises.mkdir(`${this.tempPath}/LX_assets/icons`, { recursive: true })
+            await fs.promises.writeFile(path, Buffer.from(buffer))
+        }
+        return path
+    }
+
+    // 获取姓名框资源 name_plate 
+    async getPlateAsset(plateId) {
+        const path = `${this.tempPath}/LX_assets/plates/${plateId}.png`
+        if (!fs.existsSync(path)) {
+            const url = `https://assets2.lxns.net/maimai/plate/${plateId}.png`
+            const response = await fetch(url)
+            const buffer = await response.arrayBuffer()
+            await fs.promises.mkdir(`${this.tempPath}/LX_assets/plates`, { recursive: true })
+            await fs.promises.writeFile(path, Buffer.from(buffer))
+        }
+        return path
+    }
+
+    // 获取曲绘资源
+    async getJacketAsset(songId) {
+        const path = `${this.tempPath}/LX_assets/jackets/${songId}.png`
+        if (!fs.existsSync(path)) {
+            const url = `https://assets2.lxns.net/maimai/jacket/${songId}.png`
+            const response = await fetch(url)
+            const buffer = await response.arrayBuffer()
+            await fs.promises.mkdir(`${this.tempPath}/LX_assets/jackets`, { recursive: true })
+            await fs.promises.writeFile(path, Buffer.from(buffer))
+        }
+        return path
+    }
+
+    // 获取音频资源
+    async getMusicAsset(songId) {
+        const path = `${this.tempPath}/LX_assets/music/${songId}.mp3`
+        if (!fs.existsSync(path)) {
+            const url = `https://assets2.lxns.net/maimai/music/${songId}.mp3`
+            const response = await fetch(url)
+            const buffer = await response.arrayBuffer()
+            await fs.promises.mkdir(`${this.tempPath}/LX_assets/music`, { recursive: true })
+            await fs.promises.writeFile(path, Buffer.from(buffer))
+        }
+        return path
+    }
 }
 

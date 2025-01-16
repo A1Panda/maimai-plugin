@@ -1,2 +1,10 @@
+#默认使用的API
 defaultAPI: 1 #默认API 1为落雪API 2为水鱼API
+# 定时清除缓存资源配置
+autoClearCache: true # 是否开启定时清除缓存
+clearCacheTime: "0 0 4 * * * *" # 定时清除缓存时间,默认每天凌晨4点(cron表达式)
+
+# 默认资源保存位置
+tempPath: "./plugins/maimai-plugin/temp" # 临时文件保存位置
+
 

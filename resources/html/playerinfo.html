@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>玩家信息</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        .header {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .name-plate {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+            opacity: 0.8;
+        }
+        .avatar {
+            position: relative;
+            margin-right: 20px;
+            z-index: 1;
+        }
+        .icon {
+            width: 120px;
+            height: 120px;
+            border-radius: 60px;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .info {
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+        .name {
+            font-size: 28px;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .rating {
+            display: inline-block;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .friend-code {
+            color: #fff;
+            font-size: 16px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        .details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        .detail-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .detail-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .detail-label {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        .detail-value {
+            color: #333;
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 20px;
+            text-align: right;
+            color: #999;
+            font-size: 12px;
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img class="name-plate" src="{{plateAsset}}" alt="姓名框">
+            <div class="avatar">
+                <img class="icon" src="{{iconAsset}}" alt="头像">
+            </div>
+            <div class="info">
+                <div class="name">{{name}}</div>
+                <div class="rating">Rating: {{rating}}</div>
+                <div class="friend-code">好友码: {{friend_code}}</div>
+            </div>
+        </div>
+        
+        <div class="details">
+            <div class="detail-item">
+                <div class="detail-label">称号</div>
+                <div class="detail-value">{{trophy.name}}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">段位</div>
+                <div class="detail-value">{{course_rank}}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">星星数</div>
+                <div class="detail-value">{{star}}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">头像</div>
+                <div class="detail-value">{{icon.name}} ({{icon.genre}})</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">姓名框</div>
+                <div class="detail-value">{{name_plate.name}} ({{name_plate.genre}})</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">背景框</div>
+                <div class="detail-value">{{frame.name}} ({{frame.genre}})</div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            最后更新时间: {{upload_time}}
+        </div>
+    </div>
+</body>
+</html>
