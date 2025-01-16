@@ -50,17 +50,23 @@ class PlayerInfo {
             // 获取资源文件的本地路径
             const iconAsset = await adapter.getIconAsset(response.data.icon.id)
             const plateAsset = await adapter.getPlateAsset(response.data.name_plate.id)
+            const classRankAsset = await adapter.getClassRankAsset(response.data.class_rank)
+            const courseRankAsset = await adapter.getCourseRankAsset(response.data.course_rank)
 
             // 准备渲染数据，使用 data: URL 格式
             const renderData = {
                 ...response.data,
                 iconAsset: `data:image/png;base64,${fs.readFileSync(iconAsset).toString('base64')}`,
                 plateAsset: `data:image/png;base64,${fs.readFileSync(plateAsset).toString('base64')}`,
+                classRankAsset: `data:image/webp;base64,${fs.readFileSync(classRankAsset).toString('base64')}`,
+                courseRankAsset: `data:image/webp;base64,${fs.readFileSync(courseRankAsset).toString('base64')}`,
                 // 格式化一些数据
                 rating: response.data.rating,
-                course_rank: this.formatCourseRank(response.data.course_rank),
                 upload_time: new Date(response.data.upload_time).toLocaleString('zh-CN')
             }
+
+            // 在对象之外记录日志
+            logger.info('[maimai-plugin] 玩家信息:', JSON.stringify(response.data, null, 2))
 
             // 渲染玩家信息
             const renderedImage = await this.render(renderData)
@@ -79,18 +85,6 @@ class PlayerInfo {
         }
     }
 
-    // 格式化段位显示
-    formatCourseRank(rank) {
-        const ranks = [
-            '未知',
-            '初级1', '初级2', '初级3', '初级4',
-            '中级1', '中级2', '中级3', '中级4',
-            '上级1', '上级2', '上级3', '上级4',
-            '超级1', '超级2', '超级3', '超级4',
-            '神级1', '神级2', '神级3', '神级4'
-        ]
-        return ranks[rank] || '未知'
-    }
 
     // 渲染玩家信息
     async render(data) {

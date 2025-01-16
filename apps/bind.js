@@ -10,7 +10,7 @@ export class bindHandler extends plugin {
             priority: 5000,
             rule: [
                 {
-                    reg: '^#mai(mai)? ?(bind|绑定).*$',
+                    reg: '^#?mai(mai)? ?(bind|绑定).*$',
                     fnc: 'handleBind'
                 }
             ]

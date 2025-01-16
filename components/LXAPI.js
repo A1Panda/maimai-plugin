@@ -417,5 +417,32 @@ export default class LXAPI {
         }
         return path
     }
+
+    //获取class_rank https://maimai.lxns.net/assets/maimai/class_rank/{id}.webp
+    async getClassRankAsset(id) {
+        const path = `${this.tempPath}/LX_assets/class_rank/${id}.webp`
+        if (!fs.existsSync(path)) {
+            const url = `https://maimai.lxns.net/assets/maimai/class_rank/${id}.webp`
+            const response = await fetch(url)
+            const buffer = await response.arrayBuffer()
+            await fs.promises.mkdir(`${this.tempPath}/LX_assets/class_rank`, { recursive: true })
+            await fs.promises.writeFile(path, Buffer.from(buffer))
+        }
+        return path
+    }
+
+    //获取course_rank https://maimai.lxns.net/assets/maimai/course_rank/{id}.webp
+    async getCourseRankAsset(id) {
+        const path = `${this.tempPath}/LX_assets/course_rank/${id}.webp`
+        if (!fs.existsSync(path)) {
+            const url = `https://maimai.lxns.net/assets/maimai/course_rank/${id}.webp`
+            const response = await fetch(url)
+            const buffer = await response.arrayBuffer()
+            await fs.promises.mkdir(`${this.tempPath}/LX_assets/course_rank`, { recursive: true })
+            await fs.promises.writeFile(path, Buffer.from(buffer))
+        }
+        return path
+    }
+
 }
 

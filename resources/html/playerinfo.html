@@ -19,67 +19,120 @@
             padding: 20px;
         }
         .header {
+            /* 设置相对定位,用于子元素绝对定位的参考 */
             position: relative;
+            /* 使用flex布局,使子元素水平排列 */
             display: flex;
+            /* 垂直居中对齐 */
             align-items: center;
+            /* 底部外边距 */
             margin-bottom: 20px;
-            padding: 20px;
+            /* 内边距 */
+            padding: 0px 10px;
+            /* 底部边框 */
             border-bottom: 2px solid #f0f0f0;
+            /* 最小高度,确保内容不会太挤 */
+            min-height: 140px;
+            /* 最大高度,防止内容过多 */
+            max-height: 180px;
+            /* 超出部分隐藏 */
+            overflow: hidden;
         }
         .name-plate {
             position: absolute;
-            top: 0;
-            left: 0;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            height: auto;
+            min-height: 100%;
+            object-fit: contain;
             z-index: 0;
-            opacity: 0.8;
+            opacity: 0.9;
         }
         .avatar {
             position: relative;
             margin-right: 20px;
             z-index: 1;
+            flex-shrink: 0;
+            width: 100px;
         }
         .icon {
-            width: 120px;
-            height: 120px;
-            border-radius: 60px;
+            width: 90px;
+            height: 90px;
+            border-radius: 45px;
             object-fit: cover;
-            border: 4px solid white;
+            border: 3px solid white;
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
         .info {
             flex: 1;
             position: relative;
             z-index: 1;
+            padding: 10px;
+            max-width: 70%;
+        }
+        .bottom-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 20px;
+        }
+        .friend-code {
+            color: #999;
+            font-size: 12px;
+        }
+        .game-stats {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #fff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        .stat-item img {
+            height: 24px;
+            width: auto;
+        }
+        .stat-item.class-rank img {
+            height: 35px;
+            width: auto;
         }
         .name {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: bold;
             color: #fff;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .rating {
             display: inline-block;
             background: linear-gradient(45deg, #FFD700, #FFA500);
             color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
+            padding: 4px 12px;
+            border-radius: 15px;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-size: 14px;
         }
         .friend-code {
             color: #fff;
-            font-size: 16px;
+            font-size: 14px;
             text-shadow: 0 1px 2px rgba(0,0,0,0.3);
         }
         .details {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
             margin-top: 20px;
             position: relative;
             z-index: 1;
@@ -104,12 +157,22 @@
             font-weight: bold;
         }
         .footer {
-            margin-top: 20px;
             text-align: right;
             color: #999;
             font-size: 12px;
-            position: relative;
-            z-index: 1;
+        }
+        .detail-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        .detail-group-title {
+            grid-column: 1 / -1;
+            color: #666;
+            font-size: 16px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -122,40 +185,46 @@
             </div>
             <div class="info">
                 <div class="name">{{name}}</div>
+                <div class="game-stats">
+                    <div class="stat-item">
+                        <img src="{{courseRankAsset}}" alt="段位">
+                    </div>
+                    <div class="stat-item class-rank">
+                        <img src="{{classRankAsset}}" alt="阶级">
+                    </div>
+                    <div class="stat-item">
+                        ⭐{{star}}
+                    </div>
+                </div>
                 <div class="rating">Rating: {{rating}}</div>
-                <div class="friend-code">好友码: {{friend_code}}</div>
             </div>
         </div>
         
         <div class="details">
-            <div class="detail-item">
-                <div class="detail-label">称号</div>
-                <div class="detail-value">{{trophy.name}}</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">段位</div>
-                <div class="detail-value">{{course_rank}}</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">星星数</div>
-                <div class="detail-value">{{star}}</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">头像</div>
-                <div class="detail-value">{{icon.name}} ({{icon.genre}})</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">姓名框</div>
-                <div class="detail-value">{{name_plate.name}} ({{name_plate.genre}})</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">背景框</div>
-                <div class="detail-value">{{frame.name}} ({{frame.genre}})</div>
+            <div class="detail-group">
+                <div class="detail-group-title">玩家装扮</div>
+                <div class="detail-item">
+                    <div class="detail-label">头像</div>
+                    <div class="detail-value">{{icon.name}} ({{icon.genre}})</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">姓名框</div>
+                    <div class="detail-value">{{name_plate.name}} ({{name_plate.genre}})</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">背景框</div>
+                    <div class="detail-value">{{frame.name}} ({{frame.genre}})</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">称号</div>
+                    <div class="detail-value">{{trophy.name}}</div>
+                </div>
             </div>
         </div>
         
-        <div class="footer">
-            最后更新时间: {{upload_time}}
+        <div class="bottom-info">
+            <div class="friend-code">好友码: {{friend_code}}</div>
+            <div class="footer">最后更新时间: {{upload_time}}</div>
         </div>
     </div>
 </body>

@@ -77,4 +77,12 @@ export default class APIAdapter {
     async getMusicAsset(songId) {
         return await this.api.getMusicAsset(songId)
     }
+    // 获取class_rank资源
+    async getClassRankAsset(id) {
+        return await this.api.getClassRankAsset(id)
+    }
+    // 获取course_rank资源
+    async getCourseRankAsset(id) {
+        return await this.api.getCourseRankAsset(id)
+    }
 }
