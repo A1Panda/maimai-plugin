@@ -112,6 +112,13 @@ class Bind {
             return '绑定失败：请在落雪平台绑定QQ号后在尝试'
         }
     }
+
+    // 解绑好友码
+    async unbind(userId) {
+        const userData = this.getUserData()
+        delete userData[userId]
+        return this.saveUserData(userData) ? '解绑成功！' : '解绑失败：保存数据时出错'
+    }
 }
 
 export const bind = new Bind()

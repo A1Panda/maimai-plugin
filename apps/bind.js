@@ -12,6 +12,10 @@ export class bindHandler extends plugin {
                 {
                     reg: '^#?mai(mai)? ?(bind|绑定).*$',
                     fnc: 'handleBind'
+                },
+                {
+                    reg: '^#?mai(mai)? ?(unbind|解绑).*$',
+                    fnc: 'handleUnbind'
                 }
             ]
         })
@@ -44,5 +48,11 @@ export class bindHandler extends plugin {
 
         // 如果都不匹配，返回错误提示
         await e.reply('请输入正确的绑定格式\n- #mai绑定 好友码(15位数字)\n- #mai绑定 token xxx\n- #mai绑定(自动绑定)')
+    }
+
+    async handleUnbind(e) {
+        const result = await bind.unbind(e.user_id)
+        await e.reply(result, true)
+        return
     }
 }

@@ -66,7 +66,7 @@ class PlayerInfo {
             }
 
             // 在对象之外记录日志
-            logger.info('[maimai-plugin] 玩家信息:', JSON.stringify(response.data, null, 2))
+            //logger.info('[maimai-plugin] 玩家信息:', JSON.stringify(response.data, null, 2))
 
             // 渲染玩家信息
             const renderedImage = await this.render(renderData)
