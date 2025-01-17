@@ -19,6 +19,10 @@ export class DeleteTempHandler extends plugin {
 
     async handleDelete(e) {
         try {
+            if (!e.isMaster) {
+                await e.reply('只有超级管理员才能执行此操作', true)
+                return false
+            }
             const result = deleteTemp()
             if (result === false) {
                 await e.reply('临时文件清理失败，请检查控制台输出', true)

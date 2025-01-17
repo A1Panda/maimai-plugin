@@ -53,6 +53,7 @@ class B50 {
                 
                 return {
                     ...song,
+                    song_id: song.id.toString().padStart(5, '0'),
                     jacket_url: `data:image/png;base64,${fs.readFileSync(jacketAsset).toString('base64')}`,
                     fc_icon: fcIcon ? `data:image/webp;base64,${fs.readFileSync(fcIcon).toString('base64')}` : null,
                     fs_icon: fsIcon ? `data:image/webp;base64,${fs.readFileSync(fsIcon).toString('base64')}` : null,
@@ -68,6 +69,7 @@ class B50 {
                 
                 return {
                     ...song,
+                    song_id: song.id.toString().padStart(5, '0'),
                     jacket_url: `data:image/png;base64,${fs.readFileSync(jacketAsset).toString('base64')}`,
                     fc_icon: fcIcon ? `data:image/webp;base64,${fs.readFileSync(fcIcon).toString('base64')}` : null,
                     fs_icon: fsIcon ? `data:image/webp;base64,${fs.readFileSync(fsIcon).toString('base64')}` : null,
@@ -140,6 +142,7 @@ class B50 {
             data.standard.forEach(song => {
                 let songHtml = standardSection
                 songHtml = songHtml.replace(/\{\{song_name\}\}/g, song.song_name)
+                songHtml = songHtml.replace(/\{\{song_id\}\}/g, song.song_id)
                 songHtml = songHtml.replace(/\{\{jacket_url\}\}/g, song.jacket_url)
                 songHtml = songHtml.replace(/\{\{level\}\}/g, song.level)
                 songHtml = songHtml.replace(/\{\{dx_score\}\}/g, song.dx_score)
@@ -174,6 +177,7 @@ class B50 {
             data.dx.forEach(song => {
                 let songHtml = dxSection
                 songHtml = songHtml.replace(/\{\{song_name\}\}/g, song.song_name)
+                songHtml = songHtml.replace(/\{\{song_id\}\}/g, song.song_id)
                 songHtml = songHtml.replace(/\{\{jacket_url\}\}/g, song.jacket_url)
                 songHtml = songHtml.replace(/\{\{level\}\}/g, song.level)
                 songHtml = songHtml.replace(/\{\{dx_score\}\}/g, song.dx_score)

@@ -137,6 +137,7 @@
             padding: 15px;
             border-radius: 8px;
             transition: all 0.3s ease;
+            position: relative;
         }
         .detail-item:hover {
             transform: translateY(-2px);
@@ -150,6 +151,18 @@
         .detail-value {
             color: #333;
             font-weight: bold;
+        }
+        .asset-id {
+            font-size: 11px;
+            color: #888;
+            font-family: monospace;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 1px 4px;
+            border-radius: 4px;
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            opacity: 0.8;
         }
         .footer {
             text-align: right;
@@ -199,20 +212,32 @@
             <div class="detail-group">
                 <div class="detail-group-title">玩家装扮</div>
                 <div class="detail-item">
+                    <span class="asset-id">ID: {{icon.id}}</span>
                     <div class="detail-label">头像</div>
-                    <div class="detail-value">{{icon.name}} ({{icon.genre}})</div>
+                    <div class="detail-value">
+                        {{icon.name}} ({{icon.genre}})
+                    </div>
                 </div>
                 <div class="detail-item">
+                    <span class="asset-id">ID: {{name_plate.id}}</span>
                     <div class="detail-label">姓名框</div>
-                    <div class="detail-value">{{name_plate.name}} ({{name_plate.genre}})</div>
+                    <div class="detail-value">
+                        {{name_plate.name}} ({{name_plate.genre}})
+                    </div>
                 </div>
                 <div class="detail-item">
+                    <span class="asset-id">ID: {{frame.id}}</span>
                     <div class="detail-label">背景框</div>
-                    <div class="detail-value">{{frame.name}} ({{frame.genre}})</div>
+                    <div class="detail-value">
+                        {{frame.name}} ({{frame.genre}})
+                    </div>
                 </div>
                 <div class="detail-item">
+                    <span class="asset-id">ID: {{trophy.id}}</span>
                     <div class="detail-label">称号</div>
-                    <div class="detail-value">{{trophy.name}}</div>
+                    <div class="detail-value">
+                        {{trophy.name}}
+                    </div>
                 </div>
             </div>
         </div>

@@ -56,13 +56,41 @@ class PlayerInfo {
             // 准备渲染数据，使用 data: URL 格式
             const renderData = {
                 ...response.data,
+                icon: {
+                    id: response.data.icon?.id || '未知',
+                    name: response.data.icon?.name || '未知',
+                    genre: response.data.icon?.genre || '未知'
+                },
+                name_plate: {
+                    id: response.data.name_plate?.id || '未知',
+                    name: response.data.name_plate?.name || '未知',
+                    genre: response.data.name_plate?.genre || '未知'
+                },
+                frame: {
+                    id: response.data.frame?.id || '未知',
+                    name: response.data.frame?.name || '未知',
+                    genre: response.data.frame?.genre || '未知'
+                },
+                trophy: {
+                    id: response.data.trophy?.id || '未知',
+                    name: response.data.trophy?.name || '未知'
+                },
                 iconAsset: `data:image/png;base64,${fs.readFileSync(iconAsset).toString('base64')}`,
                 plateAsset: `data:image/png;base64,${fs.readFileSync(plateAsset).toString('base64')}`,
                 classRankAsset: `data:image/webp;base64,${fs.readFileSync(classRankAsset).toString('base64')}`,
                 courseRankAsset: `data:image/webp;base64,${fs.readFileSync(courseRankAsset).toString('base64')}`,
                 // 格式化一些数据
                 rating: response.data.rating,
-                upload_time: new Date(response.data.upload_time).toLocaleString('zh-CN')
+                upload_time: new Date(response.data.upload_time).toLocaleString('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false,
+                    timeZone: 'UTC'
+                }).replace(/-/g, '/').replace(/,/, '日')
             }
 
             // 在对象之外记录日志

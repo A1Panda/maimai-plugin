@@ -36,6 +36,14 @@ export default class APIAdapter {
     async getPlayerBest50(friendCode) {
         return await this.api.getPlayerBest50(friendCode)
     }
+    // 获取歌曲信息
+    async getSongInfo(songId) {
+        return await this.api.getSongInfo(songId)
+    }
+    //获取歌曲列表
+    async getSongList() {
+        return await this.api.getSongList()
+    }
 
 
 

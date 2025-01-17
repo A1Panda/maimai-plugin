@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>歌曲信息</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
+            background: #f5f5f5;
+        }
+        .container {
+            width: 900px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 2px solid #e0e0ff;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0ff;
+            gap: 20px;
+        }
+        .jacket {
+            width: 180px;
+            height: 180px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .song-info {
+            flex: 1;
+        }
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .artist {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        .basic-info {
+            display: grid;
+            grid-template-columns: repeat(4, auto);
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        .basic-info-item {
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .basic-info-label {
+            font-size: 14px;
+            color: #666;
+            margin-right: 5px;
+        }
+        .basic-info-value {
+            font-size: 16px;
+            color: #333;
+            font-weight: bold;
+        }
+        .difficulties {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .difficulty-table-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            align-items: center;
+            padding: 10px 15px;
+            background: #2b0a5b;
+            color: white;
+            font-weight: bold;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: -5px;
+        }
+        .difficulty-name {
+            text-align: left;
+            padding-left: 10px;
+            font-size: 14px;
+            color: #333;
+            font-weight: bold;
+            font-size: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .difficulty {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            align-items: center;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .difficulty:nth-child(1) { background: #98FB98; }
+        .difficulty:nth-child(2) { background: #FFA500; }
+        .difficulty:nth-child(3) { background: #FF69B4; }
+        .difficulty:nth-child(4) { background: #9370DB; }
+        .difficulty:nth-child(5) { background: #DDA0DD; }
+        
+        .difficulty-header {
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            color: #333;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .difficulty-level {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .difficulty-value {
+            font-size: 14px;
+            color: #555;
+        }
+        
+        .difficulty-info {
+            font-size: 12px;
+            color: #555;
+        }
+        
+        .notes-info {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        .note-item {
+            font-size: 14px;
+            color: #333;
+            font-weight: bold;
+        }
+        .note-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img class="jacket" src="{{jacket}}" alt="{{title}}">
+            <div class="song-info">
+                <div class="title">{{title}}</div>
+                <div class="artist">{{artist}}</div>
+                <div class="basic-info">
+                    <div class="basic-info-item">
+                        <div class="basic-info-label">ID</div>
+                        <div class="basic-info-value">{{id}}</div>
+                    </div>
+                    <div class="basic-info-item">
+                        <div class="basic-info-label">BPM</div>
+                        <div class="basic-info-value">{{bpm}}</div>
+                    </div>
+                    <div class="basic-info-item">
+                        <div class="basic-info-label">分类</div>
+                        <div class="basic-info-value">{{genre}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="difficulties">
+            <div class="difficulty-table-header">
+                <div class="difficulty-name"></div>
+                <div>TOTAL</div>
+                <div>TAP</div>
+                <div>HOLD</div>
+                <div>SLIDE</div>
+                <div>TOUCH</div>
+                <div>BREAK</div>
+            </div>
+            {{#difficulties.dx}}
+            <div class="difficulty">
+                <div class="difficulty-name">
+                    <div class="difficulty-level">{{difficulty_name}}</div>
+                    <div class="difficulty-value">{{level}} ({{level_value}})</div>
+                </div>
+                <div class="notes-info">{{notes.total}}</div>
+                <div class="notes-info">{{notes.tap}}</div>
+                <div class="notes-info">{{notes.hold}}</div>
+                <div class="notes-info">{{notes.slide}}</div>
+                <div class="notes-info">{{notes.touch}}</div>
+                <div class="notes-info">{{notes.break}}</div>
+            </div>
+            {{/difficulties.dx}}
+        </div>
+    </div>
+</body>
+</html>
