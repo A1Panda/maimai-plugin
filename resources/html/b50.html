@@ -23,46 +23,149 @@
         }
         
         .header {
+            /* 文字居中对齐 */
             text-align: center;
-            margin-bottom: 20px;
-        }
-        
-        .header h1 {
-            font-size: 36px;
-            margin: 0;
-            color: #333;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        
-        .rating-info {
-            display: flex;
-            justify-content: center;
-            gap: 25px;
+            /* 底部外边距25px */
             margin-bottom: 25px;
+            /* 相对定位 */
+            position: relative;
+            /* 上下内边距35px和25px,左右内边距0 */
+            padding: 35px 0 25px;
+            /* 从上到下的渐变背景,从略微透明的黑色到完全透明 */
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.03), transparent);
         }
         
-        .rating-box {
-            background: linear-gradient(45deg, #f8f8f8, #ffffff);
-            padding: 12px 25px;
+        .header-plate {
+            /* 绝对定位 */
+            position: absolute;
+            /* 顶部对齐 */
+            top: 0;
+            /* 水平居中 */
+            left: 50%;
+            /* X轴平移-50%实现水平居中 */
+            transform: translateX(-50%);
+            /* 宽度800px */
+            width: 800px;
+            /* 高度100% */
+            height: auto;
+            /* 图片填充方式为覆盖 */
+            object-fit: cover;
+            /* 层级为0 */
+            z-index: 0;
+            /* 禁用鼠标事件 */
+            pointer-events: none;
+            /* 透明度0.85 */
+            opacity: 0.85;
+        }
+        
+        .user-info {
+            /* 使用flex布局使子元素水平居中排列 */
+            display: flex;
+            /* 垂直居中对齐 */
+            align-items: center;  
+            /* 水平居中对齐 */
+            justify-content: center;
+            /* 子元素间距15px */
+            gap: 15px;
+            /* 白色渐变背景,带透明度 */
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.88));
+            /* 内边距 */
+            padding: 15px 25px;
+            /* 圆角 */
             border-radius: 15px;
-            min-width: 250px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            /* 阴影效果 */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            /* 边框 */
             border: 1px solid #eee;
+            /* 下外边距 */
+            margin-bottom: 25px;
+            /* 相对定位 */
+            position: relative;
+            /* 层级 */
+            z-index: 2;
+            /* 宽度75% */
+            width: 25%;
+            /* 水平居中 */
+            margin: 0 auto;
+            /* 背景模糊效果 */
+            backdrop-filter: blur(5px);
         }
         
-        .rating-box h3 {
-            margin: 0 0 15px;
-            color: #666;
-            font-size: 20px;
-            font-weight: normal;
+        .user-avatar {
+            display: flex;
+            align-items: center;
+            margin-right: 25px;
+            position: relative;
+            z-index: 3;
         }
         
-        .rating-box div {
-            font-size: 32px;
+        .user-icon {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .user-details {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .user-basic {
+            text-align: left;
+            background: linear-gradient(to right, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+            padding: 8px 15px;
+            border-radius: 8px;
+        }
+        
+        .user-name {
+            font-size: 28px;
             font-weight: bold;
-            color: #ff9800;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            color: #222;
+            margin-bottom: 5px;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        
+        .user-rating {
+            font-size: 22px;
+            color: #f57c00;
+            font-weight: bold;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        
+        .score-info {
+            display: flex;
+            gap: 25px;
+            padding-left: 25px;
+            border-left: 2px solid rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 2;
+            background: linear-gradient(to right, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+            padding: 8px 15px;
+            border-radius: 8px;
+        }
+        
+        .score-item {
+            text-align: center;
+        }
+        
+        .score-label {
+            color: #444;
+            font-size: 16px;
+            font-weight: normal;
+            margin-bottom: 5px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+        }
+        
+        .score-value {
+            font-size: 26px;
+            font-weight: bold;
+            color: #f57c00;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
         }
         
         .song-list {
@@ -187,17 +290,28 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Best 50 成绩单</h1>
-        </div>
-        
-        <div class="rating-info">
-            <div class="rating-box">
-                <h3>Standard总分</h3>
-                <div>{{standard_total}}</div>
-            </div>
-            <div class="rating-box">
-                <h3>DX总分</h3>
-                <div>{{dx_total}}</div>
+            
+            <div class="user-info">
+                <img class="header-plate" src="{{plateAsset}}" alt="Name Plate">
+                <div class="user-avatar">
+                    <img class="user-icon" src="{{iconAsset}}" alt="User Icon">
+                </div>
+                <div class="user-details">
+                    <div class="user-basic">
+                        <div class="user-name">{{nickname}}</div>
+                        <div class="user-rating">Rating: {{rating}}</div>
+                    </div>
+                    <div class="score-info">
+                        <div class="score-item">
+                            <div class="score-label">Standard总分</div>
+                            <div class="score-value">{{standard_total}}</div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label">DX总分</div>
+                            <div class="score-value">{{dx_total}}</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         
