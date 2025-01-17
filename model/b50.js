@@ -39,6 +39,10 @@ class B50 {
             // 通过API获取玩家best50
             const adapter = new APIAdapter()
             const response = await adapter.getPlayerBest50(userData[userId].friendCode)
+            const playerInfo = await adapter.getPlayerInfo(userData[userId].friendCode)
+
+            const iconAsset = await adapter.getIconAsset(playerInfo.data.icon.id)
+            const plateAsset = await adapter.getPlateAsset(playerInfo.data.name_plate.id)
             
             // 处理标准谱和DX谱的数据
             const processedStandard = await Promise.all(response.data.standard.map(async song => {
@@ -73,6 +77,12 @@ class B50 {
 
             // 准备渲染数据
             const renderData = {
+                // 用户信息
+                nickname: playerInfo.data.name,
+                rating: playerInfo.data.rating,
+                iconAsset: `data:image/png;base64,${fs.readFileSync(iconAsset).toString('base64')}`,
+                plateAsset: `data:image/png;base64,${fs.readFileSync(plateAsset).toString('base64')}`,
+                // B50数据
                 standard_total: response.data.standard_total,
                 dx_total: response.data.dx_total,
                 standard: processedStandard,
@@ -116,7 +126,11 @@ class B50 {
             // 读取HTML模板
             let template = fs.readFileSync('./plugins/maimai-plugin/resources/html/b50.html', 'utf8')
             
-            // 替换标准数据
+            // 替换用户信息和基础数据
+            template = template.replace(/\{\{nickname\}\}/g, data.nickname)
+            template = template.replace(/\{\{rating\}\}/g, data.rating)
+            template = template.replace(/\{\{iconAsset\}\}/g, data.iconAsset)
+            template = template.replace(/\{\{plateAsset\}\}/g, data.plateAsset)
             template = template.replace(/\{\{standard_total\}\}/g, data.standard_total)
             template = template.replace(/\{\{dx_total\}\}/g, data.dx_total)
             
