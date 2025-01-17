@@ -40,7 +40,7 @@ export class PlayerInfoHandler extends plugin {
             setTimeout(() => {
                 if (msg?.message_id && e.group) e.group.recallMsg(msg.message_id)
             }, 3000)
-            const result = await musicInfo.getMusicInfo(e.msg.match(/^#?mai(mai)? ?(search|搜索) ?(.+)$/)[3])
+            const result = await musicInfo.getMusicInfo(e.msg.match(/^#?mai(mai)? ?(search|搜索) ?(歌曲|歌名|曲名|歌谱|曲谱|song) ?(.+)$/)[4])
             logger.info(JSON.stringify(result))
             // 如果是错误消息，直接返回
             if (!result.isImage) {
