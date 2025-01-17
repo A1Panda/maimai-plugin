@@ -16,7 +16,7 @@ export class update extends plugin {
           permission: 'master'
         },
         {
-          reg: '^#?(maimai|maimai-plugin|舞萌|mai)(插件)?更新(日志|记录)$',
+          reg: '^#?(maimai|maimai-plugin|舞萌|mai)(插件)?(更新|updata)(日志|记录)$',
           fnc: 'update_log',
           permission: 'master'
         }

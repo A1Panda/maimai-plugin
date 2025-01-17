@@ -1,0 +1,13 @@
+{
+    #落雪API配置
+    "LXapi": {
+        "token": "", #落雪开发者APItoken
+        "baseURL": "https://maimai.lxns.net", #默认API地址
+        "assetsURL": "https://assets2.lxns.net" #默认资源地址
+    },
+    #水鱼API配置
+    "SYapi": {
+        "token": "", #水鱼开发者APItoken
+        "baseURL": "https://www.diving-fish.com" #默认API地址
+    }
+}

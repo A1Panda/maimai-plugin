@@ -2,10 +2,10 @@
 /data/*
 
 # 忽略配置文件
-/config/config/*
-config/API_Token.yaml
-config/help.yaml
-config/friendCode.yaml
+/configs/config.yaml
+configs/API_Token.yaml
+configs/help.yaml
+configs/userdata.yaml
 
 # 忽略备份文件
 /backup/
