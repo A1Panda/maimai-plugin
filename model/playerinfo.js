@@ -62,7 +62,16 @@ class PlayerInfo {
                 courseRankAsset: `data:image/webp;base64,${fs.readFileSync(courseRankAsset).toString('base64')}`,
                 // 格式化一些数据
                 rating: response.data.rating,
-                upload_time: new Date(response.data.upload_time).toLocaleString('zh-CN')
+                upload_time: new Date(response.data.upload_time).toLocaleString('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false,
+                    timeZone: 'UTC'
+                }).replace(/-/g, '/').replace(/日.*?(\d+)/, '日 $1')
             }
 
             // 在对象之外记录日志
