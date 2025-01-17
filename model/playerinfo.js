@@ -56,6 +56,25 @@ class PlayerInfo {
             // 准备渲染数据，使用 data: URL 格式
             const renderData = {
                 ...response.data,
+                icon: {
+                    id: response.data.icon?.id || '未知',
+                    name: response.data.icon?.name || '未知',
+                    genre: response.data.icon?.genre || '未知'
+                },
+                name_plate: {
+                    id: response.data.name_plate?.id || '未知',
+                    name: response.data.name_plate?.name || '未知',
+                    genre: response.data.name_plate?.genre || '未知'
+                },
+                frame: {
+                    id: response.data.frame?.id || '未知',
+                    name: response.data.frame?.name || '未知',
+                    genre: response.data.frame?.genre || '未知'
+                },
+                trophy: {
+                    id: response.data.trophy?.id || '未知',
+                    name: response.data.trophy?.name || '未知'
+                },
                 iconAsset: `data:image/png;base64,${fs.readFileSync(iconAsset).toString('base64')}`,
                 plateAsset: `data:image/png;base64,${fs.readFileSync(plateAsset).toString('base64')}`,
                 classRankAsset: `data:image/webp;base64,${fs.readFileSync(classRankAsset).toString('base64')}`,
@@ -71,7 +90,7 @@ class PlayerInfo {
                     second: '2-digit',
                     hour12: false,
                     timeZone: 'UTC'
-                }).replace(/-/g, '/').replace(/日.*?(\d+)/, '日 $1')
+                }).replace(/-/g, '/').replace(/,/, '日')
             }
 
             // 在对象之外记录日志

@@ -14,7 +14,7 @@ export default class LXAPI {
         this.assetsURL = config.LXapi.assetsURL || 'https://assets2.lxns.net'
     }
 
-//开发者功能列表 需要开发者Token
+    //开发者功能列表 需要开发者Token
     //1.创建或修改玩家信息
     // POST /api/v0/maimai/player
 
@@ -318,7 +318,7 @@ export default class LXAPI {
     //14.通过 NET 的 HTML 源代码上传玩家数据。
     // POST /api/v0/maimai/player/{friend_code}/html
 
-//个人API需要个人Token 
+    //个人API需要个人Token
     //1.获取玩家信息。
     // GET /api/v0/user/maimai/player
 
@@ -334,9 +334,64 @@ export default class LXAPI {
 //公共API无需任何Token  
     //1.获取曲目列表
     //GET /api/v0/maimai/song/list
+    async getSongList() {
+        try {
+            const response = await fetch(`${this.baseURL}/api/v0/maimai/song/list`)
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
+            const data = await response.json()
+            return data
+        } catch (error) {
+            logger.error(`获取曲目列表失败: ${error}`)
+            throw error
+        }
+    }
 
     //2.获取曲目信息。
     //GET /api/v0/maimai/song/{song_id}
+    async getSongInfo(songId) {
+        try {
+            const response = await fetch(`${this.baseURL}/api/v0/maimai/song/${songId}`)
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
+            const rawData = await response.json()
+            const data = {
+                id: rawData.id,
+                title: rawData.title,
+                artist: rawData.artist,
+                genre: rawData.genre,
+                bpm: rawData.bpm,
+                version: rawData.version,
+                difficulties: {
+                    standard: rawData.difficulties.standard || [],
+                    dx: rawData.difficulties.dx.map(diff => ({
+                        type: diff.type,
+                        difficulty: diff.difficulty,
+                        level: diff.level,
+                        level_value: diff.level_value,
+                        note_designer: diff.note_designer,
+                        version: diff.version,
+                        notes: {
+                            total: diff.notes.total,
+                            tap: diff.notes.tap,
+                            hold: diff.notes.hold,
+                            slide: diff.notes.slide,
+                            touch: diff.notes.touch,
+                            break: diff.notes.break
+                        }
+                    }))
+                }
+            }
+            // 调试输出
+            logger.debug(`[maimai-plugin] API返回数据: ${JSON.stringify(data)}`)
+            return data
+        } catch (error) {
+            logger.error(`获取曲目信息失败: ${error}`)
+            throw error
+        }
+    }
 
     //3.获取曲目别名列表。
     //GET /api/v0/maimai/alias/list

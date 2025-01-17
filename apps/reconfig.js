@@ -10,7 +10,7 @@ export class reconfig extends plugin {
             priority: 5000,
             rule: [
                 {
-                    reg: '^#?mai(mai)? ?(重置|resat)(配置|config)(文件)?$',
+                    reg: '^#?mai(mai)? ?(重置|reset)(配置|config)?(文件)?$',
                     fnc: 'resetConfig',
                     permission: 'master'
                 }

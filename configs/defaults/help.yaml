@@ -34,4 +34,7 @@ groups:
         description: "修改插件设置"
       - command: "#mai deleass"
         description: "清除临时数据"
+      - command: "#mai reset"
+        description: "重置插件配置"
 footer: "Powered by maimai-plugin"
+
