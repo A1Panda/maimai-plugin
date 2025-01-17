@@ -143,7 +143,7 @@ class PlayerInfo {
                 return document.querySelector('.container').offsetHeight
             })
             await page.setViewport({
-                width: 1200,
+                width: 800,
                 height: bodyHeight + 40
             })
             

@@ -204,7 +204,7 @@ class B50 {
             
             // 设置视口大小
             await page.setViewport({
-                width: 2400,
+                width: 2048,
                 height: 800
             })
             
@@ -215,10 +215,9 @@ class B50 {
             const bodyHeight = await page.evaluate(() => {
                 return document.querySelector('.container').offsetHeight
             })
-            
             // 调整视口高度
             await page.setViewport({
-                width: 2400,
+                width: 2048,
                 height: bodyHeight + 40
             })
             
