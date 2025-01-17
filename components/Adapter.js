@@ -60,6 +60,7 @@ export default class APIAdapter {
 
 
 
+
 //资源类
     // 获取头像资源
     async getIconAsset(iconId) {
@@ -84,5 +85,13 @@ export default class APIAdapter {
     // 获取course_rank资源
     async getCourseRankAsset(id) {
         return await this.api.getCourseRankAsset(id)
+    }
+    // 获取等级图标资源 Rate
+    async getMusicRateAsset(rate) {
+        return await this.api.getMusicRateAsset(rate)
+    }
+    //获取音乐图标资源 Fc/Fs
+    async getMusicIconAsset(id) {
+        return await this.api.getMusicIconAsset(id)
     }
 }

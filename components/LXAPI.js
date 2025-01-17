@@ -9,8 +9,9 @@ export default class LXAPI {
         // 从配置文件中读取临时文件路径
         const mainConfig = yaml.parse(fs.readFileSync('./plugins/maimai-plugin/configs/config.yaml', 'utf8'))
         this.tempPath = mainConfig.tempPath || './plugins/maimai-plugin/temp'
-        this.baseURL = config.LXapi.baseURL
+        this.baseURL = config.LXapi.baseURL || 'https://maimai.lxns.net'
         this.token = config.LXapi.token || 'O-0yIEngnVsHgid6m5M2wlvQvmoDDLKIwEIfHtt0HEM='
+        this.assetsURL = config.LXapi.assetsURL || 'https://assets2.lxns.net'
     }
 
 //开发者功能列表 需要开发者Token
@@ -201,13 +202,16 @@ export default class LXAPI {
     // GET /api/v0/maimai/player/{friend_code}/bests
     async getPlayerBest50(friendCode) {
         try {
-            const response = await axios.get(`${this.baseURL}/api/v0/maimai/player/${friendCode}/bests`, {
+            const response = await fetch(`${this.baseURL}/api/v0/maimai/player/${friendCode}/bests`, {
                 headers: {
-                    'Authorization': this.token
+                    'Authorization': `${this.token}`
                 }
-            })
+            });
+            if (!response.ok) {
+                throw new Error(`API请求失败: ${response.status}`)
+            }
+            const rawData = await response.json()
 
-            const rawData = response.data
             const data = {
                 code: 200,
                 data: {
@@ -254,38 +258,41 @@ export default class LXAPI {
 
     // //6.获取玩家缓存的 All Perfect 50。
     // // GET /api/v0/maimai/player/{friend_code}/bests/ap
-    // async getPlayerAP50(friendCode) {
-    //     try {
-    //         const response = await axios.get(`${this.baseURL}/api/v0/maimai/player/${friendCode}/bests/ap`, {
-    //             headers: {
-    //                 'Authorization': this.token
-    //             }
-    //         })
+    async getPlayerAP50(friendCode) {
+        try {
+            const response = await fetch(`${this.baseURL}/api/v0/maimai/player/${friendCode}/bests/ap`, {
+                headers: {
+                    'Authorization': `${this.token}`
+                }
+            });
+            if (!response.ok) {
+                throw new Error(`API请求失败: ${response.status}`)
+            }
+            const rawData = await response.json()
 
-    //         const rawData = response.data
-    //         const data = {
-    //             code: 200,
-    //             data: rawData.data.map(score => ({
-    //                 achievements: score.achievements || 0,
-    //                 fc: score.fc || '',
-    //                 fs: score.fs || '',
-    //                 dx_score: score.dx_score || 0,
-    //                 play_time: score.play_time || '',
-    //                 type: score.type || '',
-    //                 level: score.level || '',
-    //                 level_index: score.level_index || 0,
-    //                 level_label: score.level_label || '',
-    //                 song_id: score.song_id || 0,
-    //                 title: score.title || '',
-    //                 upload_time: score.upload_time || ''
-    //             }))
-    //         }
-    //         return data
-    //     } catch (error) {
-    //         logger.error(`获取玩家AP 50失败: ${error}`)
-    //         throw error
-    //     }
-    // }
+            const data = {
+                code: 200,
+                data: rawData.data.map(score => ({
+                    achievements: score.achievements || 0,
+                    fc: score.fc || '',
+                    fs: score.fs || '',
+                    dx_score: score.dx_score || 0,
+                    play_time: score.play_time || '',
+                    type: score.type || '',
+                    level: score.level || '',
+                    level_index: score.level_index || 0,
+                    level_label: score.level_label || '',
+                    song_id: score.song_id || 0,
+                    title: score.title || '',
+                    upload_time: score.upload_time || ''
+                }))
+            }
+            return data
+        } catch (error) {
+            logger.error(`获取玩家AP 50失败: ${error}`)
+            throw error
+        }
+    }
 
     //7.获取玩家缓存单曲所有谱面的成绩
     // GET /api/v0/maimai/player/{friend_code}/bests
@@ -366,11 +373,44 @@ export default class LXAPI {
 // 曲绘：/jacket/{song_id}.png
 // 音频：/music/{song_id}.mp3
 
+    // 添加一个通用的资源获取函数
+    async fetchAssetWithRetry(url, retries = 3, timeout = 15000) {
+        for (let i = 0; i < retries; i++) {
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), timeout);
+                
+                const response = await fetch(url, {
+                    signal: controller.signal,
+                    timeout: timeout
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                return await response.arrayBuffer();
+            } catch (error) {
+                logger.warn(`[maimai-plugin] 第${i + 1}次获取资源失败: ${url}`);
+                logger.warn(error);
+                
+                if (i === retries - 1) {
+                    throw new Error(`获取资源失败: ${url}, 已重试${retries}次`);
+                }
+                
+                // 等待一段时间后重试
+                await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+            }
+        }
+    }
+
     // 获取头像资源 icon
     async getIconAsset(iconId) {
         const path = `${this.tempPath}/LX_assets/icons/${iconId}.png`
         if (!fs.existsSync(path)) {
-            const url = `https://assets2.lxns.net/maimai/icon/${iconId}.png`
+            const url = `${this.assetsURL}/maimai/icon/${iconId}.png`
             const response = await fetch(url)
             const buffer = await response.arrayBuffer()
             await fs.promises.mkdir(`${this.tempPath}/LX_assets/icons`, { recursive: true })
@@ -381,9 +421,9 @@ export default class LXAPI {
 
     // 获取姓名框资源 name_plate 
     async getPlateAsset(plateId) {
-        const path = `${this.tempPath}/LX_assets/plates/${plateId}.png`
+        const path = `${this.tempPath}/LX_assets/plates/${plateId}.png` 
         if (!fs.existsSync(path)) {
-            const url = `https://assets2.lxns.net/maimai/plate/${plateId}.png`
+            const url = `${this.assetsURL}/maimai/plate/${plateId}.png`
             const response = await fetch(url)
             const buffer = await response.arrayBuffer()
             await fs.promises.mkdir(`${this.tempPath}/LX_assets/plates`, { recursive: true })
@@ -396,11 +436,20 @@ export default class LXAPI {
     async getJacketAsset(songId) {
         const path = `${this.tempPath}/LX_assets/jackets/${songId}.png`
         if (!fs.existsSync(path)) {
-            const url = `https://assets2.lxns.net/maimai/jacket/${songId}.png`
-            const response = await fetch(url)
-            const buffer = await response.arrayBuffer()
-            await fs.promises.mkdir(`${this.tempPath}/LX_assets/jackets`, { recursive: true })
-            await fs.promises.writeFile(path, Buffer.from(buffer))
+            try {
+                const url = `${this.assetsURL}/maimai/jacket/${songId}.png`
+                const buffer = await this.fetchAssetWithRetry(url);
+                await fs.promises.mkdir(`${this.tempPath}/LX_assets/jackets`, { recursive: true })
+                await fs.promises.writeFile(path, Buffer.from(buffer))
+            } catch (error) {
+                logger.error(`[maimai-plugin] 获取曲绘资源失败: ${songId}`);
+                // 使用默认图片
+                const defaultPath = './plugins/maimai-plugin/resources/assets/default_jacket.png'
+                if (fs.existsSync(defaultPath)) {
+                    return defaultPath
+                }
+                throw error;
+            }
         }
         return path
     }
@@ -409,7 +458,7 @@ export default class LXAPI {
     async getMusicAsset(songId) {
         const path = `${this.tempPath}/LX_assets/music/${songId}.mp3`
         if (!fs.existsSync(path)) {
-            const url = `https://assets2.lxns.net/maimai/music/${songId}.mp3`
+            const url = `${this.assetsURL}/maimai/music/${songId}.mp3`
             const response = await fetch(url)
             const buffer = await response.arrayBuffer()
             await fs.promises.mkdir(`${this.tempPath}/LX_assets/music`, { recursive: true })
@@ -418,11 +467,15 @@ export default class LXAPI {
         return path
     }
 
+
+
+//图标使用baseURL
+
     //获取class_rank https://maimai.lxns.net/assets/maimai/class_rank/{id}.webp
     async getClassRankAsset(id) {
         const path = `${this.tempPath}/LX_assets/class_rank/${id}.webp`
         if (!fs.existsSync(path)) {
-            const url = `https://maimai.lxns.net/assets/maimai/class_rank/${id}.webp`
+            const url = `${this.baseURL}/assets/maimai/class_rank/${id}.webp`
             const response = await fetch(url)
             const buffer = await response.arrayBuffer()
             await fs.promises.mkdir(`${this.tempPath}/LX_assets/class_rank`, { recursive: true })
@@ -435,11 +488,66 @@ export default class LXAPI {
     async getCourseRankAsset(id) {
         const path = `${this.tempPath}/LX_assets/course_rank/${id}.webp`
         if (!fs.existsSync(path)) {
-            const url = `https://maimai.lxns.net/assets/maimai/course_rank/${id}.webp`
+            const url = `${this.baseURL}/assets/maimai/course_rank/${id}.webp`
             const response = await fetch(url)
             const buffer = await response.arrayBuffer()
             await fs.promises.mkdir(`${this.tempPath}/LX_assets/course_rank`, { recursive: true })
             await fs.promises.writeFile(path, Buffer.from(buffer))
+        }
+        return path
+    }
+
+
+    //	https://maimai.lxns.net/assets/maimai/music_rank/{等级}.webp
+    //获取等级Rate图标资源
+    async getMusicRateAsset(rate) {
+        const path = `${this.tempPath}/LX_assets/music_rank/${rate}.webp`
+        if (!fs.existsSync(path)) {
+            const url = `${this.baseURL}/assets/maimai/music_rank/${rate}.webp`
+            const response = await fetch(url)
+            const buffer = await response.arrayBuffer()
+            await fs.promises.mkdir(`${this.tempPath}/LX_assets/music_rank`, { recursive: true })
+            await fs.promises.writeFile(path, Buffer.from(buffer))
+        }
+        return path
+    }
+
+
+
+    // 获取音乐图标资源Fc/FS
+    async getMusicIconAsset(type) {
+        if (!type) {
+            const path = `${this.tempPath}/LX_assets/music_icon/blank.webp`
+            if (!fs.existsSync(path)) {
+                try {
+                    const url = `${this.baseURL}/assets/maimai/music_icon/blank.webp`
+                    const buffer = await this.fetchAssetWithRetry(url);
+                    await fs.promises.mkdir(`${this.tempPath}/LX_assets/music_icon`, { recursive: true })
+                    await fs.promises.writeFile(path, Buffer.from(buffer))
+                } catch (error) {
+                    logger.error(`[maimai-plugin] 获取空白图标失败`);
+                    return null;
+                }
+            }
+            return path
+        }
+
+        const validTypes = ['fcp', 'fc', 'app', 'ap', 'fsdp', 'fsd', 'fsp', 'fs', 'sync']
+        if (!validTypes.includes(type)) {
+            return null;
+        }
+        
+        const path = `${this.tempPath}/LX_assets/music_icon/${type}.webp`
+        if (!fs.existsSync(path)) {
+            try {
+                const url = `${this.baseURL}/assets/maimai/music_icon/${type}.webp`
+                const buffer = await this.fetchAssetWithRetry(url);
+                await fs.promises.mkdir(`${this.tempPath}/LX_assets/music_icon`, { recursive: true })
+                await fs.promises.writeFile(path, Buffer.from(buffer))
+            } catch (error) {
+                logger.error(`[maimai-plugin] 获取音乐图标失败: ${type}`);
+                return null;
+            }
         }
         return path
     }
