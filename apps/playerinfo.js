@@ -20,12 +20,21 @@ export class PlayerInfoHandler extends plugin {
 
     async playerinfo(e) {
         try {
+            // 获取目标用户ID
+            let targetId = e.user_id
+            
+            // 如果有@，则使用@的用户ID
+            if (e.at && e.at !== targetId) {
+                targetId = e.at
+            }
+            
             let msg = await e.reply('正在渲染个人信息请稍后...', { at: true })
             setTimeout(() => {
-                if (msg?.message_id) e.group.recallMsg(msg.message_id)
+                if (msg?.message_id && e.group) e.group.recallMsg(msg.message_id)
             }, 3000)
             
-            const result = await playerInfo.getPlayerInfo(e.user_id)
+            const result = await playerInfo.getPlayerInfo(targetId)
+            
             // 如果是错误消息，直接返回
             if (!result.isImage) {
                 await e.reply(result.message, { at: true })

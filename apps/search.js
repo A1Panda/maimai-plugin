@@ -38,7 +38,7 @@ export class PlayerInfoHandler extends plugin {
         try {
             let msg = await e.reply('正在渲染搜索结果请稍后...', { at: true })
             setTimeout(() => {
-                if (msg?.message_id) e.group.recallMsg(msg.message_id)
+                if (msg?.message_id && e.group) e.group.recallMsg(msg.message_id)
             }, 3000)
             const result = await musicInfo.getMusicInfo(e.msg.match(/^#?mai(mai)? ?(search|搜索) ?(.+)$/)[3])
             logger.info(JSON.stringify(result))
