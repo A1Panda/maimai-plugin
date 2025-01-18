@@ -318,7 +318,7 @@ export default class LXAPI {
     //14.通过 NET 的 HTML 源代码上传玩家数据。
     // POST /api/v0/maimai/player/{friend_code}/html
 
-//个人API需要个人Token
+    //个人API需要个人Token
     //1.获取玩家信息。
     // GET /api/v0/user/maimai/player
 

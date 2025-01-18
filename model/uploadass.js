@@ -25,16 +25,34 @@ export class UploadAssets {
     //搜索上传用
     async uploadSearch(type, id) {
         logger.info(`[maimai-plugin] 上传搜索资源: ${type} -> ${id}`)
-        if (type === 'song') {
+        if (type === '歌曲') {
             return await this.getMusicAsset(parseInt(id))
         }
-        if (type === 'name') {
+        if (type === '姓名框') {
             return await this.getPlateAsset(parseInt(id))
         }
-        if (type === 'avatar') {
+        if (type === '头像') {
             return await this.getIconAsset(parseInt(id))
         }
-        if (type === 'jacket') {
+        if (type === '曲绘') {
+            return await this.getJacketAsset(parseInt(id))
+        }
+        return null
+    }
+
+    //随机用
+    async uploadRandom(type, id) {
+        logger.info(`[maimai-plugin] 上传随机资源: ${type} -> ${id}`)
+        if (type === '歌曲') {  
+            return await this.getMusicAsset(parseInt(id))
+        }
+        if (type === '姓名框') {
+            return await this.getPlateAsset(parseInt(id))
+        }
+        if (type === '头像') {
+            return await this.getIconAsset(parseInt(id))
+        }
+        if (type === '曲绘') {
             return await this.getJacketAsset(parseInt(id))
         }
         return null
@@ -58,7 +76,7 @@ export class UploadAssets {
             const adapter = new APIAdapter()
             return await adapter.getIconAsset(iconId)
         } catch (err) {
-            logger.error('[maimai-plugin] 获取头像框失败')
+            logger.error('[maimai-plugin] 获取头像失败')
             logger.error(err)
             return null
         }

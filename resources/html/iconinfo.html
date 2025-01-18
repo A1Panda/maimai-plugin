@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>姓名框信息</title>
+    <title>头像信息</title>
     <style>
         body {
             margin: 0;
@@ -22,7 +22,7 @@
             padding: 30px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
-        .plate-info {
+        .icon-info {
             display: grid;
             grid-template-columns: 120px 1fr;
             gap: 20px;
@@ -83,7 +83,7 @@
             border-radius: 8px;
             margin-top: 20px;
         }
-        .info-section .plate-info {
+        .info-section .icon-info {
             margin: 0;
         }
         .requirements {
@@ -197,17 +197,17 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="title">姓名框详细信息</h1>
+        <h1 class="title">头像详细信息</h1>
         
-        {{#plate}}
+        {{#icon}}
         <div class="preview-container">
             <div class="preview-title">预览效果</div>
-            <img src="{{plate}}" alt="姓名框预览" class="preview-image">
+            <img src="{{icon}}" alt="头像预览" class="preview-image">
         </div>
-        {{/plate}}
+        {{/icon}}
         
         <div class="info-section">
-            <div class="plate-info">
+            <div class="icon-info">
                 <div class="label">ID</div>
                 <div class="value">{{id}}</div>
                 

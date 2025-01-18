@@ -1,9 +1,10 @@
 import plugin from '../../../lib/plugins/plugin.js'
+import fs from 'fs'
 import { musicInfo } from '../model/musicinfo.js'
 import { uploadAssets } from '../model/uploadass.js'
 import { aliasResolver } from '../utils/MaimaiAliasResolver.js'
-import fs from 'fs'
 import { plateInfo } from '../model/Plateinfo.js'
+import { iconInfo } from '../model/iconinfo.js'
 
 let searchHistory = {}  // 存储格式: { QQ号: { id: 搜索ID, type: 搜索类型 } }
 
@@ -22,11 +23,11 @@ export class PlayerInfoHandler extends plugin {
             priority: 5000,
             rule: [
                 {
-                    reg: '^#?mai(mai)? ?(search|搜索) ?(歌曲|歌名|音乐|曲名|歌谱|曲谱|song|姓名框|名字|名字框|name|头像|头像框|avatar|背景|背景框|background|称号|title|曲绘) ?(.+)$',
+                    reg: '^#?mai(mai)? ?(search|搜索) ?(歌曲|歌名|音乐|曲名|歌谱|曲谱|song|姓名框|名字|名字框|name|头像|头像框|avatar|背景|背景框|background|收藏品|title|曲绘) ?(.+)$',
                     fnc: 'handleSearch'
                 },
                 {
-                    reg: '^#?mai(mai)? ?(上传)$',
+                    reg: '^#?mai(mai)? ?(上传|up)$',
                     fnc: 'handleUpload'
                 }
             ]
@@ -41,25 +42,25 @@ export class PlayerInfoHandler extends plugin {
             }, 6000)
             
             // 获取搜索类型和ID
-            const match = e.msg.match(/^#?mai(?:mai)? ?(?:search|搜索) ?(歌曲|歌名|音乐|曲名|歌谱|曲谱|song|姓名框|名字|名字框|name|头像|头像框|avatar|背景|背景框|background|称号|title|曲绘) ?(.+)$/)
+            const match = e.msg.match(/^#?mai(?:mai)? ?(?:search|搜索) ?(歌曲|歌名|音乐|曲名|歌谱|曲谱|song|姓名框|名字|名字框|name|头像|头像框|avatar|背景|背景框|background|收藏品|title|曲绘) ?(.+)$/)
             const searchType = match[1]
             const id = match[2]
             
             // 确定搜索类型
             let type = ''
-            if (/歌曲|歌名|音乐|曲名|歌谱|曲谱|song/.test(searchType)) type = 'song'
-            else if (/姓名框|名字|名字框|name/.test(searchType)) type = 'name'
-            else if (/头像|头像框|avatar/.test(searchType)) type = 'avatar'
-            else if (/背景|背景框|background/.test(searchType)) type = 'background'
-            else if (/称号|title/.test(searchType)) type = 'title'
-            else if (/曲绘/.test(searchType)) type = 'jacket'
+            if (/歌曲|歌名|音乐|曲名|歌谱|曲谱|song/.test(searchType)) type = '歌曲'
+            else if (/姓名框|名字|名字框|name/.test(searchType)) type = '姓名框'
+            else if (/头像|头像框|avatar/.test(searchType)) type = '头像'
+            else if (/背景|背景框|background/.test(searchType)) type = '背景'
+            else if (/收藏品|title/.test(searchType)) type = '收藏品'
+            else if (/曲绘/.test(searchType)) type = '曲绘'
 
             logger.info(`[maimai-plugin] 搜索类型: ${searchType} -> ${type}`)
             logger.info(`[maimai-plugin] 搜索ID: ${id}`)
             
             // 根据类型调用不同的处理函数
             let result
-            if (type === 'song') {
+            if (type === '歌曲') {
                 // 检查是否为纯数字ID
                 if (/^\d+$/.test(id)) {
                     logger.info(`[maimai-plugin] 使用ID直接搜索: ${id}`)
@@ -87,7 +88,7 @@ export class PlayerInfoHandler extends plugin {
                         return await e.reply('未找到匹配的歌曲，请检查输入是否正确', { at: true })
                     }
                 }
-            } else if (type === 'name') {
+            } else if (type === '姓名框') {
                 // 检查是否为纯数字ID
                 if (/^\d+$/.test(id)) {
                     logger.info(`[maimai-plugin] 使用ID直接搜索姓名框: ${id}`)
@@ -114,14 +115,65 @@ export class PlayerInfoHandler extends plugin {
                         return await e.reply('未找到匹配的姓名框，请检查输入是否正确', { at: true })
                     }
                 }
-            } else if (type === 'avatar') {
-                result = await avatar.getAvatar(id)
-            } else if (type === 'background') {
+            } else if (type === '头像') {
+                // 检查是否为纯数字ID
+                if (/^\d+$/.test(id)) {
+                    logger.info(`[maimai-plugin] 使用ID直接搜索头像: ${id}`)
+                    result = await iconInfo.getIconInfo(id)
+                    searchHistory[e.user_id] = {
+                        id: id,
+                        type: type,
+                        name: result.name
+                    }
+                } else {
+                    // 尝试通过别名解析
+                    const icon = aliasResolver.searchIcon(id)
+                    if (icon) {
+                        logger.info(`[maimai-plugin] 通过模糊匹配找到头像: ${icon.name} (ID: ${icon.id})`)
+                        await e.reply(`通过模糊匹配找到头像: ${icon.name} (ID: ${icon.id})`)
+                        result = await iconInfo.getIconInfo(icon.id)
+                        searchHistory[e.user_id] = {
+                            id: icon.id,
+                            type: type,
+                            name: result.name
+                        }
+                    } else {
+                        logger.info(`[maimai-plugin] 未找到匹配的头像: ${id}`)
+                        return await e.reply('未找到匹配的头像，请检查输入是否正确', { at: true })
+                    }
+                }
+            } else if (type === '背景') {
                 result = await background.getBackground(id)
-            } else if (type === 'title') {
+            } else if (type === '收藏品') {
                 result = await title.getTitle(id)
-            } else if (type === 'jacket') {
-                result = await jacket.getJacket(id)
+            } else if (type === '曲绘') {
+                                // 检查是否为纯数字ID
+                if (/^\d+$/.test(id)) {
+                    logger.info(`[maimai-plugin] 使用ID直接搜索曲绘: ${id}`)
+                    result = await musicInfo.getMusicInfo(id)
+                    searchHistory[e.user_id] = {
+                        id: id,
+                        type: type,
+                        name: result.songname
+                    }
+                } else {
+                    // 尝试通过别名解析
+                    const song = aliasResolver.searchSong(id)
+                    if (song) {
+                        logger.info(`[maimai-plugin] 通过别名找到曲绘: ${song.title} (ID: ${song.id})`)
+                        await e.reply(`通过别名找到曲绘: ${song.title} (ID: ${song.id})`)
+                        result = await musicInfo.getMusicInfo(song.id)
+                        // 更新搜索历史为实际的歌曲ID
+                        searchHistory[e.user_id] = {
+                            id: song.id,
+                            type: type,
+                            name: result.songname
+                        }
+                    } else {
+                        logger.info(`[maimai-plugin] 未找到匹配的曲绘: ${id}`)
+                        return await e.reply('未找到匹配的曲绘，请检查输入是否正确', { at: true })
+                    }
+                }
             }
                 
             // 如果是错误消息，直接返回
