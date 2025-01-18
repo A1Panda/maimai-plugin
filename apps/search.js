@@ -49,17 +49,17 @@ export class PlayerInfoHandler extends plugin {
             logger.info(`[maimai-plugin] 搜索类型: ${searchType} -> ${type}`)
             logger.info(`[maimai-plugin] 搜索ID: ${id}`)
             
-            searchHistory[e.user_id] = {
-                id: id,
-                type: type
-            }
-            
             // 根据类型调用不同的处理函数
             let result
             if (type === 'song') {
                 result = await musicInfo.getMusicInfo(id)
+                searchHistory[e.user_id] = {
+                    id: id,
+                    type: type,
+                    songname: result.songname
+                }
             }
-
+                
             // 如果是错误消息，直接返回
             if (!result.isImage) {
                 await e.reply(result.message, { at: true })
@@ -85,13 +85,17 @@ export class PlayerInfoHandler extends plugin {
         try {
             // 获取最近一次搜索的类型和ID
             if (!searchHistory[e.user_id]) {
-                await e.reply('您还未进行过搜索')
+                await e.reply('您还未进行过搜索', { at: true })
                 return false
             }
 
-            const { type, id } = searchHistory[e.user_id]
+            // 获取搜索类型和ID
+            const { type, id, songname } = searchHistory[e.user_id]
+            let msg = await e.reply(`您最近一次搜索的是:\n歌曲名: ${songname}\n类型: ${type}\nID: ${id}\n正在上传...`, { at: true })
+            setTimeout(() => {
+                if (msg?.message_id && e.group) e.group.recallMsg(msg.message_id)
+            }, 3000)
 
-            await e.reply(`您最近一次搜索的是:\n类型: ${type}\nID: ${id}\n正在上传...`)
             //获取对应的资源
             const result = await uploadAssets.uploadSearch(type, id)
             if (result) {
@@ -103,7 +107,7 @@ export class PlayerInfoHandler extends plugin {
                 } else if (['mp3', 'wav', 'ogg'].includes(ext)) {
                     await e.reply([{
                         type: 'file',
-                        name: `${id}.mp3`,
+                        name: `${songname}.mp3`,
                         file: result
                     }])
                 } else {
