@@ -26,25 +26,56 @@ class MusicInfo {
                 jacket: `data:image/png;base64,${fs.readFileSync(jacketAsset).toString('base64')}`,
                 // 难度信息
                 difficulties: {
-                    dx: response.difficulties.dx.map(diff => ({
-                        ...diff,
-                        difficulty_name: (() => {
-                            const names = ['BASIC', 'ADVANCED', 'EXPERT', 'MASTER', 'Re:MASTER']
-                            return names[diff.difficulty] || ''
-                        })()
-                    }))
+                    dx: (() => {
+                        // 定义难度名称映射
+                        const names = ['BASIC', 'ADVANCED', 'EXPERT', 'MASTER', 'Re:MASTER']
+                        
+                        // 获取所有可用的难度数据
+                        let difficulties = []
+                        
+                        // 如果有DX难度，使用DX难度
+                        if (response.difficulties.dx?.length > 0) {
+                            difficulties = response.difficulties.dx.map(diff => ({
+                                ...diff,
+                                difficulty_name: names[diff.difficulty] || ''
+                            }))
+                            return difficulties
+                        }
+                        
+                        // 否则使用标准难度
+                        if (response.difficulties.standard?.length > 0) {
+                            difficulties = response.difficulties.standard.map(diff => ({
+                                ...diff,
+                                difficulty_name: names[diff.difficulty] || ''
+                            }))
+                            return difficulties
+                        }
+                        
+                        // 或者使用宴难度
+                        if (response.difficulties.utage?.length > 0) {
+                            difficulties = response.difficulties.utage.map(diff => ({
+                                ...diff,
+                                difficulty_name: names[diff.difficulty] || ''
+                            }))
+                            return difficulties
+                        }
+                        
+                        // 如果都没有，返回空数组
+                        return []
+                    })()
                 }
             }
 
             // 调试输出
-            //logger.info(`[maimai-plugin] 渲染数据: ${JSON.stringify(renderData)}`)
+            // logger.info(`[maimai-plugin] 渲染数据: ${JSON.stringify(renderData)}`)
 
             // 渲染图片
             const renderedImage = await this.render(renderData)
             
             return {
                 isImage: true,
-                message: renderedImage
+                message: renderedImage,
+                songname: response.title
             }
 
         } catch (err) {
