@@ -395,6 +395,21 @@ export default class LXAPI {
 
     //3.获取曲目别名列表。
     //GET /api/v0/maimai/alias/list
+    async getAliasList() {
+        try {
+            const response = await fetch(`${this.baseURL}/api/v0/maimai/alias/list`)
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
+            const data = await response.json()
+            // 调试输出
+            logger.debug(`[maimai-plugin] API返回数据: ${JSON.stringify(data)}`)
+            return data
+        } catch (error) {
+            logger.error(`获取曲目别名列表失败: ${error}`)
+            throw error
+        }
+    }
 
     //4.获取头像列表。
     //GET /api/v0/maimai/icon/list
@@ -571,22 +586,6 @@ export default class LXAPI {
 
     // 获取音乐图标资源Fc/FS
     async getMusicIconAsset(type) {
-        if (!type) {
-            const path = `${this.tempPath}/LX_assets/music_icon/blank.webp`
-            if (!fs.existsSync(path)) {
-                try {
-                    const url = `${this.baseURL}/assets/maimai/music_icon/blank.webp`
-                    const buffer = await this.fetchAssetWithRetry(url);
-                    await fs.promises.mkdir(`${this.tempPath}/LX_assets/music_icon`, { recursive: true })
-                    await fs.promises.writeFile(path, Buffer.from(buffer))
-                } catch (error) {
-                    logger.error(`[maimai-plugin] 获取空白图标失败`);
-                    return null;
-                }
-            }
-            return path
-        }
-
         const validTypes = ['fcp', 'fc', 'app', 'ap', 'fsdp', 'fsd', 'fsp', 'fs', 'sync']
         if (!validTypes.includes(type)) {
             return null;

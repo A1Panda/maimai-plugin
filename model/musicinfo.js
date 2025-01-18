@@ -7,7 +7,7 @@ class MusicInfo {
     // 获取音乐信息
     async getMusicInfo(songId) {
         try {
-            // 获取用户绑定数据
+            // 获取适配API
             const adapter = new APIAdapter()
             const response = await adapter.getSongInfo(songId)
             
@@ -93,6 +93,7 @@ class MusicInfo {
                 diffHtml = diffHtml.replace(/\{\{difficulty_name\}\}/g, diff.difficulty_name)
                 diffHtml = diffHtml.replace(/\{\{level\}\}/g, diff.level)
                 diffHtml = diffHtml.replace(/\{\{level_value\}\}/g, diff.level_value)
+                diffHtml = diffHtml.replace(/\{\{note_designer\}\}/g, diff.note_designer || '-')
                 diffHtml = diffHtml.replace(/\{\{notes\.tap\}\}/g, diff.notes.tap)
                 diffHtml = diffHtml.replace(/\{\{notes\.hold\}\}/g, diff.notes.hold)
                 diffHtml = diffHtml.replace(/\{\{notes\.slide\}\}/g, diff.notes.slide)
