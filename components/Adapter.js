@@ -20,11 +20,11 @@ export default class APIAdapter {
 
 // 代理所有API方法
 // 公共API类
-    // 获取玩家信息
+    // 获取玩家信息 正常
     async getPlayerInfo(friendCode) {
         return await this.api.getPlayerInfo(friendCode)
     }
-    // 通过QQ获取玩家信息
+    // 通过QQ获取玩家信息 正常
     async getPlayerInfoByQQ(qq) {
         return await this.api.getPlayerInfoByQQ(qq)
     }
@@ -32,11 +32,11 @@ export default class APIAdapter {
     async getPlayerBest(friendCode, params) {
         return await this.api.getPlayerBest(friendCode, params)
     }
-    // 获取玩家Best 50
+    // 获取玩家Best 50 正常
     async getPlayerBest50(friendCode) {
         return await this.api.getPlayerBest50(friendCode)
     }
-    // 获取歌曲信息
+    // 获取歌曲信息 正常
     async getSongInfo(songId) {
         return await this.api.getSongInfo(songId)
     }
@@ -44,29 +44,42 @@ export default class APIAdapter {
     async getSongList() {
         return await this.api.getSongList()
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    //获取别名列表
+    async getAliasList() {
+        return await this.api.getAliasList()
+    }
+    //获取头像列表
+    async getIconList() {
+        return await this.api.getIconList()
+    }
+    //获取姓名框列表
+    async getPlateList() {
+        return await this.api.getPlateList()
+    }
+    //获取背景框列表
+    async getFrameList() {
+        return await this.api.getFrameList()
+    }
+    //获取收藏品分类列表
+    async getCollectionGenreList() {
+        return await this.api.getCollectionGenreList()
+    }
+    //获取收藏品分类信息
+    async getCollectionGenreInfo(collectionGenreId) {
+        return await this.api.getCollectionGenreInfo(collectionGenreId)
+    }
+    //头像信息
+    async getIconInfo(iconId) {
+        return await this.api.getIconInfo(iconId)
+    }
+    //姓名框信息
+    async getPlateInfo(plateId) {
+        return await this.api.getPlateInfo(plateId)
+    }
+    //背景框信息
+    async getFrameInfo(frameId) {
+        return await this.api.getFrameInfo(frameId)
+    }
 
 
 //资源类
