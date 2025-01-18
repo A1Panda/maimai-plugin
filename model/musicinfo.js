@@ -7,7 +7,7 @@ class MusicInfo {
     // 获取音乐信息
     async getMusicInfo(songId) {
         try {
-            // 获取用户绑定数据
+            // 获取适配API
             const adapter = new APIAdapter()
             const response = await adapter.getSongInfo(songId)
             
