@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>姓名框信息</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: "Microsoft YaHei Bold", "Microsoft YaHei", sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .plate-info {
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+        .label {
+            font-weight: 700;
+            color: #444;
+            font-size: 16px;
+            padding: 8px 0;
+            letter-spacing: 0.5px;
+            text-shadow: 0 0 1px rgba(0,0,0,0.1);
+        }
+        .value {
+            color: #333;
+            font-size: 16px;
+            padding: 8px 0;
+            line-height: 1.5;
+            font-weight: 600;
+            text-shadow: 0 0 1px rgba(0,0,0,0.1);
+        }
+        .title {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.08);
+        }
+        .preview-container {
+            grid-column: 1 / -1;
+            margin: 20px 0;
+            text-align: center;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+        }
+        .preview-title {
+            font-weight: 700;
+            color: #555;
+            margin-bottom: 15px;
+            font-size: 18px;
+            letter-spacing: 0.5px;
+        }
+        .preview-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .info-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .info-section .plate-info {
+            margin: 0;
+        }
+        .requirements {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .requirement {
+            margin-bottom: 20px;
+        }
+        .requirement:last-child {
+            margin-bottom: 0;
+        }
+        .requirement-title {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .requirement-text {
+            font-size: 15px;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 15px;
+            line-height: 1.5;
+            padding: 12px 15px;
+            background: #fff;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            letter-spacing: 0.3px;
+            text-shadow: 0 0 1px rgba(0,0,0,0.1);
+        }
+        .song-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+            padding: 10px;
+            background: #fff;
+            border-radius: 4px;
+        }
+        .song-item {
+            padding: 8px 12px;
+            background: #f0f4f8;
+            border-radius: 4px;
+            font-size: 15px;
+            line-height: 1.4;
+            color: #444;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 10px;
+        }
+        .song-id {
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 13px;
+            padding: 2px 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            color: #444;
+            min-width: 45px;
+            text-align: center;
+            font-weight: 600;
+            text-shadow: 0 0 1px rgba(0,0,0,0.1);
+        }
+        .song-title {
+            flex: 1;
+            margin-right: 10px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            text-shadow: 0 0 1px rgba(0,0,0,0.1);
+        }
+        .song-type {
+            font-size: 12px;
+            padding: 2px 6px;
+            background: #e3f2fd;
+            border-radius: 3px;
+            color: #1565c0;
+            white-space: nowrap;
+            min-width: 60px;
+            text-align: center;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            text-shadow: 0 0 1px rgba(0,0,0,0.1);
+        }
+        .requirements-section {
+            margin-top: 30px;
+        }
+        .requirement-header {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .song-count {
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            padding: 4px 10px;
+            background: #e9ecef;
+            border-radius: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">姓名框详细信息</h1>
+        
+        {{#plate}}
+        <div class="preview-container">
+            <div class="preview-title">预览效果</div>
+            <img src="{{plate}}" alt="姓名框预览" class="preview-image">
+        </div>
+        {{/plate}}
+        
+        <div class="info-section">
+            <div class="plate-info">
+                <div class="label">ID</div>
+                <div class="value">{{id}}</div>
+                
+                <div class="label">名称</div>
+                <div class="value">{{name}}</div>
+                
+                <div class="label">描述</div>
+                <div class="value">{{description}}</div>
+                
+                <div class="label">类型</div>
+                <div class="value">{{genre}}</div>
+            </div>
+        </div>
+        
+        {{#hasRequirements}}
+        <div class="requirements-section">
+            <div class="requirement-header">
+                <span>获取条件</span>
+                {{#requirements}}
+                {{#hasSongs}}
+                <span class="song-count">共需要 {{totalSongs}} 首歌曲</span>
+                {{/hasSongs}}
+                {{/requirements}}
+            </div>
+            {{#requirements}}
+            <div class="requirement">
+                <div class="requirement-text">{{text}}</div>
+                {{#hasSongs}}
+                <div class="song-list">
+                    {{#songs}}
+                    <div class="song-item">
+                        <div class="song-id">#{{id}}</div>
+                        <div class="song-title">{{title}}</div>
+                        <div class="song-type">{{type}}</div>
+                    </div>
+                    {{/songs}}
+                </div>
+                {{/hasSongs}}
+            </div>
+            {{/requirements}}
+        </div>
+        {{/hasRequirements}}
+    </div>
+</body>
+</html>
