@@ -318,7 +318,7 @@ export default class LXAPI {
     //14.通过 NET 的 HTML 源代码上传玩家数据。
     // POST /api/v0/maimai/player/{friend_code}/html
 
-    //个人API需要个人Token
+//个人API需要个人Token
     //1.获取玩家信息。
     // GET /api/v0/user/maimai/player
 
@@ -413,27 +413,147 @@ export default class LXAPI {
 
     //4.获取头像列表。
     //GET /api/v0/maimai/icon/list
+    async getIconList() {
+        try {
+            const response = await fetch(`${this.baseURL}/api/v0/maimai/icon/list`)
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
+            const data = await response.json()
+            // 调试输出
+            logger.debug(`[maimai-plugin] API返回数据: ${JSON.stringify(data)}`)
+            return data
+        } catch (error) {
+            logger.error(`获取头像列表失败: ${error}`)
+            throw error
+        }
+    }
 
     //5.获取头像信息。
     //GET /api/v0/maimai/icon/{icon_id}
+    async getIconInfo(iconId) {
+        try {
+            const response = await fetch(`${this.baseURL}/api/v0/maimai/icon/${iconId}`)
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
+            const data = await response.json()
+            // 调试输出
+            logger.debug(`[maimai-plugin] API返回数据: ${JSON.stringify(data)}`)
+            return data
+        } catch (error) {
+            logger.error(`获取头像信息失败: ${error}`)
+            throw error
+        }
+    }
 
     //6.获取姓名框列表。
     //GET /api/v0/maimai/plate/list
+    async getPlateList() {
+        try {
+            const response = await fetch(`${this.baseURL}/api/v0/maimai/plate/list`)
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
+            const data = await response.json()
+            // 调试输出
+            logger.debug(`[maimai-plugin] API返回数据: ${JSON.stringify(data)}`)
+            return data
+        } catch (error) {
+            logger.error(`获取姓名框列表失败: ${error}`)
+            throw error
+        }
+    }
 
     //7.获取姓名框信息。
     //GET /api/v0/maimai/plate/{plate_id}
+    async getPlateInfo(plateId) {
+        try {
+            const response = await fetch(`${this.baseURL}/api/v0/maimai/plate/${plateId}`)
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
+            const data = await response.json()
+            // 调试输出
+            logger.debug(`[maimai-plugin] API返回数据: ${JSON.stringify(data)}`)
+            return data
+        } catch (error) {
+            logger.error(`获取姓名框信息失败: ${error}`)
+            throw error
+        }
+    }
 
     //8.获取背景框列表。
     //GET /api/v0/maimai/frame/list
+    async getFrameList() {
+        try {
+            const response = await fetch(`${this.baseURL}/api/v0/maimai/frame/list`)
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
+            const data = await response.json()
+            // 调试输出
+            logger.debug(`[maimai-plugin] API返回数据: ${JSON.stringify(data)}`)
+            return data
+        } catch (error) {
+            logger.error(`获取背景框列表失败: ${error}`)
+            throw error
+        }
+    }
 
     //9.获取背景框信息。
     //GET /api/v0/maimai/frame/{frame_id}
+    async getFrameInfo(frameId) {
+        try {
+            const response = await fetch(`${this.baseURL}/api/v0/maimai/frame/${frameId}`)
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
+            const data = await response.json()
+            // 调试输出
+            logger.debug(`[maimai-plugin] API返回数据: ${JSON.stringify(data)}`)
+            return data
+        } catch (error) {
+            logger.error(`获取背景框信息失败: ${error}`)
+            throw error
+        }
+    }
 
     //10.获取收藏品分类列表
     //GET /api/v0/maimai/collection-genre/list
+    async getCollectionGenreList() {
+        try {
+            const response = await fetch(`${this.baseURL}/api/v0/maimai/collection-genre/list`)
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
+            const data = await response.json()
+            // 调试输出
+            logger.debug(`[maimai-plugin] API返回数据: ${JSON.stringify(data)}`)
+            return data
+        } catch (error) {
+            logger.error(`获取收藏品分类列表失败: ${error}`)
+            throw error
+        }
+    }
 
     //11.获取收藏品分类信息。
     //GET /api/v0/maimai/collection-genre/{collection_genre_id}
+    async getCollectionGenreInfo(collectionGenreId) {
+        try {
+            const response = await fetch(`${this.baseURL}/api/v0/maimai/collection-genre/${collectionGenreId}`)
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
+            const data = await response.json()
+            // 调试输出
+            logger.debug(`[maimai-plugin] API返回数据: ${JSON.stringify(data)}`)
+            return data
+        } catch (error) {
+            logger.error(`获取收藏品分类信息失败: ${error}`)
+            throw error
+        }
+    }
 
 //游戏资源类基础 URL：https://assets2.lxns.net/maimai
 // 路径：

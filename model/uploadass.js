@@ -52,7 +52,7 @@ export class UploadAssets {
         }
     }
 
-    // 获取头像框
+    // 获取头像
     async getIconAsset(iconId) {
         try {
             const adapter = new APIAdapter()
