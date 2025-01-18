@@ -30,7 +30,7 @@ export class PlayerInfoHandler extends plugin {
             let msg = await e.reply('正在渲染搜索结果请稍后...', { at: true })
             setTimeout(() => {
                 if (msg?.message_id && e.group) e.group.recallMsg(msg.message_id)
-            }, 3000)
+            }, 6000)
             
             // 获取搜索类型和ID
             const match = e.msg.match(/^#?mai(?:mai)? ?(?:search|搜索) ?(歌曲|歌名|曲名|歌谱|曲谱|song|姓名框|名字|名字框|name|头像|头像框|avatar|背景|背景框|background|称号|title|曲绘) ?(.+)$/)
@@ -94,7 +94,7 @@ export class PlayerInfoHandler extends plugin {
             let msg = await e.reply(`您最近一次搜索的是:\n歌曲名: ${songname}\n类型: ${type}\nID: ${id}\n正在上传...`, { at: true })
             setTimeout(() => {
                 if (msg?.message_id && e.group) e.group.recallMsg(msg.message_id)
-            }, 3000)
+            }, 6000)
 
             //获取对应的资源
             const result = await uploadAssets.uploadSearch(type, id)

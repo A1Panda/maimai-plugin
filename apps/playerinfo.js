@@ -31,7 +31,7 @@ export class PlayerInfoHandler extends plugin {
             let msg = await e.reply('正在渲染个人信息请稍后...', { at: true })
             setTimeout(() => {
                 if (msg?.message_id && e.group) e.group.recallMsg(msg.message_id)
-            }, 3000)
+            }, 6000)
             
             const result = await playerInfo.getPlayerInfo(targetId)
             
