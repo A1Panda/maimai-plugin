@@ -61,7 +61,7 @@ pnpm install -P
 | `#mai info` | 查看个人信息✔️
 | `#mai b50` | 查看B50成绩✔️
 | `#mai recent` | 查看最近游玩记录✖️
-| `#mai score 曲名` | 查询单曲成绩✖️
+| `#mai score 曲名` | 查询单曲成绩✔️
 | `#mai search ID` | 搜索(支持音频、头像、曲绘、名牌、姓名框)✔️
 | `#mai random` | 随机一首歌✔️
 | `#mai plate` | 查看名牌进度✖️
@@ -74,13 +74,15 @@ pnpm install -P
 | `#mai 更新` | 更新插件✔️
 | `#mai 设置` | 修改插件设置✖️
 | `#mai 清除资源` | 清除过期的临时数据✔️
-| `#mai 强制清除资源` | 强制清除所有临时数据✔️
+| `#mai 重置配置文件` | 重置因为更新变化的配置文件（自己的数据一定要保存好）✔️
 
 ------
 
 ### Todo
 
-* [ ] 优化界面设计
+* [✔️] 优化界面设计
+* [ ] 添加小游戏功能
+* [ ] 支持适配水鱼API
 * [ ] 添加更多查分功能
 * [ ] 支持自定义主题
 * [ ] 添加成就系统
@@ -96,6 +98,9 @@ pnpm install -P
 ### 致谢名单
 
 * 感谢[Catrong](https://gitee.com/catrong)提供的插件开发思路
+* 感谢[Yunzai-Bot](https://gitee.com/yoimiya-kokomi/Yunzai-Bot)提供的插件开发框架
+* 感谢[Miao-Yunzai](https://gitee.com/yoimiya-kokomi/Miao-Yunzai)提供的插件开发框架
+* 感谢[TRSS-Yunzai](https://gitee.com/TimeRainStarSky/Yunzai)提供的插件开发框架
 
 ------
 
