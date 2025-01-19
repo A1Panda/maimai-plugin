@@ -6,35 +6,62 @@ class MaimaiAliasResolver {
         this.aliasList = null
         this.plateList = null
         this.iconList = null
+        this.frameList = null
         this.songMap = new Map()  // songId -> song
         this.aliasMap = new Map() // alias -> songId
         this.plateMap = new Map() // plateId -> plate
         this.iconMap = new Map()  // iconId -> icon
+        this.frameMap = new Map() // frameId -> frame
     }
 
     // 初始化数据
     async init() {
+        const startTime = process.hrtime()
+        
         try {
             const adapter = new APIAdapter()
             
             // 获取歌曲列表
+            logger.mark(logger.yellow('[maimai-plugin] 正在获取歌曲列表...'))
             const songListResponse = await adapter.getSongList()
             this.songList = songListResponse.songs
             
             // 获取别名列表
+            logger.mark(logger.yellow('[maimai-plugin] 正在获取别名列表...'))
             const aliasListResponse = await adapter.getAliasList()
             this.aliasList = aliasListResponse.aliases
             
             // 获取姓名框列表
+            logger.mark(logger.yellow('[maimai-plugin] 正在获取姓名框列表...'))
             const plateListResponse = await adapter.getPlateList()
             this.plateList = plateListResponse.plates
             
             // 获取头像列表
+            logger.mark(logger.yellow('[maimai-plugin] 正在获取头像列表...'))
             const iconListResponse = await adapter.getIconList()
             this.iconList = iconListResponse.icons
             
+            // 获取背景框列表
+            logger.mark(logger.yellow('[maimai-plugin] 正在获取背景框列表...'))
+            const frameListResponse = await adapter.getFrameList()
+            this.frameList = frameListResponse.frames
+            
             // 构建映射
+            logger.mark(logger.yellow('[maimai-plugin] 正在构建数据映射...'))
             this.buildMaps()
+            
+            // 计算总耗时
+            const endTime = process.hrtime(startTime)
+            const loadTime = (endTime[0] * 1000 + endTime[1] / 1000000).toFixed(2)
+            
+            // 输出统计信息
+            logger.mark(logger.green('[maimai-plugin] 数据初始化完成'))
+            logger.mark(logger.green(`[maimai-plugin] 歌曲数量: ${this.songList.length}`))
+            logger.mark(logger.green(`[maimai-plugin] 别名数量: ${this.aliasList.length}`))
+            logger.mark(logger.green(`[maimai-plugin] 姓名框数量: ${this.plateList.length}`))
+            logger.mark(logger.green(`[maimai-plugin] 头像数量: ${this.iconList.length}`))
+            logger.mark(logger.green(`[maimai-plugin] 背景框数量: ${this.frameList.length}`))
+            logger.mark(logger.green(`[maimai-plugin] 数据初始化耗时: ${loadTime}ms`))
             
             return true
         } catch (err) {
@@ -72,6 +99,14 @@ class MaimaiAliasResolver {
             this.iconMap.set(icon.name.toLowerCase(), icon)
             this.iconMap.set(icon.description.toLowerCase(), icon)
             this.iconMap.set(icon.genre.toLowerCase(), icon)
+        }
+        
+        // 构建背景框映射
+        for (const frame of this.frameList) {
+            this.frameMap.set(frame.id, frame)
+            // 将名称和描述也加入搜索映射
+            this.frameMap.set(frame.name.toLowerCase(), frame)
+            this.frameMap.set(frame.description.toLowerCase(), frame)
         }
     }
 
@@ -151,6 +186,32 @@ class MaimaiAliasResolver {
                 icon.description.toLowerCase().includes(keyword) ||
                 icon.genre.toLowerCase().includes(keyword)) {
                 return icon
+            }
+        }
+        
+        return null
+    }
+
+    // 搜索背景框
+    searchFrame(keyword) {
+        // 确保已初始化
+        if (!this.frameList) {
+            return null
+        }
+        
+        // 1. 尝试通过ID搜索
+        if (/^\d+$/.test(keyword)) {
+            const id = parseInt(keyword)
+            return this.frameMap.get(id)
+        }
+        
+        keyword = keyword.toLowerCase()
+        
+        // 2. 模糊匹配名称和描述
+        for (const frame of this.frameList) {
+            if (frame.name.toLowerCase().includes(keyword) ||
+                frame.description.toLowerCase().includes(keyword)) {
+                return frame
             }
         }
         

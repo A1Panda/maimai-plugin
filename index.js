@@ -1,5 +1,9 @@
 // 导入 Node.js 的文件系统模块
 import fs from 'node:fs'
+import { aliasResolver } from './utils/MaimaiAliasResolver.js'
+
+// 记录开始时间
+const startTime = process.hrtime()
 
 // 全局 segment 对象初始化
 // 用于处理消息段，支持 icqq 和 oicq 两种框架
@@ -17,6 +21,14 @@ if (!global.segment) {
 
 // 在控制台打印插件标题
 logger.mark(logger.green('[maimai-plugin]------舞萌DX查分器------'))
+
+// 初始化别名解析器
+aliasResolver.init().then(() => {
+    logger.mark(logger.green('[maimai-plugin] 别名解析器初始化成功'))
+}).catch(err => {
+    logger.error('[maimai-plugin] 初始化别名解析器失败')
+    logger.error(err)
+})
 
 // 读取 apps 目录下所有的 .js 文件
 // 使用 fs.readdirSync 同步读取目录内容
@@ -74,8 +86,13 @@ initConfig()
 
 // 如果没有发生错误，显示成功信息
 if (!errvis) {
+    // 计算耗时
+    const endTime = process.hrtime(startTime)
+    const loadTime = (endTime[0] * 1000 + endTime[1] / 1000000).toFixed(2) // 转换为毫秒并保留2位小数
+    
     logger.mark(logger.green(`[maimai-plugin] MaiMai查分器插件载入成功~`))
     logger.mark(logger.green(`[maimai-plugin] 成功加载了 ${successCount} 个插件~`))
+    logger.mark(logger.green(`[maimai-plugin] 插件加载耗时: ${loadTime}ms`))
     logger.mark(logger.green(`[maimai-plugin] 欢迎使用MaiMai查分器插件！`))
     logger.mark(logger.green('[maimai-plugin]------Q群:511802473------'))
 }

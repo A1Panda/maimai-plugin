@@ -6,12 +6,6 @@ import Mustache from 'mustache'
 import APIAdapter from '../components/Adapter.js'
 import { aliasResolver } from '../utils/MaimaiAliasResolver.js'
 
-// 初始化别名解析器
-aliasResolver.init().catch(err => {
-    logger.error('[maimai-plugin] 初始化别名解析器失败')
-    logger.error(err)
-})
-
 class ScoreInfo {
     constructor() {
         this.userDataPath = './plugins/maimai-plugin/configs/userdata.yaml'

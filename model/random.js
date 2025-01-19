@@ -74,6 +74,7 @@ export class Random {
 
             // 从列表中随机选择一个ID
             if(list && list.length > 0) {
+                logger.info(`[maimai-plugin] 列表总数: ${list.length}`)
                 const randomIndex = Math.floor(Math.random() * list.length)
                 logger.info(`[maimai-plugin] 随机ID: ${list[randomIndex].id}`)
                 switch(type) {
