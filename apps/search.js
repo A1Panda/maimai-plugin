@@ -23,7 +23,7 @@ export class PlayerInfoHandler extends plugin {
             priority: 5000,
             rule: [
                 {
-                    reg: '^#?mai(mai)? ?(search|搜索) ?(歌曲|歌名|音乐|曲名|歌谱|曲谱|song|姓名框|名字|名字框|name|头像|头像框|avatar|背景|背景框|background|收藏品|title|曲绘) ?(.+)$',
+                    reg: '^#?mai(mai)? ?(search|搜索|查询) ?(歌曲|歌名|音乐|曲名|歌谱|曲谱|song|姓名框|名字|名字框|name|头像|头像框|avatar|背景|背景框|background|收藏品|title|曲绘) ?(.+)$',
                     fnc: 'handleSearch'
                 },
                 {
@@ -42,7 +42,7 @@ export class PlayerInfoHandler extends plugin {
             }, 6000)
             
             // 获取搜索类型和ID
-            const match = e.msg.match(/^#?mai(?:mai)? ?(?:search|搜索) ?(歌曲|歌名|音乐|曲名|歌谱|曲谱|song|姓名框|名字|名字框|name|头像|头像框|avatar|背景|背景框|background|收藏品|title|曲绘) ?(.+)$/)
+            const match = e.msg.match(/^#?mai(?:mai)? ?(?:search|搜索|查询) ?(歌曲|歌名|音乐|曲名|歌谱|曲谱|song|姓名框|名字|名字框|name|头像|头像框|avatar|背景|背景框|background|收藏品|title|曲绘) ?(.+)$/)
             const searchType = match[1]
             const id = match[2]
             
