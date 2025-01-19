@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>舞萌DX成绩信息</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            width: 1000px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        /* 歌曲基本信息 */
+        .song-info {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .song-cover {
+            width: 200px;
+            height: 200px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .song-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .song-details {
+            flex: 1;
+        }
+        
+        .song-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .song-meta {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        /* 难度信息区域 */
+        .difficulties {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+        }
+        
+        .difficulty {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .difficulty-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .difficulty-name {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .difficulty-level {
+            background: #666;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 14px;
+        }
+        
+        /* 成绩信息 */
+        .score-info {
+            margin-top: 10px;
+        }
+        
+        .score-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .score-label {
+            color: #666;
+        }
+        
+        .score-value {
+            font-weight: bold;
+        }
+        
+        /* 难度颜色 */
+        .BASIC .difficulty-level { background: #1ea91e; }
+        .ADVANCED .difficulty-level { background: #f0a202; }
+        .EXPERT .difficulty-level { background: #e3322c; }
+        .MASTER .difficulty-level { background: #9932cc; }
+        .Re\:MASTER .difficulty-level { background: #c5c5c5; }
+        
+        /* 评级颜色 */
+        .rate-SSS\+ { color: #ff69b4; }
+        .rate-SSS { color: #ff69b4; }
+        .rate-SS\+ { color: #ffd700; }
+        .rate-SS { color: #ffd700; }
+        .rate-S\+ { color: #ff4500; }
+        .rate-S { color: #ff4500; }
+        .rate-AAA { color: #ff0000; }
+        .rate-AA { color: #ff0000; }
+        .rate-A { color: #ff6347; }
+        .rate-BBB { color: #4169e1; }
+        .rate-BB { color: #4169e1; }
+        .rate-B { color: #4169e1; }
+        .rate-C { color: #808080; }
+        .rate-D { color: #808080; }
+        
+        .no-score {
+            color: #999;
+            text-align: center;
+            padding: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 歌曲基本信息 -->
+        <div class="song-info">
+            <div class="song-cover">
+                <img src="{{cover}}" alt="{{title}}">
+            </div>
+            <div class="song-details">
+                <div class="song-title">{{title}}</div>
+                <div class="song-meta">歌手: {{artist}}</div>
+                <div class="song-meta">ID: {{id}}</div>
+                <div class="song-meta">类型: {{type}}</div>
+                <div class="song-meta">分类: {{genre}}</div>
+                <div class="song-meta">版本: {{version}}</div>
+                <div class="song-meta">BPM: {{bpm}}</div>
+            </div>
+        </div>
+        
+        <!-- 难度信息 -->
+        <div class="difficulties">
+            {{#difficulties}}
+            <div class="difficulty {{name}}">
+                <div class="difficulty-header">
+                    <span class="difficulty-name">{{name}}</span>
+                    <span class="difficulty-level">Lv.{{level}}</span>
+                </div>
+                {{#hasScore}}
+                <div class="score-info">
+                    <div class="score-row">
+                        <span class="score-label">达成率</span>
+                        <span class="score-value">{{achievement}}%</span>
+                    </div>
+                    <div class="score-row">
+                        <span class="score-label">评级</span>
+                        <span class="score-value rate-{{rate}}">{{rate}}</span>
+                    </div>
+                    {{#fcStatus}}
+                    <div class="score-row">
+                        <span class="score-label">连击</span>
+                        <span class="score-value">{{fcStatus}}</span>
+                    </div>
+                    {{/fcStatus}}
+                    {{#fsStatus}}
+                    <div class="score-row">
+                        <span class="score-label">同步</span>
+                        <span class="score-value">{{fsStatus}}</span>
+                    </div>
+                    {{/fsStatus}}
+                    <div class="score-row">
+                        <span class="score-label">谱师</span>
+                        <span class="score-value">{{noteDesigner}}</span>
+                    </div>
+                    <div class="score-row">
+                        <span class="score-label">DX分</span>
+                        <span class="score-value">{{dxscore}}</span>
+                    </div>
+                    {{#playTime}}
+                    <div class="score-row">
+                        <span class="score-label">游玩时间</span>
+                        <span class="score-value">{{playTime}}</span>
+                    </div>
+                    {{/playTime}}
+                </div>
+                {{/hasScore}}
+                {{^hasScore}}
+                <div class="no-score">暂无成绩</div>
+                {{/hasScore}}
+            </div>
+            {{/difficulties}}
+        </div>
+    </div>
+</body>
+</html>

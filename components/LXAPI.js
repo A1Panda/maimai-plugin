@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import yaml from 'yaml'
 
+
 // 导出落雪API类
 export default class LXAPI {
     constructor() {
@@ -157,23 +158,52 @@ export default class LXAPI {
             if (params.song_id && params.song_name) {
                 throw new Error('song_id 和 song_name 参数不能同时提供')
             }
-            if (!params.level_index) {
-                throw new Error('必须提供 level_index 参数')
+            if (params.level_index === undefined || ![0, 1, 2, 3, 4].includes(params.level_index)) {
+                throw new Error(`必须提供有效的 level_index 参数 (0-4), 当前值: ${params.level_index}`)
+            }
+            // 检查谱面类型参数
+            if (!params.song_type) {
+                throw new Error('必须提供 song_type 参数 (standard/dx/utage)')
+            }
+            // 验证谱面类型的有效值
+            const validSongTypes = ['standard', 'dx', 'utage']
+            if (!validSongTypes.includes(params.song_type)) {
+                throw new Error('song_type 参数无效,必须为 standard/dx/utage 之一')
             }
 
-            const response = await axios.get(`${this.baseURL}/api/v0/maimai/player/${friendCode}/best`, {
-                params: {
-                    song_id: params.song_id,
-                    song_name: params.song_name,
-                    level_index: params.level_index,
-                    song_type: params.song_type
-                },
+            const response = await fetch(`${this.baseURL}/api/v0/maimai/player/${friendCode}/best?song_id=${params.song_id}&song_type=${params.song_type}&level_index=${params.level_index}`, {
                 headers: {
                     'Authorization': this.token
                 }
-            })
+            });
 
-            const rawData = response.data
+            if (!response.ok) {
+                throw new Error(`API请求失败: ${response.status}`)
+            }
+
+            const rawData = await response.json()
+            
+            // 如果data为null,返回空数据结构
+            if (!rawData.data) {
+                return {
+                    code: 200,
+                    data: {
+                        achievements: 0,
+                        fc: '',
+                        fs: '',
+                        dx_score: 0,
+                        play_time: '',
+                        type: '',
+                        level: '',
+                        level_index: 0,
+                        level_label: '',
+                        song_id: 0,
+                        title: '',
+                        upload_time: ''
+                    }
+                }
+            }
+
             const data = {
                 code: 200,
                 data: {
@@ -181,6 +211,7 @@ export default class LXAPI {
                     fc: rawData.data.fc || '', // Full Combo 类型
                     fs: rawData.data.fs || '', // Full Sync 类型
                     dx_score: rawData.data.dx_score || 0, // DX分数
+                    rate: rawData.data.rate || '', // 评级
                     play_time: rawData.data.play_time || '', // 游玩时间
                     type: rawData.data.type || '', // 游玩类型
                     level: rawData.data.level || '', // 难度等级
