@@ -5,6 +5,7 @@ import { uploadAssets } from '../model/uploadass.js'
 import { aliasResolver } from '../utils/MaimaiAliasResolver.js'
 import { plateInfo } from '../model/Plateinfo.js'
 import { iconInfo } from '../model/iconinfo.js'
+import { frameInfo } from '../model/frameinfo.js'
 
 let searchHistory = {}  // 存储格式: { QQ号: { id: 搜索ID, type: 搜索类型 } }
 
@@ -143,7 +144,32 @@ export class PlayerInfoHandler extends plugin {
                     }
                 }
             } else if (type === '背景') {
-                result = await background.getBackground(id)
+                // 检查是否为纯数字ID
+                if (/^\d+$/.test(id)) {
+                    logger.info(`[maimai-plugin] 使用ID直接搜索背景: ${id}`)
+                    result = await frameInfo.getFrameInfo(id)
+                    searchHistory[e.user_id] = {
+                        id: id,
+                        type: type,
+                        name: result.name
+                    }
+                } else {
+                    // 尝试通过别名解析
+                    const frame = aliasResolver.searchFrame(id)
+                    if (frame) {
+                        logger.info(`[maimai-plugin] 通过模糊匹配找到背景: ${frame.name} (ID: ${frame.id})`)
+                        await e.reply(`通过模糊匹配找到背景: ${frame.name} (ID: ${frame.id})`)
+                        result = await frameInfo.getFrameInfo(frame.id)
+                        searchHistory[e.user_id] = {
+                            id: frame.id,
+                            type: type,
+                            name: result.name
+                        }
+                    } else {
+                        logger.info(`[maimai-plugin] 未找到匹配的背景: ${id}`)
+                        return await e.reply('未找到匹配的背景，请检查输入是否正确', { at: true })
+                    }
+                }
             } else if (type === '收藏品') {
                 result = await title.getTitle(id)
             } else if (type === '曲绘') {

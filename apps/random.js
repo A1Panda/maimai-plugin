@@ -3,6 +3,7 @@ import { random } from '../model/random.js'
 import { musicInfo } from '../model/musicinfo.js'
 import { plateInfo } from '../model/Plateinfo.js'
 import { iconInfo } from '../model/iconinfo.js'
+import { frameInfo } from '../model/frameinfo.js'
 import { uploadAssets } from '../model/uploadass.js'
 
 export class RandomHandler extends plugin {
@@ -14,7 +15,7 @@ export class RandomHandler extends plugin {
             priority: 5000,
             rule: [
                 {
-                    reg: '^#?mai(mai)? ?(随机|random) ?(歌曲|姓名框|头像|背景框|收藏品|曲绘)( ?\\d+)?$',
+                    reg: '^#?mai(mai)? ?(随机|random) ?(歌曲|歌名|音乐|曲名|谱面|song|姓名框|名字框|名牌|plate|头像|头像框|avatar|背景|背景框|皮肤|background|frame|收藏品|称号|title|曲绘|cover)( ?\\d+)?$',
                     fnc: 'random'
                 }
             ]
@@ -27,8 +28,25 @@ export class RandomHandler extends plugin {
             setTimeout(() => {
                 if (msg?.message_id && e.group) e.group.recallMsg(msg.message_id)
             }, 6000)
-            // 从消息中提取类型
-            const type = e.msg.match(/(歌曲|姓名框|头像|背景框|收藏品|曲绘)/)[0]
+            // 从消息中提取类型并标准化
+            const typeMatch = e.msg.match(/(歌曲|歌名|音乐|曲名|谱面|song|姓名框|名字框|名牌|plate|头像|头像框|avatar|背景|背景框|皮肤|background|frame|收藏品|称号|title|曲绘|cover)/)[0]
+            
+            // 标准化类型名称
+            let type
+            if (/歌曲|歌名|音乐|曲名|谱面|song/.test(typeMatch)) {
+                type = '歌曲'
+            } else if (/姓名框|名字框|名牌|plate/.test(typeMatch)) {
+                type = '姓名框'
+            } else if (/头像|头像框|avatar/.test(typeMatch)) {
+                type = '头像'
+            } else if (/背景|背景框|皮肤|background|frame/.test(typeMatch)) {
+                type = '背景框'
+            } else if (/收藏品|称号|title/.test(typeMatch)) {
+                type = '收藏品'
+            } else if (/曲绘|cover/.test(typeMatch)) {
+                type = '曲绘'
+            }
+            
             // 提取难度限制
             const difficulty = e.msg.match(/\d+$/)?.[0]
             
@@ -41,7 +59,7 @@ export class RandomHandler extends plugin {
             }
             
             // 获取资源文件
-            const asset = await uploadAssets.uploadRandom(type, id)
+            const asset = type === '背景' ? null : await uploadAssets.uploadRandom(type, id)
             
             // 获取资源信息
             let result
@@ -55,6 +73,9 @@ export class RandomHandler extends plugin {
                     break
                 case '头像':
                     result = await iconInfo.getIconInfo(id)
+                    break
+                case '背景框':
+                    result = await frameInfo.getFrameInfo(id)
                     break
                 default:
                     if (asset) {

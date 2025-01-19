@@ -6,10 +6,12 @@ class MaimaiAliasResolver {
         this.aliasList = null
         this.plateList = null
         this.iconList = null
+        this.frameList = null
         this.songMap = new Map()  // songId -> song
         this.aliasMap = new Map() // alias -> songId
         this.plateMap = new Map() // plateId -> plate
         this.iconMap = new Map()  // iconId -> icon
+        this.frameMap = new Map() // frameId -> frame
     }
 
     // 初始化数据
@@ -32,6 +34,10 @@ class MaimaiAliasResolver {
             // 获取头像列表
             const iconListResponse = await adapter.getIconList()
             this.iconList = iconListResponse.icons
+            
+            // 获取背景框列表
+            const frameListResponse = await adapter.getFrameList()
+            this.frameList = frameListResponse.frames
             
             // 构建映射
             this.buildMaps()
@@ -72,6 +78,14 @@ class MaimaiAliasResolver {
             this.iconMap.set(icon.name.toLowerCase(), icon)
             this.iconMap.set(icon.description.toLowerCase(), icon)
             this.iconMap.set(icon.genre.toLowerCase(), icon)
+        }
+        
+        // 构建背景框映射
+        for (const frame of this.frameList) {
+            this.frameMap.set(frame.id, frame)
+            // 将名称和描述也加入搜索映射
+            this.frameMap.set(frame.name.toLowerCase(), frame)
+            this.frameMap.set(frame.description.toLowerCase(), frame)
         }
     }
 
@@ -151,6 +165,32 @@ class MaimaiAliasResolver {
                 icon.description.toLowerCase().includes(keyword) ||
                 icon.genre.toLowerCase().includes(keyword)) {
                 return icon
+            }
+        }
+        
+        return null
+    }
+
+    // 搜索背景框
+    searchFrame(keyword) {
+        // 确保已初始化
+        if (!this.frameList) {
+            return null
+        }
+        
+        // 1. 尝试通过ID搜索
+        if (/^\d+$/.test(keyword)) {
+            const id = parseInt(keyword)
+            return this.frameMap.get(id)
+        }
+        
+        keyword = keyword.toLowerCase()
+        
+        // 2. 模糊匹配名称和描述
+        for (const frame of this.frameList) {
+            if (frame.name.toLowerCase().includes(keyword) ||
+                frame.description.toLowerCase().includes(keyword)) {
+                return frame
             }
         }
         
