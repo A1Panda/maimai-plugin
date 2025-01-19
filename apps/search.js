@@ -9,12 +9,6 @@ import { frameInfo } from '../model/frameinfo.js'
 
 let searchHistory = {}  // 存储格式: { QQ号: { id: 搜索ID, type: 搜索类型 } }
 
-// 初始化别名解析器
-aliasResolver.init().catch(err => {
-    logger.error('[maimai-plugin] 初始化别名解析器失败')
-    logger.error(err)
-})
-
 export class PlayerInfoHandler extends plugin {
     constructor() {
         super({
