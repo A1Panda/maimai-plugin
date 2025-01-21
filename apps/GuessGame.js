@@ -114,7 +114,9 @@ export class GuessGameHandler extends plugin {
                 await e.group.recallMsg(msg.message_id)
             }
             
-            await e.reply(result.message)
+            // 分开发送文字和音频
+            await e.reply(result.message[0])  // 先发送文字提示
+            await e.reply(result.message[1])  // 再发送音频
             
             setTimeout(async () => {
                 await e.reply('音乐已发送，请仔细听哦~')
