@@ -13,18 +13,44 @@ class GuessGame {
         this.games = new Map() // 存储进行中的游戏 groupId -> gameInfo
     }
 
-    // 初始化游戏
+    // 创建游戏基础信息
+    createGameInfo(type, resource) {
+        return {
+            type,
+            resource,
+            startTime: Date.now(),
+            attempts: 0,
+            maxAttempts: 5,
+            status: 'loading'
+        }
+    }
+
+    // 记录游戏答案到日志
+    logGameAnswer(groupId, type, resource) {
+        logger.mark(logger.yellow('----------------------------------------'))
+        logger.mark(logger.yellow(`[maimai-plugin] 群${groupId}的猜${type}游戏答案:`))
+        logger.mark(logger.yellow(`答案: ${resource.name || resource.title}`))
+        logger.mark(logger.yellow(`ID: ${resource.id}`))
+        logger.mark(logger.yellow('----------------------------------------'))
+    }
+
+    // 检查游戏状态
+    checkGameStatus(groupId) {
+        if (this.games.has(groupId)) {
+            return {
+                success: false,
+                message: '当前已有游戏在进行中'
+            }
+        }
+        return { success: true }
+    }
+
+    // 初始化普通游戏
     async initGame(groupId, type) {
         try {
-            // 检查是否已有游戏在进行
-            if (this.games.has(groupId)) {
-                return {
-                    success: false,
-                    message: '当前已有游戏在进行中'
-                }
-            }
+            const statusCheck = this.checkGameStatus(groupId)
+            if (!statusCheck.success) return statusCheck
 
-            // 获取随机资源
             const resource = await this.getRandomResource(type)
             if (!resource) {
                 return {
@@ -33,30 +59,15 @@ class GuessGame {
                 }
             }
 
-            // 创建游戏信息
             const gameInfo = {
-                type: type,
-                resource: resource,
-                startTime: Date.now(),
-                attempts: 0,
-                maxAttempts: 5,
-                hints: [],
-                status: 'loading' // 添加loading状态
+                ...this.createGameInfo(type, resource),
+                hints: []
             }
 
-            // 存储游戏信息
             this.games.set(groupId, gameInfo)
+            this.logGameAnswer(groupId, type, resource)
 
-            // 生成初始提示
             const hint = await this.generateHint(gameInfo, 0)
-
-            // 在后台打印答案
-            logger.mark(logger.yellow('----------------------------------------'))
-            logger.mark(logger.yellow(`[maimai-plugin] 群${groupId}的猜${type}游戏答案:`))
-            logger.mark(logger.yellow(`答案: ${resource.name || resource.title}`))
-            logger.mark(logger.yellow(`ID: ${resource.id}`))
-            logger.mark(logger.yellow('----------------------------------------'))
-
             return {
                 success: true,
                 message: `猜${type}游戏开始！\n${hint}\n请发送你的答案，你有${gameInfo.maxAttempts}次机会`
@@ -78,6 +89,7 @@ class GuessGame {
             
             switch (type) {
                 case '歌曲':
+                case '曲绘':  // 添加对曲绘类型的支持
                     const randomSong = aliasResolver.songList[Math.floor(Math.random() * aliasResolver.songList.length)]
                     // 获取详细信息
                     const songInfo = await adapter.getSongInfo(randomSong.id)
@@ -594,33 +606,13 @@ class GuessGame {
     // 初始化图片猜谜游戏
     async initImageGame(groupId, type) {
         try {
-            // 检查是否已有游戏在进行
-            if (this.games.has(groupId)) {
-                return {
-                    success: false,
-                    message: '当前已有游戏在进行中'
-                }
-            }
+            const statusCheck = this.checkGameStatus(groupId)
+            if (!statusCheck.success) return statusCheck
 
             // 获取随机资源
-            let resource
-            switch (type) {
-                case '曲绘图':
-                    resource = await this.getRandomResource('歌曲')
-                    break
-                case '头像图':
-                    resource = await this.getRandomResource('头像')
-                    break
-                case '姓名框图':
-                    resource = await this.getRandomResource('姓名框')
-                    break
-                default:
-                    return {
-                        success: false,
-                        message: '不支持的游戏类型'
-                    }
-            }
-
+            const baseType = type.replace('图', '')
+            logger.info(`[maimai-plugin] 获取${baseType}资源`)  // 添加日志
+            const resource = await this.getRandomResource(baseType)
             if (!resource) {
                 return {
                     success: false,
@@ -628,10 +620,9 @@ class GuessGame {
                 }
             }
 
-            // 获取图片资源
+            // 根据类型获取对应的图片资源
             const adapter = new APIAdapter()
             let imageAsset
-
             switch (type) {
                 case '曲绘图':
                     imageAsset = await adapter.getJacketAsset(resource.id)
@@ -642,37 +633,29 @@ class GuessGame {
                 case '姓名框图':
                     imageAsset = await adapter.getPlateAsset(resource.id)
                     break
+                default:
+                    return {
+                        success: false,
+                        message: '不支持的游戏类型'
+                    }
             }
 
             if (!imageAsset) {
+                logger.error(`[maimai-plugin] 获取${type}资源失败: ${resource.id}`)  // 添加错误日志
                 return {
                     success: false,
                     message: '获取图片资源失败'
                 }
             }
 
-            // 创建游戏信息
             const gameInfo = {
-                type: type,
-                resource: resource,
-                startTime: Date.now(),
-                attempts: 0,
-                maxAttempts: 5,
-                status: 'loading',  // 添加loading状态
-                imageAsset: imageAsset  // 保存图片资源路径
+                ...this.createGameInfo(type, resource),
+                imageAsset
             }
 
-            // 存储游戏信息
             this.games.set(groupId, gameInfo)
+            this.logGameAnswer(groupId, type, resource)
 
-            // 在后台打印答案
-            logger.mark(logger.yellow('----------------------------------------'))
-            logger.mark(logger.yellow(`[maimai-plugin] 群${groupId}的猜${type}游戏答案:`))
-            logger.mark(logger.yellow(`答案: ${resource.name || resource.title}`))
-            logger.mark(logger.yellow(`ID: ${resource.id}`))
-            logger.mark(logger.yellow('----------------------------------------'))
-
-            // 生成初始遮罩图片（只显示20%）
             const maskedImage = await this.generateMaskedImage(imageAsset, 1, type)
             if (!maskedImage) {
                 return {
@@ -681,7 +664,6 @@ class GuessGame {
                 }
             }
 
-            // 返回遮罩图片作为提示
             return {
                 success: true,
                 message: [
@@ -806,15 +788,9 @@ class GuessGame {
     // 初始化音乐猜谜游戏
     async initMusicGame(groupId) {
         try {
-            // 检查是否已有游戏在进行
-            if (this.games.has(groupId)) {
-                return {
-                    success: false,
-                    message: '当前已有游戏在进行中'
-                }
-            }
+            const statusCheck = this.checkGameStatus(groupId)
+            if (!statusCheck.success) return statusCheck
 
-            // 获取随机歌曲
             const resource = await this.getRandomResource('歌曲')
             if (!resource) {
                 return {
@@ -823,10 +799,8 @@ class GuessGame {
                 }
             }
 
-            // 获取音频资源
             const adapter = new APIAdapter()
             const musicAsset = await adapter.getMusicAsset(resource.id)
-
             if (!musicAsset) {
                 return {
                     success: false,
@@ -834,28 +808,14 @@ class GuessGame {
                 }
             }
 
-            // 创建游戏信息
             const gameInfo = {
-                type: '音乐',
-                resource: resource,
-                startTime: Date.now(),
-                attempts: 0,
-                maxAttempts: 5,
-                status: 'loading',  // 添加loading状态表示音频正在发送
-                musicAsset: musicAsset  // 保存音频资源路径
+                ...this.createGameInfo('音乐', resource),
+                musicAsset
             }
 
-            // 存储游戏信息
             this.games.set(groupId, gameInfo)
+            this.logGameAnswer(groupId, '音乐', resource)
 
-            // 在后台打印答案
-            logger.mark(logger.yellow('----------------------------------------'))
-            logger.mark(logger.yellow(`[maimai-plugin] 群${groupId}的猜音乐游戏答案:`))
-            logger.mark(logger.yellow(`答案: ${resource.title}`))
-            logger.mark(logger.yellow(`ID: ${resource.id}`))
-            logger.mark(logger.yellow('----------------------------------------'))
-
-            // 返回音频作为提示
             return {
                 success: true,
                 message: [
