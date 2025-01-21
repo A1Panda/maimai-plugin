@@ -559,6 +559,7 @@ class GuessGame {
         
         switch (actualType) {
             case '歌曲':
+            case '曲绘':
             case '音乐':  // 添加音乐游戏的结果展示
                 const songResult = await musicInfo.getMusicInfo(game.resource.id)
                 return {
