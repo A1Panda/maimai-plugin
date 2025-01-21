@@ -859,7 +859,7 @@ class GuessGame {
             return {
                 success: true,
                 message: [
-                    `猜音乐游戏开始！\n请根据音频猜测歌曲名称，你有${gameInfo.maxAttempts}次机会\n音频即将发送，请稍等...`,
+                    `猜音乐游戏开始！\n请根据音频猜测歌曲名称，你有${gameInfo.maxAttempts}次机会`,
                     segment.record(`file://${musicAsset}`)
                 ]
             }
