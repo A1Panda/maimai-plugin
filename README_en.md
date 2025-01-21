@@ -9,7 +9,7 @@
 [![maimai-plugin](https://img.shields.io/badge/GitHub-maimai--plugin-9cf?style=for-the-badge&logo=github)](https://github.com/a1panda/maimai-plugin)
 [![maimai-plugin](https://img.shields.io/badge/Gitee-maimai--plugin-9cf?style=for-the-badge&logo=gitee)](https://gitee.com/a1_panda/maimai-plugin)
 
-![version](https://img.shields.io/badge/version-0.0.1-9cf?style=for-the-badge)
+![version](https://img.shields.io/badge/version-1.4.6-9cf?style=for-the-badge)
 ![version](https://img.shields.io/badge/maimai-2025.01-6cf?style=for-the-badge)
 
 [![YunzaiBot](https://img.shields.io/badge/Yunzai-v3.0-9cf?style=for-the-badge&logo=dependabot)](https://gitee.com/yoimiya-kokomi/Yunzai-Bot)
