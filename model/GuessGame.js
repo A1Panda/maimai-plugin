@@ -70,7 +70,7 @@ class GuessGame {
             const hint = await this.generateHint(gameInfo, 0)
             return {
                 success: true,
-                message: `猜${type}游戏开始！\n${hint}\n请发送你的答案，你有${gameInfo.maxAttempts}次机会`
+                message: `猜${type}游戏开始！\n${hint}\n请发送你的答案，你有${gameInfo.maxAttempts}次机会\n请@我发送答案`
             }
         } catch (err) {
             logger.error(`[maimai-plugin] 初始化猜${type}游戏失败`)
@@ -667,7 +667,7 @@ class GuessGame {
             return {
                 success: true,
                 message: [
-                    `猜${type}游戏开始！\n请根据图片猜测答案，你有${gameInfo.maxAttempts}次机会`,
+                    `猜${type}游戏开始！\n请根据图片猜测答案，你有${gameInfo.maxAttempts}次机会\n请@我发送答案`,
                     segment.image(`file://${maskedImage}`)
                 ]
             }
@@ -819,7 +819,7 @@ class GuessGame {
             return {
                 success: true,
                 message: [
-                    `猜音乐游戏开始！\n请根据音频猜测歌曲名称，你有${gameInfo.maxAttempts}次机会`,
+                    `猜音乐游戏开始！\n请根据音频猜测歌曲名称，你有${gameInfo.maxAttempts}次机会\n请@我发送答案`,
                     segment.record(`file://${musicAsset}`)
                 ]
             }
