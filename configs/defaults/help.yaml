@@ -26,6 +26,8 @@ groups:
         description: "上传刚刚搜索到的资源文件"
       - command: "#mai random<类型><难度>"
         description: "随机各种资源"
+      - command: "#mai guess <类型>"
+        description: "猜谜游戏支持猜图、猜音乐"
       - command: "#mai plate"
         description: "查看名牌进度"
       - command: "#mai rank"
