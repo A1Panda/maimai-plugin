@@ -1,9 +1,30 @@
 // 导入 Node.js 的文件系统模块
 import fs from 'node:fs'
+import path from 'node:path'
 import { aliasResolver } from './utils/MaimaiAliasResolver.js'
+// 初始化配置文件
+import { initConfig } from './utils/config.js'
 
 // 记录开始时间
 const startTime = process.hrtime()
+
+// 清理临时文件
+const cleanTempFiles = () => {
+    try {
+        const tempDir = path.join(process.cwd(), 'temp', 'maimai-plugin')
+        if (fs.existsSync(tempDir)) {
+            const files = fs.readdirSync(tempDir)
+            for (const file of files) {
+                const filePath = path.join(tempDir, file)
+                fs.unlinkSync(filePath)
+            }
+            logger.mark(logger.green('[maimai-plugin] 临时文件清理完成'))
+        }
+    } catch (err) {
+        logger.error('[maimai-plugin] 清理临时文件失败')
+        logger.error(err)
+    }
+}
 
 // 全局 segment 对象初始化
 // 用于处理消息段，支持 icqq 和 oicq 两种框架
@@ -21,6 +42,9 @@ if (!global.segment) {
 
 // 在控制台打印插件标题
 logger.mark(logger.green('[maimai-plugin]------舞萌DX查分器------'))
+
+// 清理临时文件
+cleanTempFiles()
 
 // 初始化别名解析器
 aliasResolver.init().then(() => {
@@ -75,10 +99,6 @@ for (let i in files) {
 
 // 导出 apps 对象，供其他模块使用
 export { apps }
-
-// 初始化配置文件
-// 导入配置初始化函数
-import { initConfig } from './utils/config.js'
 
 // 初始化配置文件
 initConfig()
