@@ -101,15 +101,24 @@ export class GuessGameHandler extends plugin {
             return false
         }
 
-        let msg = await e.reply('正在处理数据请稍后...', { at: true })
-        setTimeout(() => {
-            if (msg?.message_id && e.group) e.group.recallMsg(msg.message_id)
-        }, 6000)
-
+        let msg = await e.reply('正在获取音乐资源，请稍后...', { at: true })
+        
         try {
             // 初始化游戏
             const result = await guessGame.initMusicGame(e.group_id)
+            
+            // 先撤回提示消息
+            if (msg?.message_id && e.group) {
+                await e.group.recallMsg(msg.message_id)
+            }
+            
+            // 发送游戏消息
             await e.reply(result.message)
+            
+            // 延迟发送提示
+            setTimeout(async () => {
+                await e.reply('音乐已发送，请仔细听哦~')
+            }, 2000)
 
             return true
         } catch (err) {
