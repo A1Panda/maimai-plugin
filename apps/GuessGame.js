@@ -115,9 +115,10 @@ export class GuessGameHandler extends plugin {
             // 发送游戏消息
             await e.reply(result.message)
             
-            // 延迟发送提示
+            // 延迟发送提示并设置游戏状态为就绪
             setTimeout(async () => {
                 await e.reply('音乐已发送，请仔细听哦~')
+                guessGame.setMusicGameReady(e.group_id)
             }, 2000)
 
             return true

@@ -326,6 +326,14 @@ class GuessGame {
             }
         }
 
+        // 如果是音乐游戏且还在加载中，返回提示
+        if (game.type === '音乐' && game.status === 'loading') {
+            return {
+                success: false,
+                message: '音频还在发送中，请稍等...'
+            }
+        }
+
         // 增加尝试次数
         game.attempts++
 
@@ -819,7 +827,8 @@ class GuessGame {
                 startTime: Date.now(),
                 attempts: 0,
                 maxAttempts: 5,
-                status: 'playing'
+                status: 'loading',  // 添加loading状态表示音频正在发送
+                musicAsset: musicAsset  // 保存音频资源路径
             }
 
             // 存储游戏信息
@@ -847,6 +856,14 @@ class GuessGame {
                 success: false,
                 message: '游戏初始化失败'
             }
+        }
+    }
+
+    // 添加新方法：设置音乐游戏为就绪状态
+    setMusicGameReady(groupId) {
+        const game = this.games.get(groupId)
+        if (game && game.type === '音乐' && game.status === 'loading') {
+            game.status = 'playing'
         }
     }
 }
