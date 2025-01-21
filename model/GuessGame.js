@@ -41,7 +41,7 @@ class GuessGame {
                 attempts: 0,
                 maxAttempts: 5,
                 hints: [],
-                status: 'playing' // playing, won, timeout
+                status: 'loading' // 添加loading状态
             }
 
             // 存储游戏信息
@@ -326,11 +326,24 @@ class GuessGame {
             }
         }
 
-        // 如果是音乐游戏且还在加载中，返回提示
-        if (game.type === '音乐' && game.status === 'loading') {
+        // 检查游戏是否还在加载中
+        if (game.status === 'loading') {
+            let message = ''
+            switch (game.type) {
+                case '音乐':
+                    message = '音频还在发送中，请稍等...'
+                    break
+                case '曲绘图':
+                case '头像图':
+                case '姓名框图':
+                    message = '图片还在发送中，请稍等...'
+                    break
+                default:
+                    message = '游戏正在初始化，请稍等...'
+            }
             return {
                 success: false,
-                message: '音频还在发送中，请稍等...'
+                message: message
             }
         }
 
@@ -645,7 +658,8 @@ class GuessGame {
                 startTime: Date.now(),
                 attempts: 0,
                 maxAttempts: 5,
-                status: 'playing'
+                status: 'loading',  // 添加loading状态
+                imageAsset: imageAsset  // 保存图片资源路径
             }
 
             // 存储游戏信息
@@ -863,6 +877,14 @@ class GuessGame {
     setMusicGameReady(groupId) {
         const game = this.games.get(groupId)
         if (game && game.type === '音乐' && game.status === 'loading') {
+            game.status = 'playing'
+        }
+    }
+
+    // 设置游戏为就绪状态
+    setGameReady(groupId) {
+        const game = this.games.get(groupId)
+        if (game && game.status === 'loading') {
             game.status = 'playing'
         }
     }

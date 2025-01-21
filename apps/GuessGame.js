@@ -33,30 +33,32 @@ export class GuessGameHandler extends plugin {
         })
     }
 
-    // 开始游戏
+    // 开始普通游戏
     async startGame(e) {
-        // 只允许群聊使用
         if (!e.isGroup) {
             await e.reply('该功能仅支持群聊使用')
             return false
         }
 
-        let msg = await e.reply('正在处理数据请稍后...', { at: true })
-        setTimeout(() => {
-            if (msg?.message_id && e.group) e.group.recallMsg(msg.message_id)
-        }, 6000)
-
+        let msg = await e.reply('正在初始化游戏，请稍后...', { at: true })
+        
         try {
-            // 获取游戏类型
             const type = e.msg.match(/(歌曲|姓名框|头像|背景)/)[0]
-
-            // 初始化游戏
             const result = await guessGame.initGame(e.group_id, type)
+            
+            if (msg?.message_id && e.group) {
+                await e.group.recallMsg(msg.message_id)
+            }
+            
             await e.reply(result.message)
+            
+            setTimeout(() => {
+                guessGame.setGameReady(e.group_id)
+            }, 1000)
 
             return true
         } catch (err) {
-            logger.error('[maimai-plugin] 启动猜谜游戏失败')
+            logger.error('[maimai-plugin] 启动游戏失败')
             logger.error(err)
             await e.reply('启动游戏失败，请稍后再试')
             return false
@@ -65,24 +67,27 @@ export class GuessGameHandler extends plugin {
 
     // 开始图片猜谜游戏
     async startImageGame(e) {
-        // 只允许群聊使用
         if (!e.isGroup) {
             await e.reply('该功能仅支持群聊使用')
             return false
         }
 
-        let msg = await e.reply('正在处理数据请稍后...', { at: true })
-        setTimeout(() => {
-            if (msg?.message_id && e.group) e.group.recallMsg(msg.message_id)
-        }, 6000)
-
+        let msg = await e.reply('正在获取图片资源，请稍后...', { at: true })
+        
         try {
-            // 获取游戏类型
             const type = e.msg.match(/(曲绘图|头像图|姓名框图)/)[0]
-
-            // 初始化游戏
             const result = await guessGame.initImageGame(e.group_id, type)
+            
+            if (msg?.message_id && e.group) {
+                await e.group.recallMsg(msg.message_id)
+            }
+            
             await e.reply(result.message)
+            
+            setTimeout(async () => {
+                await e.reply('图片已发送，请仔细看哦~')
+                guessGame.setGameReady(e.group_id)
+            }, 2000)
 
             return true
         } catch (err) {
@@ -95,7 +100,6 @@ export class GuessGameHandler extends plugin {
 
     // 开始音乐猜谜游戏
     async startMusicGame(e) {
-        // 只允许群聊使用
         if (!e.isGroup) {
             await e.reply('该功能仅支持群聊使用')
             return false
@@ -104,21 +108,17 @@ export class GuessGameHandler extends plugin {
         let msg = await e.reply('正在获取音乐资源，请稍后...', { at: true })
         
         try {
-            // 初始化游戏
             const result = await guessGame.initMusicGame(e.group_id)
             
-            // 先撤回提示消息
             if (msg?.message_id && e.group) {
                 await e.group.recallMsg(msg.message_id)
             }
             
-            // 发送游戏消息
             await e.reply(result.message)
             
-            // 延迟发送提示并设置游戏状态为就绪
             setTimeout(async () => {
                 await e.reply('音乐已发送，请仔细听哦~')
-                guessGame.setMusicGameReady(e.group_id)
+                guessGame.setGameReady(e.group_id)
             }, 2000)
 
             return true
