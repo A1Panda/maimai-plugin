@@ -5,6 +5,22 @@ import { aliasResolver } from './utils/MaimaiAliasResolver.js'
 // 初始化配置文件
 import { initConfig } from './utils/config.js'
 
+// 在控制台打印插件标题
+logger.mark(logger.green(
+    '\n' +
+    '███╗   ███╗ █████╗ ██╗███╗   ███╗ █████╗ ██╗        ██████╗ ██╗     ██╗   ██╗ ██████╗ ██╗███╗   ██╗\n' +
+    '████╗ ████║██╔══██╗██║████╗ ████║██╔══██╗██║        ██╔══██╗██║     ██║   ██║██╔════╝ ██║████╗  ██║\n' +
+    '██╔████╔██║███████║██║██╔████╔██║███████║██║        ██████╔╝██║     ██║   ██║██║  ███╗██║██╔██╗ ██║\n' +
+    '██║╚██╔╝██║██╔══██║██║██║╚██╔╝██║██╔══██║██║        ██╔═══╝ ██║     ██║   ██║██║   ██║██║██║╚██╗██║\n' +
+    '██║ ╚═╝ ██║██║  ██║██║██║ ╚═╝ ██║██║  ██║██║███████╗██║     ███████╗╚██████╔╝╚██████╔╝██║██║ ╚████║\n' +
+    '╚═╝     ╚═╝╚═╝  ╚═╝╚═╝╚═╝     ╚═╝╚═╝  ╚═╝╚═╝╚══════╝╚═╝     ╚══════╝ ╚═════╝  ╚═════╝ ╚═╝╚═╝  ╚═══╝\n' +
+    '                                                                                                     '
+
+))
+
+// 初始化配置文件
+initConfig()
+
 // 记录开始时间
 const startTime = process.hrtime()
 
@@ -39,9 +55,6 @@ if (!global.segment) {
 //插件作者QQ号：3121280556
 //MaiMai查分器插件
 //如果有什么好的建议欢迎提出
-
-// 在控制台打印插件标题
-logger.mark(logger.green('[maimai-plugin]------舞萌DX查分器------'))
 
 // 清理临时文件
 cleanTempFiles()
@@ -100,16 +113,13 @@ for (let i in files) {
 // 导出 apps 对象，供其他模块使用
 export { apps }
 
-// 初始化配置文件
-initConfig()
-
 
 // 如果没有发生错误，显示成功信息
 if (!errvis) {
     // 计算耗时
     const endTime = process.hrtime(startTime)
     const loadTime = (endTime[0] * 1000 + endTime[1] / 1000000).toFixed(2) // 转换为毫秒并保留2位小数
-    
+    logger.mark(logger.green('[maimai-plugin]------舞萌DX查分器------'))
     logger.mark(logger.green(`[maimai-plugin] MaiMai查分器插件载入成功~`))
     logger.mark(logger.green(`[maimai-plugin] 成功加载了 ${successCount} 个插件~`))
     logger.mark(logger.green(`[maimai-plugin] 插件加载耗时: ${loadTime}ms`))
