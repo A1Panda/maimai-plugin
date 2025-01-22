@@ -1,52 +1,68 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-// 递归删除目录及其内容,返回删除的文件数
+// 定义常量
+const PLUGIN_TEMP = './plugins/maimai-plugin/temp'
+const YUNZAI_TEMP = path.join(process.cwd(), 'temp', 'maimai-plugin')
+
+// 删除单个文件或目录
+function deleteFileOrDir(filePath) {
+    try {
+        const stat = fs.lstatSync(filePath)
+        if (stat.isDirectory()) {
+            return deleteFolderRecursive(filePath)
+        } else {
+            fs.unlinkSync(filePath)
+            return 1
+        }
+    } catch (err) {
+        logger.error(`[maimai-plugin] 删除文件失败: ${filePath}`)
+        logger.error(err)
+        return 0
+    }
+}
+
+// 递归删除目录及其内容
 function deleteFolderRecursive(folderPath) {
     let count = 0
     if (fs.existsSync(folderPath)) {
         fs.readdirSync(folderPath).forEach((file) => {
-            const curPath = path.join(folderPath, file)
-            if (fs.lstatSync(curPath).isDirectory()) {
-                // 递归删除子目录
-                count += deleteFolderRecursive(curPath)
-            } else {
-                // 删除文件
-                fs.unlinkSync(curPath)
-                count++
-            }
+            count += deleteFileOrDir(path.join(folderPath, file))
         })
-        // 删除空目录
         fs.rmdirSync(folderPath)
     }
     return count
 }
 
-// 删除临时文件
-export function deleteTemp() {
+// 通用的清理函数
+function cleanDirectory(dirPath, type = 'plugin') {
     try {
-        const tempPath = './plugins/maimai-plugin/temp'
-        if (fs.existsSync(tempPath)) {
-            let totalFiles = 0
-            const files = fs.readdirSync(tempPath)
-            for (const file of files) {
-                const filePath = path.join(tempPath, file)
-                if (fs.lstatSync(filePath).isDirectory()) {
-                    // 如果是目录，递归删除
-                    totalFiles += deleteFolderRecursive(filePath)
-                } else {
-                    // 如果是文件，直接删除
-                    fs.unlinkSync(filePath)
-                    totalFiles++
-                }
-            }
-            logger.info(`[maimai-plugin] 临时文件清理完成,共清理${totalFiles}个文件`)
-            return totalFiles
+        if (!fs.existsSync(dirPath)) return 0
+
+        let count = 0
+        const files = fs.readdirSync(dirPath)
+        
+        for (const file of files) {
+            count += deleteFileOrDir(path.join(dirPath, file))
         }
-        return 0
+
+        const message = `[maimai-plugin] ${type === 'plugin' ? '插件' : 'Yunzai'}临时文件清理完成，共清理${count}个文件`
+        type === 'plugin' ? logger.info(message) : logger.mark(logger.green(message))
+        
+        return count
     } catch (err) {
-        logger.error('[maimai-plugin] 清理临时文件失败')
+        logger.error(`[maimai-plugin] 清理${type === 'plugin' ? '插件' : 'Yunzai'}临时文件失败`)
         logger.error(err)
         return false
     }
+}
+
+// 删除插件目录下的临时文件
+export function deleteTemp() {
+    return cleanDirectory(PLUGIN_TEMP, 'plugin')
+}
+
+// 清理 Yunzai temp 目录下的 maimai-plugin 临时文件
+export function cleanTempFiles() {
+    return cleanDirectory(YUNZAI_TEMP, 'yunzai')
 }
