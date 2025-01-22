@@ -8,7 +8,7 @@
 </div>
 <div align="center">
 
-# maimai-Plugin
+# maimai-Plugin 
 [![maimai-plugin](https://img.shields.io/badge/GitHub仓库-maimai--plugin-9cf?style=for-the-badge&logo=github)](https://github.com/a1panda/maimai-plugin)
 [![maimai-plugin](https://img.shields.io/badge/Gitee仓库-maimai--plugin-9cf?style=for-the-badge&logo=gitee)](https://gitee.com/a1_panda/maimai-plugin)
 
