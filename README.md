@@ -2,7 +2,7 @@
 
 <a href="">
   <picture>
-    <source srcset="./resources/images/kv_pc.avif" type="image/avif" width="80%" />
+    <source srcset="./resources/images/kv_pc.avif" type="image/png" width="80%" />
     <img src="./resources/images/kv_pc.png" width="80%" />
 </picture>
 </div>
