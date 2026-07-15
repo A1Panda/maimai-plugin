@@ -38,8 +38,7 @@ body {
 .full-page-background img {
     width: 100%; height: 100%;
     object-fit: cover;
-    opacity: 0.5;
-    filter: saturate(1.1);
+    opacity: 1;
 }
 
 /* ===== 内容容器：毛玻璃蒙层 ===== */
@@ -47,11 +46,6 @@ body {
     width: 1420px;
     position: relative;
     z-index: 10;
-    background: rgba(255,255,255,0.4);
-    padding: 20px;
-    border-radius: 30px;
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
 }
 
 /* ===== 头部：姓名板居中 ===== */
@@ -227,19 +221,26 @@ body {
 .type-indicator.song-std { color: var(--std-blue); }
 .type-indicator.song-dx { color: var(--dx-orange); }
 
-/* ===== 底部图标群组：横向一字排开 ===== */
+/* ===== 底部图标群组：绝对定位横向一字排开 ===== */
 .song-icons-group {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
     display: flex;
+    flex-direction: row;
     align-items: center;
     gap: 8px;
+    z-index: 20;
+}
+.song-icons-group img {
+    height: 24px !important;
+    width: auto;
+    object-fit: contain;
+    flex-shrink: 0;
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));
 }
 .rank-badge-img {
-    height: 26px;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-}
-.status-icon {
-    height: 22px;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    height: 28px !important;
 }
 
 /* 右下编号 */
@@ -307,8 +308,8 @@ body {
 
             <div class="song-icons-group">
                 <img class="rank-badge-img" src="{{rate_icon}}" alt="{{rate}}">
-                {{#fc}}<img class="status-icon" src="{{fc_icon}}" alt="FC">{{/fc}}
-                {{#fs}}<img class="status-icon" src="{{fs_icon}}" alt="FS">{{/fs}}
+                {{#fc}}<img src="{{fc_icon}}" alt="FC">{{/fc}}
+                {{#fs}}<img src="{{fs_icon}}" alt="FS">{{/fs}}
             </div>
         </div>
 
