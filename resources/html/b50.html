@@ -19,43 +19,48 @@
 * { margin:0; padding:0; box-sizing:border-box; font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; }
 
 body {
+    position: relative;
+    min-height: 100vh;
+    padding: 20px 5px;
+    display: flex;
+    justify-content: center;
     background-color: var(--bg-main);
     background-image:
         radial-gradient(#ffcae5 1.5px, transparent 1.5px),
         linear-gradient(180deg, #fff 0%, var(--bg-main) 100%);
     background-size: 26px 26px, 100% 100%;
-    padding: 10px 5px;
-    display: flex;
-    justify-content: center;
 }
-.container { width: 1550px; }
 
-/* ===== 顶部区域：大背景视野 ===== */
+/* ===== 全局最底层大背景 (Frame 贯穿全页) ===== */
+.full-page-background {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: -1;
+    pointer-events: none;
+}
+.full-page-background img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    opacity: 0.15;
+    filter: saturate(1.2);
+}
+
+.container { width: 1400px; position: relative; z-index: 10; }
+
+/* ===== 头部：姓名板居中 ===== */
 .header-wrapper {
     position: relative;
     width: 100%;
-    height: 240px;
-    margin-bottom: 35px;
-    border-radius: 24px;
-    overflow: hidden;
+    height: 180px;
+    margin-bottom: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
-}
-.full-background-frame {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    object-fit: cover;
-    object-position: center;
-    z-index: 1;
-    filter: brightness(0.95);
 }
 .user-plate-container {
     position: relative;
-    z-index: 5;
-    width: 680px;
+    width: 700px;
     height: 140px;
     display: flex;
     align-items: center;
@@ -65,11 +70,11 @@ body {
     position: absolute;
     width: 100%; height: 100%;
     object-fit: contain;
-    z-index: 3;
+    z-index: 2;
 }
 .user-data-overlay {
     position: relative;
-    z-index: 10;
+    z-index: 5;
     display: flex;
     align-items: center;
     gap: 30px;
@@ -77,26 +82,26 @@ body {
     padding: 0 50px;
 }
 .avatar {
-    width: 100px; height: 100px;
-    border-radius: 15px;
-    border: 4px solid #fff;
+    width: 90px; height: 90px;
+    border-radius: 18px;
+    border: 3px solid #fff;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     flex-shrink: 0;
 }
-.info-text { display: flex; flex-direction: column; gap: 8px; }
+.info-text { display: flex; flex-direction: column; gap: 6px; }
 .rating-box {
     background: rgba(40,40,40,0.9);
     color: var(--gold-rating);
     padding: 3px 15px;
     border-radius: 8px;
     font-weight: 900;
-    font-size: 20px;
+    font-size: 19px;
     width: fit-content;
     box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 .rating-sub { font-size: 12px; opacity: 0.75; margin-left: 8px; }
 .nickname {
-    font-size: 42px; font-weight: 900;
+    font-size: 38px; font-weight: 900;
     color: #fff;
     text-shadow:
         2px 2px 0 var(--pink-main), -2px -2px 0 var(--pink-main),
@@ -127,14 +132,14 @@ body {
     margin-bottom: 40px;
 }
 
-/* ===== 右侧封面 + 渐变过渡卡片 ===== */
+/* ===== 卡片：半透明底透出背景 ===== */
 .song-card {
     position: relative;
     height: 185px;
-    background-color: #fff;
+    background: rgba(255,255,255,0.9);
     border-radius: 16px;
-    border: 2.5px solid #fff;
-    box-shadow: 0 6px 18px rgba(255,118,184,0.18);
+    border: 2px solid #fff;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -153,7 +158,7 @@ body {
     content: '';
     position: absolute;
     top: 0; left: 0; bottom: 0; right: 0;
-    background: linear-gradient(105deg, #fff 50%, rgba(255,255,255,0.4) 65%, transparent 75%);
+    background: linear-gradient(105deg, rgba(255,255,255,0.92) 50%, rgba(255,255,255,0.4) 65%, transparent 75%);
     z-index: 2;
     pointer-events: none;
 }
@@ -180,24 +185,19 @@ body {
 .song-card[data-lvn="14"] .card-top-bar,
 .song-card[data-lvn="15"] .card-top-bar { background: var(--color-remaster); }
 
-/* 卡片文字内容 */
 .card-content {
     position: relative;
     z-index: 10;
-    height: 100%;
     padding: 12px;
+    height: 100%;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
 }
 .song-name {
-    font-size: 11.5px;
-    font-weight: 900;
-    color: var(--pink-main);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-size: 11.5px; font-weight: 900; color: var(--pink-main);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     padding-right: 60px;
-    margin-bottom: 4px;
 }
 .achv-area { display: flex; align-items: center; margin-bottom: 4px; }
 .arrows { color: var(--pink-main); font-size: 10px; letter-spacing: -2px; opacity: 0.45; margin-right: 5px; flex-shrink: 0; }
@@ -206,15 +206,15 @@ body {
 .meta-info .ra-label { color: #555; }
 .meta-info .ra-val { color: var(--color-master); font-size: 13px; }
 
-/* ===== 右上药丸标签 (STD/DX) ===== */
+/* ===== 右上药丸标签 ===== */
 .type-indicator {
     position: absolute;
     top: 10px; right: 10px;
     background: #fff;
     color: var(--pink-main);
     border: 1.5px solid currentColor;
-    font-size: 10px;
-    padding: 1px 8px;
+    font-size: 9px;
+    padding: 1px 7px;
     border-radius: 20px;
     font-weight: 900;
     z-index: 30;
@@ -223,38 +223,40 @@ body {
 .type-indicator.song-std { color: var(--std-blue); }
 .type-indicator.song-dx { color: var(--dx-orange); }
 
-/* ===== 左下图标组：横向排列 ===== */
+/* ===== 左下排名徽章 ===== */
+.rank-badge-box {
+    position: absolute;
+    bottom: 10px; left: 12px;
+    z-index: 20;
+}
+.rank-icon {
+    height: 26px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+/* ===== 底部 FC/SYNC 图标 ===== */
 .song-icons {
     position: absolute;
     bottom: 12px;
-    left: 12px;
+    left: 55px;
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 10px;
+    gap: 8px;
     z-index: 20;
-    pointer-events: none;
 }
 .song-icons img {
-    height: 24px;
-    width: auto;
-    object-fit: contain;
-    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.25));
-    flex-shrink: 0;
-}
-.rank-icon {
-    height: 24px !important;
+    height: 22px;
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));
 }
 
-/* ===== 右下编号水印 ===== */
+/* 右下编号 */
 .ribbon-index {
     position: absolute;
-    bottom: 4px; right: 8px;
-    font-size: 20px;
+    bottom: 5px; right: 8px;
+    font-size: 18px;
     font-weight: 900;
     color: rgba(255,118,184,0.3);
     font-style: italic;
-    z-index: 5;
+    z-index: 10;
 }
 
 /* 页脚 */
@@ -269,10 +271,14 @@ body {
 </style>
 </head>
 <body>
-<div class="container">
-    <div class="header-wrapper">
-        {{#frameAsset}}<img class="full-background-frame" src="{{frameAsset}}" alt="Frame">{{/frameAsset}}
+<!-- ===== 全局底层大背景 (Frame 贯穿全页) ===== -->
+<div class="full-page-background">
+    {{#frameAsset}}<img src="{{frameAsset}}" alt="Background">{{/frameAsset}}
+</div>
 
+<div class="container">
+    <!-- ===== 头部：姓名板居中 ===== -->
+    <div class="header-wrapper">
         <div class="user-plate-container">
             <img class="name-plate-img" src="{{plateAsset}}" alt="Name Plate">
             <div class="user-data-overlay">
@@ -295,7 +301,6 @@ body {
         <img class="card-bg-jacket" src="{{jacket_url}}" alt="{{song_name}}">
         <div class="card-top-bar"></div>
 
-        <!-- 右上药丸标签 -->
         <div class="type-indicator song-std">すたんだーど</div>
 
         <div class="card-content">
@@ -310,13 +315,13 @@ body {
             </div>
         </div>
 
-        <!-- 左下评价 + FC/SYNC 图标组 -->
-        <div class="song-icons">
+        <div class="rank-badge-box">
             <img class="rank-icon" src="{{rate_icon}}" alt="{{rate}}">
+        </div>
+        <div class="song-icons">
             {{#fc}}<img src="{{fc_icon}}" alt="FC">{{/fc}}
             {{#fs}}<img src="{{fs_icon}}" alt="FS">{{/fs}}
         </div>
-
         <div class="ribbon-index">#{{index}}</div>
     </div>
     {{/standard}}
@@ -343,13 +348,13 @@ body {
             </div>
         </div>
 
-        <!-- 左下评价 + FC/SYNC 图标组 -->
-        <div class="song-icons">
+        <div class="rank-badge-box">
             <img class="rank-icon" src="{{rate_icon}}" alt="{{rate}}">
+        </div>
+        <div class="song-icons">
             {{#fc}}<img src="{{fc_icon}}" alt="FC">{{/fc}}
             {{#fs}}<img src="{{fs_icon}}" alt="FS">{{/fs}}
         </div>
-
         <div class="ribbon-index">#{{index}}</div>
     </div>
     {{/dx}}
