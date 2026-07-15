@@ -11,7 +11,8 @@ export default class SYAPI {
         this.tempPath = mainConfig.tempPath || './plugins/maimai-plugin/temp'
         this.baseURL = config.SYapi.baseURL || 'https://www.diving-fish.com'
         this.token = config.SYapi.token || ''
-        this.assetsURL = config.LXapi.assetsURL || 'https://assets2.lxns.net'  // 资源仍用落雪CDN
+        this.assetsURL = config.LXapi.assetsURL || 'https://assets2.lxns.net'  // 曲绘/头像/音频用落雪CDN
+        this.lxBaseURL = config.LXapi.baseURL || 'https://maimai.lxns.net'    // 评级图标等资源用落雪主站
 
         // 缓存 music_data
         this._musicData = null
@@ -687,7 +688,7 @@ export default class SYAPI {
     async getClassRankAsset(id) {
         const path = `${this.tempPath}/LX_assets/class_rank/${id}.webp`
         if (!fs.existsSync(path)) {
-            const url = `${this.baseURL}/assets/maimai/class_rank/${id}.webp`
+            const url = `${this.lxBaseURL}/assets/maimai/class_rank/${id}.webp`
             const buffer = await this.fetchAssetWithRetry(url)
             await fs.promises.mkdir(`${this.tempPath}/LX_assets/class_rank`, { recursive: true })
             await fs.promises.writeFile(path, Buffer.from(buffer))
@@ -698,7 +699,7 @@ export default class SYAPI {
     async getCourseRankAsset(id) {
         const path = `${this.tempPath}/LX_assets/course_rank/${id}.webp`
         if (!fs.existsSync(path)) {
-            const url = `${this.baseURL}/assets/maimai/course_rank/${id}.webp`
+            const url = `${this.lxBaseURL}/assets/maimai/course_rank/${id}.webp`
             const buffer = await this.fetchAssetWithRetry(url)
             await fs.promises.mkdir(`${this.tempPath}/LX_assets/course_rank`, { recursive: true })
             await fs.promises.writeFile(path, Buffer.from(buffer))
@@ -709,7 +710,7 @@ export default class SYAPI {
     async getMusicRateAsset(rate) {
         const path = `${this.tempPath}/LX_assets/music_rank/${rate}.webp`
         if (!fs.existsSync(path)) {
-            const url = `${this.baseURL}/assets/maimai/music_rank/${rate}.webp`
+            const url = `${this.lxBaseURL}/assets/maimai/music_rank/${rate}.webp`
             const buffer = await this.fetchAssetWithRetry(url)
             await fs.promises.mkdir(`${this.tempPath}/LX_assets/music_rank`, { recursive: true })
             await fs.promises.writeFile(path, Buffer.from(buffer))
@@ -723,7 +724,7 @@ export default class SYAPI {
         const path = `${this.tempPath}/LX_assets/music_icon/${type}.webp`
         if (!fs.existsSync(path)) {
             try {
-                const url = `${this.baseURL}/assets/maimai/music_icon/${type}.webp`
+                const url = `${this.lxBaseURL}/assets/maimai/music_icon/${type}.webp`
                 const buffer = await this.fetchAssetWithRetry(url)
                 await fs.promises.mkdir(`${this.tempPath}/LX_assets/music_icon`, { recursive: true })
                 await fs.promises.writeFile(path, Buffer.from(buffer))
