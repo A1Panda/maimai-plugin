@@ -91,12 +91,17 @@ class B50 {
             const response = await adapter.getPlayerBest50(userData[userId].friendCode)
             const playerInfo = await adapter.getPlayerInfo(userData[userId].friendCode)
 
-            // 预下载头像/姓名框/背景框为 base64 data URI（避免 Puppeteer 网络问题 + 本地缓存）
-            const [iconDataURI, plateDataURI, frameDataURI] = await Promise.all([
-                playerInfo.data.icon?.id ? this._fetchImageAsDataURI(`${adapter.getAssetsBaseURL()}/icon/${playerInfo.data.icon.id}.png`, `icon_${playerInfo.data.icon.id}`) : Promise.resolve(''),
-                playerInfo.data.name_plate?.id ? this._fetchImageAsDataURI(`${adapter.getAssetsBaseURL()}/plate/${playerInfo.data.name_plate.id}.png`, `plate_${playerInfo.data.name_plate.id}`) : Promise.resolve(''),
-                playerInfo.data.frame?.id ? this._fetchImageAsDataURI(`${adapter.getAssetsBaseURL()}/frame/${playerInfo.data.frame.id}.png`, `frame_${playerInfo.data.frame.id}`) : Promise.resolve('')
+            // 头像/姓名框/背景框：通过 adapter 方法下载到本地（自带缓存），再转 base64
+            const [iconPath, platePath] = await Promise.all([
+                playerInfo.data.icon?.id ? adapter.getIconAsset(playerInfo.data.icon.id).catch(() => '') : Promise.resolve(''),
+                playerInfo.data.name_plate?.id ? adapter.getPlateAsset(playerInfo.data.name_plate.id).catch(() => '') : Promise.resolve('')
             ])
+            const iconDataURI = iconPath && fs.existsSync(iconPath) ? `data:image/png;base64,${fs.readFileSync(iconPath).toString('base64')}` : ''
+            const plateDataURI = platePath && fs.existsSync(platePath) ? `data:image/png;base64,${fs.readFileSync(platePath).toString('base64')}` : ''
+            // 背景框：无专用 adapter 方法，仍用 _fetchImageAsDataURI + 缓存
+            const frameDataURI = playerInfo.data.frame?.id 
+                ? await this._fetchImageAsDataURI(`${adapter.getAssetsBaseURL()}/frame/${playerInfo.data.frame.id}.png`, `frame_${playerInfo.data.frame.id}`)
+                : ''
             
             // 处理标准谱和DX谱的数据（jacket 下载为 base64）
             const processSong = async (song) => {
