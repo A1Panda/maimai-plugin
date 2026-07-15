@@ -78,7 +78,8 @@ export default class SYAPI {
                 throw new Error(`API请求失败: ${response.status}`)
             }
             const rawData = await response.json()
-            // 水鱼 /dev/player/records 返回: { nickname, rating, additional_rating, records, ... }
+            // 水鱼 /dev/player/records 返回: { nickname, rating, additional_rating, records, plate }
+            // additional_rating: 0-10=段位初-十, 11-20=真初-真十, 21=真皆伝, 22=里皆伝
             const data = {
                 success: true,
                 code: 200,
@@ -87,14 +88,16 @@ export default class SYAPI {
                     rating: rawData.rating || 0,
                     friend_code: parseInt(friendCode) || 0,
                     // 水鱼API不提供trophy数据，用空值填充
-                    trophy: rawData.trophy || { id: 0, name: '', color: 'Normal' },
-                    course_rank: rawData.course_rank || 0,
-                    class_rank: rawData.class_rank || 0,
+                    trophy: { id: 0, name: '', color: 'Normal' },
+                    // 水鱼的 additional_rating 对应 LX 的 class_rank（段位）
+                    class_rank: rawData.additional_rating ?? 0,
+                    // 水鱼API不提供course_rank（course模式段位），用空值填充
+                    course_rank: 0,
                     star: rawData.star || 0,
                     // 水鱼API不提供icon/plate/frame数据，用空值填充
-                    icon: rawData.icon || { id: 0, name: '', genre: '' },
-                    name_plate: rawData.name_plate || { id: 0, name: '', genre: '' },
-                    frame: rawData.frame || { id: 0, name: '', genre: '' },
+                    icon: { id: 0, name: '', genre: '' },
+                    name_plate: { id: 0, name: '', genre: '' },
+                    frame: { id: 0, name: '', genre: '' },
                     upload_time: rawData.upload_time || ''
                 }
             }
@@ -614,7 +617,7 @@ export default class SYAPI {
     }
 
     getBaseURL() {
-        return this.baseURL
+        return this.lxBaseURL
     }
 
     async fetchAssetWithRetry(url, retries = 3, timeout = 15000) {

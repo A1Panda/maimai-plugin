@@ -47,14 +47,14 @@ class PlayerInfo {
                 }
             }
 
-            // 构建资源直链 URL
+            // 构建资源直链 URL（id=0时水鱼API无此数据，使用空值）
             const assetsBase = adapter.getAssetsBaseURL()
             const baseURL = adapter.getBaseURL()
-            const iconAsset = `${assetsBase}/icon/${response.data.icon.id}.png`
-            const plateAsset = `${assetsBase}/plate/${response.data.name_plate.id}.png`
+            const iconAsset = response.data.icon?.id ? `${assetsBase}/icon/${response.data.icon.id}.png` : ''
+            const plateAsset = response.data.name_plate?.id ? `${assetsBase}/plate/${response.data.name_plate.id}.png` : ''
             const frameAsset = response.data.frame?.id ? `${assetsBase}/frame/${response.data.frame.id}.png` : ''
-            const classRankAsset = `${baseURL}/assets/maimai/class_rank/${response.data.class_rank}.webp`
-            const courseRankAsset = `${baseURL}/assets/maimai/course_rank/${response.data.course_rank}.webp`
+            const classRankAsset = response.data.class_rank ? `${baseURL}/assets/maimai/class_rank/${response.data.class_rank}.webp` : ''
+            const courseRankAsset = response.data.course_rank ? `${baseURL}/assets/maimai/course_rank/${response.data.course_rank}.webp` : ''
 
             // 准备渲染数据
             const renderData = {
