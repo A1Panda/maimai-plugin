@@ -8,7 +8,7 @@
     },
     #水鱼API配置
     "SYapi": {
-        "token": "", #水鱼开发者APItoken
+        "token": "xkZf95e2cTwdRAlvrNoHPCq3y70YBKQU", #水鱼开发者APItoken
         "baseURL": "https://www.diving-fish.com" #默认API地址
     }
 }

@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import yaml from 'yaml'
 
-// 导出水鱼API类
+// 导出水鱼API类 - 完美适配水鱼 diving-fish API
 export default class SYAPI {
     constructor() {
         // 从配置文件中读取API基础配置
@@ -21,8 +21,14 @@ export default class SYAPI {
     // 通用请求头
     _getHeaders() {
         const headers = { 'Content-Type': 'application/json' }
+        return headers
+    }
+
+    // 开发者请求头（使用 Developer-Token 认证）
+    _getDevHeaders() {
+        const headers = { 'Content-Type': 'application/json' }
         if (this.token) {
-            headers['Authorization'] = `${this.token}`
+            headers['Developer-Token'] = this.token
         }
         return headers
     }
@@ -45,7 +51,7 @@ export default class SYAPI {
     // 查找曲目信息
     async _findSong(songId) {
         const musicData = await this._getMusicData()
-        // 水鱼API的 id 是字符串类型
+        // 水鱼API的 id 可能是字符串或数字类型
         return musicData.find(s => String(s.id) === String(songId)) || null
     }
 
@@ -56,17 +62,22 @@ export default class SYAPI {
         throw new Error('水鱼API不支持创建/修改玩家信息')
     }
 
-    // 获取玩家信息 - 水鱼用POST /api/maimaidxprober/player/profile
+    // 获取玩家信息 - 使用 /dev/player/records (Developer-Token)
     async getPlayerInfo(friendCode) {
         try {
-            const response = await fetch(`${this.baseURL}/api/maimaidxprober/player/profile`, {
-                method: 'POST',
-                headers: this._getHeaders(),
-                body: JSON.stringify({ qq: parseInt(friendCode) })
-            })
-            if (!response.ok) throw new Error(`API请求失败: ${response.status}`)
+            const response = await fetch(
+                `${this.baseURL}/api/maimaidxprober/dev/player/records?qq=${friendCode}`,
+                { headers: this._getDevHeaders() }
+            )
+            if (!response.ok) {
+                if (response.status === 400) {
+                    const errData = await response.json().catch(() => ({}))
+                    throw new Error(errData.message || '请求失败: 请检查QQ号是否正确或用户是否同意第三方查询')
+                }
+                throw new Error(`API请求失败: ${response.status}`)
+            }
             const rawData = await response.json()
-            // 水鱼返回: { nickname, rating, additional_rating, ... }
+            // 水鱼 /dev/player/records 返回: { nickname, rating, additional_rating, records, ... }
             const data = {
                 success: true,
                 code: 200,
@@ -74,10 +85,12 @@ export default class SYAPI {
                     name: rawData.nickname || '',
                     rating: rawData.rating || 0,
                     friend_code: parseInt(friendCode) || 0,
+                    // 水鱼API不提供trophy数据，用空值填充
                     trophy: rawData.trophy || { id: 0, name: '', color: 'Normal' },
                     course_rank: rawData.course_rank || 0,
                     class_rank: rawData.class_rank || 0,
                     star: rawData.star || 0,
+                    // 水鱼API不提供icon/plate/frame数据，用空值填充
                     icon: rawData.icon || { id: 0, name: '', genre: '' },
                     name_plate: rawData.name_plate || { id: 0, name: '', genre: '' },
                     frame: rawData.frame || { id: 0, name: '', genre: '' },
@@ -91,19 +104,20 @@ export default class SYAPI {
         }
     }
 
-    // 通过QQ获取玩家信息 = 直接调 getPlayerInfo
+    // 通过QQ获取玩家信息
     async getPlayerInfoByQQ(qq) {
+        // 水鱼API本身就是基于QQ查询，直接使用
         return await this.getPlayerInfo(qq)
     }
 
-    // 获取玩家最佳成绩
+    // 获取玩家缓存单曲最佳成绩
     async getPlayerBest(friendCode, params = {}) {
         try {
             if (!params.song_id && !params.song_name) {
                 throw new Error('必须提供 song_id 或 song_name 参数')
             }
             // 水鱼API返回所有records，需要本地筛选
-            const allScores = await this._getAllRecords(friendCode)
+            const allRecords = await this._getAllRecords(friendCode)
             const musicData = await this._getMusicData()
 
             let targetSongId = params.song_id
@@ -114,24 +128,31 @@ export default class SYAPI {
                 targetSongId = song.id
             }
 
-            const levelIndex = params.level_index || 0
-            const dxScore = allScores.find(s =>
+            const levelIndex = params.level_index !== undefined ? params.level_index : 0
+            const dxScore = allRecords.find(s =>
                 String(s.song_id) === String(targetSongId) && s.level_index === levelIndex
             )
 
             if (!dxScore) {
-                return { code: 200, data: { id: 0, song_name: '', achievements: 0, fc: '', fs: '', dx_score: 0, dx_star: 0, dx_rating: 0, rate: '', play_time: '', type: '', level: '', level_index: 0, upload_time: '' } }
+                return {
+                    code: 200,
+                    data: {
+                        id: 0, song_name: '', achievements: 0, fc: '', fs: '',
+                        dx_score: 0, dx_star: 0, dx_rating: 0, rate: '',
+                        play_time: '', type: '', level: '', level_index: 0, upload_time: ''
+                    }
+                }
             }
 
             const song = await this._findSong(targetSongId)
-            const chart = song?.charts?.[levelIndex] || {}
+            const levelLabel = song?.level?.[levelIndex] || ''
 
             return {
                 code: 200,
                 data: {
                     id: targetSongId,
                     song_name: song?.title || '',
-                    level: song?.level?.[levelIndex] || '',
+                    level: levelLabel,
                     level_index: levelIndex,
                     achievements: dxScore.achievements || 0,
                     fc: dxScore.fc || '',
@@ -151,19 +172,24 @@ export default class SYAPI {
         }
     }
 
-    // 获取玩家所有 records
+    // 获取玩家所有 records（使用 Developer-Token）
     async _getAllRecords(friendCode) {
-        const response = await fetch(`${this.baseURL}/api/maimaidxprober/player/records`, {
-            method: 'POST',
-            headers: this._getHeaders(),
-            body: JSON.stringify({ qq: parseInt(friendCode) })
-        })
-        if (!response.ok) {
-            if (response.status === 400) return { records: [] }
-            throw new Error(`API请求失败: ${response.status}`)
+        try {
+            const response = await fetch(
+                `${this.baseURL}/api/maimaidxprober/dev/player/records?qq=${friendCode}`,
+                { headers: this._getDevHeaders() }
+            )
+            if (!response.ok) {
+                // 400 可能是用户不存在或隐私设置
+                if (response.status === 400) return []
+                throw new Error(`API请求失败: ${response.status}`)
+            }
+            const data = await response.json()
+            return data.records || []
+        } catch (error) {
+            logger.error(`[SYAPI] 获取玩家所有成绩失败: ${error}`)
+            throw error
         }
-        const data = await response.json()
-        return data.records || []
     }
 
     // 获取玩家 Best 50
@@ -172,8 +198,6 @@ export default class SYAPI {
             const allRecords = await this._getAllRecords(friendCode)
             const musicData = await this._getMusicData()
 
-            // 水鱼返回的是 [{song_id, level_index, achievements, ...}]
-            // 按 dx_rating 排序取 best 50
             const standard = []
             const dx = []
 
@@ -208,13 +232,17 @@ export default class SYAPI {
             standard.sort(sortByRating)
             dx.sort(sortByRating)
 
+            // 计算total：水鱼API中ra就是单曲rating，取前35首标准+前15首DX
+            const topStandard = standard.slice(0, 35)
+            const topDx = dx.slice(0, 15)
+
             return {
                 code: 200,
                 data: {
-                    standard_total: standard.reduce((sum, s) => sum + s.dx_rating, 0),
-                    dx_total: dx.reduce((sum, s) => sum + s.dx_rating, 0),
-                    standard: standard.slice(0, 35),
-                    dx: dx.slice(0, 15),
+                    standard_total: topStandard.reduce((sum, s) => sum + s.dx_rating, 0),
+                    dx_total: topDx.reduce((sum, s) => sum + s.dx_rating, 0),
+                    standard: topStandard,
+                    dx: topDx,
                     standard_selections: standard.slice(35, 45),
                     dx_selections: dx.slice(15, 25)
                 }
@@ -315,7 +343,7 @@ export default class SYAPI {
         }
     }
 
-    // 上传玩家成绩 - 水鱼API不支持
+    // 上传玩家成绩 - 水鱼API不支持通过开发者API上传
     async postPlayerScores(friendCode, scores) {
         throw new Error('水鱼API不支持上传玩家成绩')
     }
@@ -387,7 +415,7 @@ export default class SYAPI {
         }
     }
 
-    // 以下功能水鱼API不支持或部分支持
+    // 以下功能水鱼API不支持
     async getPlayerHeatmap(friendCode) {
         throw new Error('水鱼API不支持热力图功能')
     }
@@ -400,18 +428,18 @@ export default class SYAPI {
         throw new Error('水鱼API不支持成绩历史功能')
     }
 
+    // 获取玩家版本牌子数据（水鱼 /query_plate 需要 Developer-Token）
     async getPlayerCollection(friendCode, collectionType, collectionId) {
         try {
-            // 水鱼有 plate 查询端点
             const response = await fetch(`${this.baseURL}/api/maimaidxprober/query/plate`, {
                 method: 'POST',
-                headers: this._getHeaders(),
+                headers: this._getDevHeaders(),
                 body: JSON.stringify({ qq: parseInt(friendCode), version: [] })
             })
             if (!response.ok) throw new Error(`API请求失败: ${response.status}`)
             return await response.json()
         } catch (error) {
-            logger.error(`[SYAPI] 获取玩家收藏品进度失败: ${error}`)
+            logger.error(`[SYAPI] 获取玩家版本牌子失败: ${error}`)
             throw error
         }
     }
@@ -439,7 +467,7 @@ export default class SYAPI {
 
     // ==================== 公共API ====================
 
-    // 获取曲目列表
+    // 获取曲目列表（从缓存的 music_data 构建）
     async getSongList(params = {}) {
         try {
             const musicData = await this._getMusicData()
@@ -513,7 +541,7 @@ export default class SYAPI {
         }
     }
 
-    // 获取别名列表
+    // 获取别名列表（从 music_data 中提取）
     async getAliasList() {
         try {
             const musicData = await this._getMusicData()
@@ -530,36 +558,63 @@ export default class SYAPI {
         }
     }
 
-    // 以下端点水鱼API不直接支持，需抛错
-    async getIconList() { throw new Error('水鱼API不支持头像列表 - 请使用落雪API') }
-    async getIconInfo(iconId) { throw new Error('水鱼API不支持头像信息 - 请使用落雪API') }
-    async getPlateList() {
-        try {
-            const response = await fetch(`${this.baseURL}/api/maimaidxprober/query/plate`, {
-                method: 'POST',
-                headers: this._getHeaders(),
-                body: JSON.stringify({ version: [] })
-            })
-            if (!response.ok) throw new Error(`API请求失败: ${response.status}`)
-            return await response.json()
-        } catch (error) {
-            logger.error(`[SYAPI] 获取姓名框列表失败: ${error}`)
-            throw error
-        }
+    // ==================== 收藏品列表（水鱼不直接支持，返回空数据保证别名解析器不崩溃） ====================
+
+    async getIconList() {
+        // 水鱼API不支持头像列表，返回空数据避免别名解析器崩溃
+        logger.warn('[SYAPI] 水鱼API不支持头像列表，返回空数据')
+        return { icons: [] }
     }
-    async getPlateInfo(plateId) { throw new Error('水鱼API不支持姓名框信息 - 请使用落雪API') }
-    async getFrameList() { throw new Error('水鱼API不支持背景框列表 - 请使用落雪API') }
-    async getFrameInfo(frameId) { throw new Error('水鱼API不支持背景框信息 - 请使用落雪API') }
-    async getCollectionGenreList() { throw new Error('水鱼API不支持收藏品分类列表 - 请使用落雪API') }
-    async getCollectionGenreInfo(collectionGenreId) { throw new Error('水鱼API不支持收藏品分类信息 - 请使用落雪API') }
+
+    async getIconInfo(iconId) {
+        throw new Error('水鱼API不支持头像信息 - 请使用落雪API')
+    }
+
+    async getPlateList() {
+        // 水鱼API不支持姓名框列表，返回空数据避免别名解析器崩溃
+        logger.warn('[SYAPI] 水鱼API不支持姓名框列表，返回空数据')
+        return { plates: [] }
+    }
+
+    async getPlateInfo(plateId) {
+        throw new Error('水鱼API不支持姓名框信息 - 请使用落雪API')
+    }
+
+    async getFrameList() {
+        // 水鱼API不支持背景框列表，返回空数据避免别名解析器崩溃
+        logger.warn('[SYAPI] 水鱼API不支持背景框列表，返回空数据')
+        return { frames: [] }
+    }
+
+    async getFrameInfo(frameId) {
+        throw new Error('水鱼API不支持背景框信息 - 请使用落雪API')
+    }
+
+    async getCollectionGenreList() {
+        throw new Error('水鱼API不支持收藏品分类列表 - 请使用落雪API')
+    }
+
+    async getCollectionGenreInfo(collectionGenreId) {
+        throw new Error('水鱼API不支持收藏品分类信息 - 请使用落雪API')
+    }
+
     async getCollectionList(collectionType, params = {}) {
         throw new Error('水鱼API不支持通用收藏品列表 - 请使用落雪API')
     }
+
     async getCollectionInfo(collectionType, collectionId, params = {}) {
         throw new Error('水鱼API不支持通用收藏品信息 - 请使用落雪API')
     }
 
-    // ==================== 资源类（使用落雪CDN） ====================
+    // ==================== 资源类（复用落雪CDN） ====================
+
+    getAssetsBaseURL() {
+        return `${this.assetsURL}/maimai`
+    }
+
+    getBaseURL() {
+        return this.baseURL
+    }
 
     async fetchAssetWithRetry(url, retries = 3, timeout = 15000) {
         for (let i = 0; i < retries; i++) {
@@ -632,7 +687,7 @@ export default class SYAPI {
     async getClassRankAsset(id) {
         const path = `${this.tempPath}/LX_assets/class_rank/${id}.webp`
         if (!fs.existsSync(path)) {
-            const url = `${this.assetsURL}/maimai/class_rank/${id}.webp`
+            const url = `${this.baseURL}/assets/maimai/class_rank/${id}.webp`
             const buffer = await this.fetchAssetWithRetry(url)
             await fs.promises.mkdir(`${this.tempPath}/LX_assets/class_rank`, { recursive: true })
             await fs.promises.writeFile(path, Buffer.from(buffer))
@@ -643,7 +698,7 @@ export default class SYAPI {
     async getCourseRankAsset(id) {
         const path = `${this.tempPath}/LX_assets/course_rank/${id}.webp`
         if (!fs.existsSync(path)) {
-            const url = `${this.assetsURL}/maimai/course_rank/${id}.webp`
+            const url = `${this.baseURL}/assets/maimai/course_rank/${id}.webp`
             const buffer = await this.fetchAssetWithRetry(url)
             await fs.promises.mkdir(`${this.tempPath}/LX_assets/course_rank`, { recursive: true })
             await fs.promises.writeFile(path, Buffer.from(buffer))
@@ -654,7 +709,7 @@ export default class SYAPI {
     async getMusicRateAsset(rate) {
         const path = `${this.tempPath}/LX_assets/music_rank/${rate}.webp`
         if (!fs.existsSync(path)) {
-            const url = `${this.assetsURL}/maimai/music_rank/${rate}.webp`
+            const url = `${this.baseURL}/assets/maimai/music_rank/${rate}.webp`
             const buffer = await this.fetchAssetWithRetry(url)
             await fs.promises.mkdir(`${this.tempPath}/LX_assets/music_rank`, { recursive: true })
             await fs.promises.writeFile(path, Buffer.from(buffer))
@@ -668,7 +723,7 @@ export default class SYAPI {
         const path = `${this.tempPath}/LX_assets/music_icon/${type}.webp`
         if (!fs.existsSync(path)) {
             try {
-                const url = `${this.assetsURL}/maimai/music_icon/${type}.webp`
+                const url = `${this.baseURL}/assets/maimai/music_icon/${type}.webp`
                 const buffer = await this.fetchAssetWithRetry(url)
                 await fs.promises.mkdir(`${this.tempPath}/LX_assets/music_icon`, { recursive: true })
                 await fs.promises.writeFile(path, Buffer.from(buffer))

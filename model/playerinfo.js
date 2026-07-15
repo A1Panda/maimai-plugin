@@ -85,7 +85,7 @@ class PlayerInfo {
                 courseRankAsset: courseRankAsset,
                 // 格式化一些数据
                 rating: response.data.rating,
-                upload_time: new Date(response.data.upload_time).toLocaleString('zh-CN', {
+                upload_time: response.data.upload_time ? new Date(response.data.upload_time).toLocaleString('zh-CN', {
                     year: 'numeric',
                     month: '2-digit', 
                     day: 'numeric',
@@ -94,7 +94,7 @@ class PlayerInfo {
                     second: '2-digit',
                     hour12: false,
                     timeZone: 'UTC'
-                }).replace(/-/g, '/').replace(/,/, '日')
+                }).replace(/-/g, '/').replace(/,/, '日') : '未知'
             }
 
             // 在对象之外记录日志
