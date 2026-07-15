@@ -56,6 +56,7 @@ export default class LXAPI {
                 
                 throw new Error(`API请求失败: ${response.status}`)
             }
+            const rawData = await response.json()
             return this._mapPlayerData(rawData)
         } catch (error) {
             logger.error(`获取玩家信息失败: ${error}`)
