@@ -2,34 +2,36 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>玩家信息</title>
+<title>玩家信息 - MiLK Style</title>
 <style>
 :root {
-    --bg: #0a0a1a;
-    --card-bg: rgba(255,255,255,0.06);
-    --text: #e0e0f0;
-    --sub: #9090b0;
-    --gold: #ffd740;
-    --dx-pink: #ff4da6;
-    --dx-purple: #b44dff;
+    --bg-main: #fdf2f7;
+    --pink-main: #ff76b8;
+    --text-dark: #5c4b54;
+    --card-white: rgba(255, 255, 255, 0.95);
+    --accent-purple: #9f51dc;
+    --gold: #ffa000;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 
 body {
-    background: linear-gradient(145deg, #0a0a1a 0%, #13132b 30%, #1a0a2e 55%, #0d1b2a 100%);
-    color: var(--text);
-    font-family: "Microsoft YaHei", -apple-system, sans-serif;
-    padding: 24px;
+    background-color: var(--bg-main);
+    background-image: radial-gradient(#ffcae5 1.5px, transparent 1.5px);
+    background-size: 20px 20px;
+    color: var(--text-dark);
+    font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    padding: 30px;
 }
 
 .container {
     max-width: 700px;
     margin: 0 auto;
-    background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
-    border-radius: 20px;
+    background: var(--card-white);
+    border-radius: 24px;
     padding: 0;
-    border: 1px solid rgba(255,255,255,0.08);
     overflow: hidden;
+    box-shadow: 0 10px 30px rgba(255, 118, 184, 0.2);
+    border: 3px solid #fff;
 }
 
 /* 头部：姓名框 + 头像 */
@@ -38,8 +40,8 @@ body {
     display: flex;
     align-items: center;
     padding: 30px 28px;
-    background: transparent;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
+    background: linear-gradient(135deg, #fff0f5, #ffe8f0);
+    border-bottom: 2px dashed #ffdeed;
     min-height: 160px;
 }
 .header::before {
@@ -47,7 +49,7 @@ body {
     position: absolute;
     inset: 0;
     z-index: 0;
-    background: radial-gradient(ellipse 400px 200px at 50% 50%, rgba(180,77,255,0.06), transparent);
+    background: radial-gradient(ellipse 300px 160px at 50% 50%, rgba(255,118,184,0.08), transparent);
     pointer-events: none;
 }
 
@@ -57,7 +59,7 @@ body {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    opacity: 0.14;
+    opacity: 0.12;
     pointer-events: none;
     z-index: 0;
 }
@@ -66,7 +68,7 @@ body {
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     width: 90%;
-    opacity: 0.38;
+    opacity: 0.3;
     pointer-events: none;
     z-index: 1;
 }
@@ -75,8 +77,8 @@ body {
 .icon {
     width: 88px; height: 88px;
     border-radius: 50%;
-    border: 3px solid rgba(255,255,255,0.18);
-    box-shadow: 0 0 30px rgba(180,77,255,0.25);
+    border: 4px solid var(--pink-main);
+    box-shadow: 0 0 25px rgba(255,118,184,0.25);
 }
 
 .info { position: relative; z-index: 2; flex: 1; }
@@ -84,12 +86,9 @@ body {
 .name {
     font-size: 26px;
     font-weight: 800;
-    background: linear-gradient(135deg, #e0c3ff, #ffb3d9);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--pink-main);
     margin-bottom: 8px;
-    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
+    text-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
 .rating {
@@ -98,10 +97,9 @@ body {
     font-weight: 700;
     padding: 4px 14px;
     border-radius: 20px;
-    background: linear-gradient(135deg, rgba(255,215,64,0.15), rgba(255,152,0,0.1));
+    background: linear-gradient(135deg, rgba(255,160,0,0.12), rgba(255,200,0,0.08));
     color: var(--gold);
-    border: 1px solid rgba(255,215,64,0.2);
-    text-shadow: 0 0 12px rgba(255,215,64,0.3);
+    border: 1px solid rgba(255,160,0,0.15);
     margin-bottom: 10px;
 }
 
@@ -124,19 +122,18 @@ body {
 }
 
 .cosmetic-card {
-    background: var(--card-bg);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 14px;
+    background: #fffafa;
+    border-radius: 16px;
     padding: 16px;
     transition: all 0.2s;
+    border-bottom: 3px solid #ffdeed;
 }
 .cosmetic-card:hover {
-    border-color: rgba(255,255,255,0.14);
-    background: rgba(255,255,255,0.08);
+    background: #fff0f5;
 }
 .cosmetic-label {
-    font-size: 12px;
-    color: var(--sub);
+    font-size: 11px;
+    color: #b0a0a8;
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 6px;
@@ -144,20 +141,20 @@ body {
 .cosmetic-name {
     font-size: 15px;
     font-weight: 700;
-    color: var(--text);
+    color: var(--text-dark);
     margin-bottom: 2px;
 }
 .cosmetic-genre {
     font-size: 12px;
-    color: rgba(255,255,255,0.3);
+    color: #c0b0b8;
 }
 .cosmetic-id {
     float: right;
     font-size: 11px;
     font-family: monospace;
-    color: rgba(255,255,255,0.15);
-    padding: 2px 6px;
-    background: rgba(255,255,255,0.04);
+    color: #c0b0b8;
+    padding: 2px 8px;
+    background: #f0e8ec;
     border-radius: 6px;
 }
 
@@ -167,11 +164,11 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 16px 28px;
-    border-top: 1px solid rgba(255,255,255,0.06);
+    border-top: 2px dashed #ffdeed;
     font-size: 13px;
 }
-.friend-code { color: var(--sub); font-weight: 600; }
-.upload-time { color: rgba(255,255,255,0.2); font-size: 12px; }
+.friend-code { color: #b0a0a8; font-weight: 600; }
+.upload-time { color: #c0b0b8; font-size: 12px; }
 </style>
 </head>
 <body>
@@ -192,7 +189,7 @@ body {
                 <div class="stat-item">
                     <img src="{{classRankAsset}}" alt="阶级" style="height:38px">
                 </div>
-                <div class="stat-item star">⭐{{star}}</div>
+                <div class="stat-item star">★{{star}}</div>
             </div>
         </div>
     </div>
@@ -200,31 +197,31 @@ body {
     <div class="cosmetics">
         <div class="cosmetic-card">
             <span class="cosmetic-id">ID:{{icon.id}}</span>
-            <div class="cosmetic-label">头像</div>
+            <div class="cosmetic-label">Icon</div>
             <div class="cosmetic-name">{{icon.name}}</div>
             <div class="cosmetic-genre">{{icon.genre}}</div>
         </div>
         <div class="cosmetic-card">
             <span class="cosmetic-id">ID:{{name_plate.id}}</span>
-            <div class="cosmetic-label">姓名框</div>
+            <div class="cosmetic-label">Plate</div>
             <div class="cosmetic-name">{{name_plate.name}}</div>
             <div class="cosmetic-genre">{{name_plate.genre}}</div>
         </div>
         <div class="cosmetic-card">
             <span class="cosmetic-id">ID:{{frame.id}}</span>
-            <div class="cosmetic-label">背景框</div>
+            <div class="cosmetic-label">Frame</div>
             <div class="cosmetic-name">{{frame.name}}</div>
             <div class="cosmetic-genre">{{frame.genre}}</div>
         </div>
         <div class="cosmetic-card">
             <span class="cosmetic-id">ID:{{trophy.id}}</span>
-            <div class="cosmetic-label">称号</div>
+            <div class="cosmetic-label">Trophy</div>
             <div class="cosmetic-name">{{trophy.name}}</div>
         </div>
     </div>
 
     <div class="footer">
-        <span class="friend-code">好友码 {{friend_code}}</span>
+        <span class="friend-code">FC: {{friend_code}}</span>
         <span class="upload-time">{{upload_time}}</span>
     </div>
 </div>

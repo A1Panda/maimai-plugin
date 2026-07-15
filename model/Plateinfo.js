@@ -75,7 +75,8 @@ class PlateInfo {
                         requirement.songs = req.songs.map(song => ({
                             id: song.id.toString().padStart(4, '0'),
                             title: song.title,
-                            type: song.type === 'standard' ? '标准谱面' : 'DX谱面'
+                            type: song.type === 'standard' ? 'STD' : 'DX',
+                            typeClass: song.type === 'standard' ? 'type-std' : 'type-dx'
                         }))
                     }
                     

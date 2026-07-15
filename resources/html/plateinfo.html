@@ -2,174 +2,238 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>姓名框信息</title>
+<title>姓名框信息 - MiLK Style</title>
 <style>
 :root {
-    --card-bg: rgba(255,255,255,0.06);
-    --text: #e0e0f0;
-    --sub: #9090b0;
+    --bg-main: #fdf2f7;
+    --pink-main: #ff76b8;
+    --text-dark: #5c4b54;
+    --card-white: rgba(255, 255, 255, 0.95);
+    --accent-purple: #9f51dc;
 }
+
 * { margin:0; padding:0; box-sizing:border-box; }
 
 body {
-    background: linear-gradient(145deg, #0a0a1a 0%, #13132b 30%, #1a0a2e 55%, #0d1b2a 100%);
-    color: var(--text);
-    font-family: "Microsoft YaHei", -apple-system, sans-serif;
-    padding: 24px;
+    background-color: var(--bg-main);
+    background-image: radial-gradient(#ffcae5 1.5px, transparent 1.5px);
+    background-size: 20px 20px;
+    color: var(--text-dark);
+    font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    padding: 30px;
 }
 
 .container {
-    max-width: 720px;
+    max-width: 800px;
     margin: 0 auto;
-    background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
-    border-radius: 20px;
-    padding: 28px;
-    border: 1px solid rgba(255,255,255,0.08);
+    background: var(--card-white);
+    border-radius: 24px;
+    padding: 0;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(255, 118, 184, 0.2);
+    border: 3px solid #fff;
 }
 
-.page-title {
-    font-size: 26px;
-    font-weight: 800;
+.header-bar {
+    background: var(--pink-main);
+    padding: 20px;
     text-align: center;
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    background: linear-gradient(135deg, #e0c3ff, #ffb3d9);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: white;
+}
+.header-bar h1 {
+    font-size: 24px;
     letter-spacing: 2px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.preview {
+/* 预览区域 */
+.preview-section {
+    padding: 25px;
+    background: #fff;
     text-align: center;
-    padding: 24px;
-    background: var(--card-bg);
-    border: 1px solid rgba(255,255,255,0.05);
-    border-radius: 14px;
-    margin-bottom: 20px;
 }
 .preview-label {
+    display: inline-block;
+    padding: 4px 15px;
+    background: #f0f0f0;
+    border-radius: 50px;
     font-size: 12px;
-    color: var(--sub);
-    letter-spacing: 1px;
-    margin-bottom: 12px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #888;
 }
-.preview img {
-    max-width: 100%;
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+.preview-image-container {
+    width: 100%;
+    aspect-ratio: 4 / 1;
+    background: #eee;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+    border: 2px solid #fff;
+    outline: 1px solid #eee;
+}
+.preview-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
-.info-grid {
+/* 信息格 */
+.info-section {
+    padding: 0 25px 25px;
     display: grid;
-    grid-template-columns: 100px 1fr;
-    gap: 10px 16px;
-    background: var(--card-bg);
-    border: 1px solid rgba(255,255,255,0.05);
-    border-radius: 14px;
-    padding: 20px;
-    margin-bottom: 20px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
 }
-.info-label { font-size: 13px; color: var(--sub); font-weight: 600; padding: 6px 0; }
-.info-val { font-size: 14px; font-weight: 700; color: var(--text); padding: 6px 0; }
-
-.requirements {
-    background: var(--card-bg);
-    border: 1px solid rgba(255,255,255,0.05);
-    border-radius: 14px;
-    padding: 20px;
+.info-item {
+    background: #fffafa;
+    padding: 12px 18px;
+    border-radius: 15px;
+    border-bottom: 3px solid #ffdeed;
 }
-.req-header {
+.info-label {
+    font-size: 11px;
+    color: #b0a0a8;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+.info-val {
     font-size: 16px;
-    font-weight: 800;
-    color: var(--text);
-    margin-bottom: 16px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-weight: 900;
+    color: var(--text-dark);
 }
-.req-item { margin-bottom: 16px; }
-.req-item:last-child { margin-bottom: 0; }
-.req-text {
-    font-size: 14px;
-    font-weight: 600;
-    color: rgba(255,255,255,0.7);
-    padding: 12px 16px;
-    background: rgba(255,255,255,0.03);
-    border-radius: 10px;
-    border: 1px solid rgba(255,255,255,0.04);
-    margin-bottom: 10px;
+.info-item.full { grid-column: span 2; }
+
+/* 获取条件区域 */
+.req-section {
+    padding: 25px;
+    background: #fff;
+    border-top: 2px dashed #ffcae5;
 }
-.song-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 6px;
-    margin-top: 8px;
-}
-.song-item {
+.section-title {
+    font-size: 18px;
+    font-weight: 900;
+    margin-bottom: 15px;
+    color: var(--pink-main);
     display: flex;
     align-items: center;
     gap: 10px;
+}
+.section-title::before {
+    content: '';
+    width: 5px; height: 18px;
+    background: var(--pink-main);
+    border-radius: 5px;
+}
+
+.req-card {
+    background: #fff9fb;
+    border: 2px solid #fff;
+    border-radius: 18px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+}
+.req-desc {
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 12px;
     padding: 8px 12px;
-    background: rgba(255,255,255,0.03);
-    border-radius: 8px;
-    font-size: 13px;
-    border: 1px solid rgba(255,255,255,0.03);
+    background: white;
+    border-radius: 10px;
+    color: #775a68;
+}
+
+/* 歌曲列表样式优化 */
+.song-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+}
+.song-card {
+    display: flex;
+    align-items: center;
+    background: white;
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid #eee;
 }
 .song-id {
+    font-weight: 900;
+    color: var(--pink-main);
+    margin-right: 12px;
     font-family: monospace;
-    font-size: 12px;
-    color: rgba(255,255,255,0.25);
-    background: rgba(255,255,255,0.04);
-    padding: 2px 8px;
-    border-radius: 6px;
-    min-width: 50px;
-    text-align: center;
+    font-size: 14px;
 }
-.song-name { flex:1; font-weight: 600; color: var(--text); }
-.song-type {
-    font-size: 11px;
-    padding: 2px 8px;
-    background: rgba(180,77,255,0.1);
-    color: rgba(255,255,255,0.5);
-    border-radius: 6px;
+.song-name {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
+.song-type-tag {
+    font-size: 10px;
+    font-weight: 900;
+    padding: 2px 8px;
+    border-radius: 5px;
+    text-transform: uppercase;
+}
+.type-std { background: #5ebde6; color: white; }
+.type-dx { background: #f28b24; color: white; }
 </style>
 </head>
 <body>
 <div class="container">
-    <div class="page-title">姓名框详细信息</div>
-
-    {{#plate}}
-    <div class="preview">
-        <div class="preview-label">预览效果</div>
-        <img src="{{plate}}" alt="姓名框预览">
+    <div class="header-bar">
+        <h1>PLATE DETAILS</h1>
     </div>
-    {{/plate}}
 
-    <div class="info-grid">
-        <span class="info-label">ID</span>
-        <span class="info-val">{{id}}</span>
-        <span class="info-label">名称</span>
-        <span class="info-val">{{name}}</span>
-        <span class="info-label">描述</span>
-        <span class="info-val">{{description}}</span>
-        <span class="info-label">类型</span>
-        <span class="info-val">{{genre}}</span>
+    <div class="preview-section">
+        <div class="preview-label">PREVIEW</div>
+        {{#plate}}
+        <div class="preview-image-container">
+            <img src="{{plate}}" alt="姓名框预览">
+        </div>
+        {{/plate}}
+        {{^plate}}
+        <div style="padding: 30px; color: #ccc;">No Image Available</div>
+        {{/plate}}
+    </div>
+
+    <div class="info-section">
+        <div class="info-item">
+            <div class="info-label">ID</div>
+            <div class="info-val">#{{id}}</div>
+        </div>
+        <div class="info-item">
+            <div class="info-label">Genre</div>
+            <div class="info-val">{{genre}}</div>
+        </div>
+        <div class="info-item full">
+            <div class="info-label">Name</div>
+            <div class="info-val" style="color: var(--pink-main); font-size: 20px;">{{name}}</div>
+        </div>
+        <div class="info-item full">
+            <div class="info-label">Description</div>
+            <div class="info-val" style="font-weight: normal; font-size: 14px; line-height: 1.5;">{{description}}</div>
+        </div>
     </div>
 
     {{#hasRequirements}}
-    <div class="requirements">
-        <div class="req-header">获取条件</div>
+    <div class="req-section">
+        <div class="section-title">HOW TO GET</div>
         {{#requirements}}
-        <div class="req-item">
-            <div class="req-text">{{text}}</div>
+        <div class="req-card">
+            <div class="req-desc">{{text}}</div>
             {{#hasSongs}}
-            <div class="song-grid">
+            <div class="song-list">
                 {{#songs}}
-                <div class="song-item">
-                    <span class="song-id">#{{id}}</span>
+                <div class="song-card">
+                    <span class="song-id">{{id}}</span>
                     <span class="song-name">{{title}}</span>
-                    <span class="song-type">{{type}}</span>
+                    <span class="song-type-tag {{typeClass}}">{{type}}</span>
                 </div>
                 {{/songs}}
             </div>

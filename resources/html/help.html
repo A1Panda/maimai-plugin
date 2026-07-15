@@ -3,63 +3,74 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>帮助菜单</title>
+<title>帮助菜单 - MiLK Style</title>
 <style>
 :root {
-    --card-bg: rgba(255,255,255,0.06);
-    --text: #e0e0f0;
-    --sub: #9090b0;
-    --dx-pink: #ff4da6;
-    --dx-purple: #b44dff;
+    --bg-main: #fdf2f7;
+    --pink-main: #ff76b8;
+    --text-dark: #5c4b54;
+    --card-white: rgba(255, 255, 255, 0.95);
+    --dx-purple: #9f51dc;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 
 body {
-    background: linear-gradient(145deg, #0a0a1a 0%, #13132b 30%, #1a0a2e 55%, #0d1b2a 100%);
-    color: var(--text);
-    font-family: "Microsoft YaHei", -apple-system, sans-serif;
-    padding: 24px;
+    background-color: var(--bg-main);
+    background-image: radial-gradient(#ffcae5 1.5px, transparent 1.5px);
+    background-size: 20px 20px;
+    color: var(--text-dark);
+    font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+    padding: 30px;
 }
 
 .container {
     max-width: 580px;
     margin: 0 auto;
-    background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
-    border-radius: 20px;
-    padding: 28px;
-    border: 1px solid rgba(255,255,255,0.08);
+    background: var(--card-white);
+    border-radius: 24px;
+    padding: 0;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(255, 118, 184, 0.2);
+    border: 3px solid #fff;
 }
 
-.page-title {
-    font-size: 24px;
-    font-weight: 800;
+.header-bar {
+    background: var(--pink-main);
+    padding: 20px;
     text-align: center;
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-    background: linear-gradient(135deg, var(--dx-pink), var(--dx-purple));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: white;
+}
+.header-bar h1 {
+    font-size: 22px;
     letter-spacing: 2px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .group {
-    margin-bottom: 20px;
-    background: var(--card-bg);
-    border: 1px solid rgba(255,255,255,0.05);
-    border-radius: 14px;
+    margin: 16px 20px;
+    background: #fff9fb;
+    border-radius: 16px;
     padding: 16px;
+    border: 2px solid #fff;
 }
-.group:last-child { margin-bottom: 0; }
+.group:last-child { margin-bottom: 20px; }
 
 .group-title {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--dx-pink);
-    margin-bottom: 12px;
+    font-size: 14px;
+    font-weight: 900;
+    color: var(--pink-main);
+    margin-bottom: 10px;
     padding-bottom: 8px;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-    letter-spacing: 1px;
+    border-bottom: 2px dashed #ffdeed;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.group-title::before {
+    content: '';
+    width: 4px; height: 14px;
+    background: var(--pink-main);
+    border-radius: 4px;
 }
 
 .cmd-list { list-style: none; }
@@ -69,43 +80,42 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 10px 12px;
-    border-radius: 8px;
-    transition: background 0.15s;
+    border-radius: 10px;
     gap: 12px;
 }
-.cmd-item:hover { background: rgba(255,255,255,0.04); }
+.cmd-item:hover { background: rgba(255,118,184,0.06); }
 
 .cmd-code {
     font-size: 14px;
     font-weight: 700;
     color: var(--dx-purple);
     padding: 4px 10px;
-    background: rgba(180,77,255,0.08);
-    border: 1px solid rgba(180,77,255,0.12);
+    background: rgba(159,81,220,0.06);
+    border: 1px solid rgba(159,81,220,0.12);
     border-radius: 8px;
     white-space: nowrap;
 }
 .cmd-desc {
     font-size: 13px;
-    color: var(--sub);
+    color: #b0a0a8;
     text-align: right;
     font-weight: 600;
 }
 
 .footer {
     text-align: center;
-    padding-top: 20px;
-    margin-top: 20px;
-    border-top: 1px solid rgba(255,255,255,0.05);
+    padding: 16px 20px 20px;
     font-size: 12px;
-    color: rgba(255,255,255,0.15);
+    color: #c0b0b8;
     font-weight: 600;
 }
 </style>
 </head>
 <body>
 <div class="container">
-    <div class="page-title">{{title}}</div>
+    <div class="header-bar">
+        <h1>{{title}}</h1>
+    </div>
     {{#groups}}
     <div class="group">
         <div class="group-title">{{groupTitle}}</div>

@@ -2,55 +2,76 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>歌曲信息</title>
+<title>歌曲信息 - MiLK Style</title>
 <style>
 :root {
-    --bg: #0a0a1a;
-    --card-bg: rgba(255,255,255,0.06);
-    --text: #e0e0f0;
-    --sub: #9090b0;
+    --bg-main: #fdf2f7;
+    --pink-main: #ff76b8;
+    --text-dark: #5c4b54;
+    --card-white: rgba(255, 255, 255, 0.95);
+    --accent-purple: #9f51dc;
 }
+
 * { margin:0; padding:0; box-sizing:border-box; }
 
 body {
-    background: linear-gradient(145deg, #0a0a1a 0%, #13132b 30%, #1a0a2e 55%, #0d1b2a 100%);
-    color: var(--text);
-    font-family: "Microsoft YaHei", -apple-system, sans-serif;
-    padding: 24px;
+    background-color: var(--bg-main);
+    background-image: radial-gradient(#ffcae5 1.5px, transparent 1.5px);
+    background-size: 20px 20px;
+    color: var(--text-dark);
+    font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    padding: 30px;
 }
 
 .container {
     width: 920px;
     margin: 0 auto;
-    background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
-    border-radius: 20px;
-    padding: 24px;
-    border: 1px solid rgba(255,255,255,0.08);
+    background: var(--card-white);
+    border-radius: 24px;
+    padding: 0;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(255, 118, 184, 0.2);
+    border: 3px solid #fff;
 }
 
-.header {
+.header-bar {
+    background: var(--pink-main);
+    padding: 20px;
+    text-align: center;
+    color: white;
+}
+.header-bar h1 {
+    font-size: 24px;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.content {
+    padding: 25px;
+}
+
+.song-header {
     display: flex;
     gap: 24px;
     margin-bottom: 24px;
     padding-bottom: 20px;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
+    border-bottom: 2px dashed #ffdeed;
 }
 .jacket {
     width: 170px; height: 170px;
-    border-radius: 14px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(255,118,184,0.15);
     flex-shrink: 0;
+    border: 3px solid #fff;
 }
 .song-info { flex:1; }
 .title {
     font-size: 28px;
     font-weight: 800;
-    background: linear-gradient(135deg, #e0c3ff, #ffb3d9);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--pink-main);
     margin-bottom: 10px;
 }
-.artist { font-size: 15px; color: var(--sub); margin-bottom: 12px; }
+.artist { font-size: 15px; color: #b0a0a8; margin-bottom: 12px; }
 
 .meta-row {
     display: flex;
@@ -59,15 +80,15 @@ body {
 }
 .meta-item {
     padding: 8px 16px;
-    background: var(--card-bg);
-    border: 1px solid rgba(255,255,255,0.05);
-    border-radius: 10px;
+    background: #fffafa;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     gap: 8px;
+    border-bottom: 2px solid #ffdeed;
 }
-.meta-label { font-size: 12px; color: var(--sub); }
-.meta-val { font-size: 15px; font-weight: 700; color: var(--text); }
+.meta-label { font-size: 12px; color: #b0a0a8; }
+.meta-val { font-size: 15px; font-weight: 700; color: var(--text-dark); }
 
 /* 难度表头 */
 .diff-table-header {
@@ -75,13 +96,13 @@ body {
     grid-template-columns: 160px repeat(6, 1fr);
     align-items: center;
     padding: 12px 16px;
-    background: rgba(180,77,255,0.08);
-    border: 1px solid rgba(180,77,255,0.12);
+    background: rgba(255,118,184,0.08);
+    border: 1px solid rgba(255,118,184,0.12);
     border-radius: 12px;
     margin-bottom: 8px;
     font-size: 13px;
     font-weight: 700;
-    color: var(--sub);
+    color: #b0a0a8;
     text-align: center;
 }
 .diff-table-header > :first-child { text-align: left; padding-left: 8px; }
@@ -95,11 +116,11 @@ body {
     border-radius: 12px;
     margin-bottom: 6px;
     text-align: center;
-    border: 1px solid rgba(255,255,255,0.04);
-    background: var(--card-bg);
+    background: #fffafa;
+    border: 1px solid #ffdeed;
     transition: all 0.2s;
 }
-.diff-row:hover { border-color: rgba(255,255,255,0.1); }
+.diff-row:hover { border-color: #ff76b8; }
 
 /* 难度行颜色 */
 .diff-row:nth-child(2) { border-left: 4px solid #4caf50; }
@@ -118,70 +139,76 @@ body {
 .diff-name .name { font-size: 14px; font-weight: 800; }
 .diff-name .level-tag {
     font-size: 12px;
-    color: var(--sub);
+    color: #b0a0a8;
 }
 .diff-name .designer {
     font-size: 11px;
-    color: rgba(255,255,255,0.2);
+    color: #c0b0b8;
     margin-top: 2px;
 }
 
 .note-val {
     font-size: 18px;
     font-weight: 800;
-    color: var(--text);
+    color: var(--text-dark);
 }
 </style>
 </head>
 <body>
 <div class="container">
-    <div class="header">
-        <img class="jacket" src="{{jacket}}" alt="{{title}}">
-        <div class="song-info">
-            <div class="title">{{title}}</div>
-            <div class="artist">{{artist}}</div>
-            <div class="meta-row">
-                <div class="meta-item">
-                    <span class="meta-label">ID</span>
-                    <span class="meta-val">{{id}}</span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">BPM</span>
-                    <span class="meta-val">{{bpm}}</span>
-                </div>
-                <div class="meta-item">
-                    <span class="meta-label">分类</span>
-                    <span class="meta-val">{{genre}}</span>
+    <div class="header-bar">
+        <h1>MUSIC DETAILS</h1>
+    </div>
+
+    <div class="content">
+        <div class="song-header">
+            <img class="jacket" src="{{jacket}}" alt="{{title}}">
+            <div class="song-info">
+                <div class="title">{{title}}</div>
+                <div class="artist">{{artist}}</div>
+                <div class="meta-row">
+                    <div class="meta-item">
+                        <span class="meta-label">ID</span>
+                        <span class="meta-val">{{id}}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">BPM</span>
+                        <span class="meta-val">{{bpm}}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Genre</span>
+                        <span class="meta-val">{{genre}}</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="diff-table-header">
-        <div>难度</div>
-        <div>TOTAL</div>
-        <div>TAP</div>
-        <div>HOLD</div>
-        <div>SLIDE</div>
-        <div>TOUCH</div>
-        <div>BREAK</div>
-    </div>
-
-    {{#difficulties.dx}}
-    <div class="diff-row">
-        <div class="diff-name">
-            <span class="name">{{difficulty_name}}</span>
-            <span class="level-tag">{{level}} ({{level_value}})</span>
-            <span class="designer">谱师: {{note_designer}}</span>
+        <div class="diff-table-header">
+            <div>Difficulty</div>
+            <div>TOTAL</div>
+            <div>TAP</div>
+            <div>HOLD</div>
+            <div>SLIDE</div>
+            <div>TOUCH</div>
+            <div>BREAK</div>
         </div>
-        <div class="note-val">{{notes.total}}</div>
-        <div class="note-val">{{notes.tap}}</div>
-        <div class="note-val">{{notes.hold}}</div>
-        <div class="note-val">{{notes.slide}}</div>
-        <div class="note-val">{{notes.touch}}</div>
-        <div class="note-val">{{notes.break}}</div>
+
+        {{#difficulties.dx}}
+        <div class="diff-row">
+            <div class="diff-name">
+                <span class="name">{{difficulty_name}}</span>
+                <span class="level-tag">{{level}} ({{level_value}})</span>
+                <span class="designer">Designer: {{note_designer}}</span>
+            </div>
+            <div class="note-val">{{notes.total}}</div>
+            <div class="note-val">{{notes.tap}}</div>
+            <div class="note-val">{{notes.hold}}</div>
+            <div class="note-val">{{notes.slide}}</div>
+            <div class="note-val">{{notes.touch}}</div>
+            <div class="note-val">{{notes.break}}</div>
+        </div>
+        {{/difficulties.dx}}
     </div>
-    {{/difficulties.dx}}
 </div>
 </body>
 </html>

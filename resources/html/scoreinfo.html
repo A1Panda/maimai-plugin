@@ -2,31 +2,52 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>舞萌DX成绩信息</title>
+<title>成绩信息 - MiLK Style</title>
 <style>
 :root {
-    --bg: #0a0a1a;
-    --card-bg: rgba(255,255,255,0.06);
-    --text: #e0e0f0;
-    --sub: #9090b0;
-    --gold: #ffd740;
+    --bg-main: #fdf2f7;
+    --pink-main: #ff76b8;
+    --text-dark: #5c4b54;
+    --card-white: rgba(255, 255, 255, 0.95);
+    --gold: #ffa000;
 }
+
 * { margin:0; padding:0; box-sizing:border-box; }
 
 body {
-    background: linear-gradient(145deg, #0a0a1a 0%, #13132b 30%, #1a0a2e 55%, #0d1b2a 100%);
-    color: var(--text);
-    font-family: "Microsoft YaHei", -apple-system, sans-serif;
-    padding: 24px;
+    background-color: var(--bg-main);
+    background-image: radial-gradient(#ffcae5 1.5px, transparent 1.5px);
+    background-size: 20px 20px;
+    color: var(--text-dark);
+    font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    padding: 30px;
 }
 
 .container {
     width: 960px;
     margin: 0 auto;
-    background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
-    border-radius: 20px;
-    padding: 24px;
-    border: 1px solid rgba(255,255,255,0.08);
+    background: var(--card-white);
+    border-radius: 24px;
+    padding: 0;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(255, 118, 184, 0.2);
+    border: 3px solid #fff;
+}
+
+.header-bar {
+    background: var(--pink-main);
+    padding: 20px;
+    text-align: center;
+    color: white;
+}
+.header-bar h1 {
+    font-size: 24px;
+    letter-spacing: 2px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.content {
+    padding: 25px;
 }
 
 /* 歌曲头部 */
@@ -35,14 +56,15 @@ body {
     gap: 24px;
     margin-bottom: 24px;
     padding-bottom: 24px;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
+    border-bottom: 2px dashed #ffdeed;
 }
 .song-cover {
     width: 180px; height: 180px;
-    border-radius: 14px;
+    border-radius: 16px;
     overflow: hidden;
     flex-shrink: 0;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    box-shadow: 0 8px 30px rgba(255,118,184,0.15);
+    border: 3px solid #fff;
 }
 .song-cover img { width:100%; height:100%; object-fit:cover; }
 
@@ -50,20 +72,18 @@ body {
 .song-title {
     font-size: 28px;
     font-weight: 800;
-    background: linear-gradient(135deg, #e0c3ff, #ffb3d9);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--pink-main);
     margin-bottom: 8px;
 }
 .song-meta {
     font-size: 14px;
-    color: var(--sub);
+    color: #b0a0a8;
     margin-bottom: 4px;
     display: flex;
     gap: 16px;
 }
 .song-meta span { display: flex; align-items: center; gap: 4px; }
-.song-meta .val { color: rgba(255,255,255,0.7); font-weight: 600; }
+.song-meta .val { color: var(--text-dark); font-weight: 600; }
 
 /* 难度卡片 */
 .diff-grid {
@@ -72,15 +92,14 @@ body {
     gap: 14px;
 }
 .diff-card {
-    background: var(--card-bg);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 14px;
+    background: #fffafa;
+    border-radius: 16px;
     padding: 16px;
     transition: all 0.2s;
+    border-bottom: 3px solid #ffdeed;
 }
 .diff-card:hover {
-    border-color: rgba(255,255,255,0.14);
-    background: rgba(255,255,255,0.08);
+    background: #fff0f5;
 }
 
 .diff-header {
@@ -120,8 +139,8 @@ body {
     font-size: 13px;
     margin-bottom: 6px;
 }
-.score-label { color: var(--sub); }
-.score-val { font-weight: 700; color: var(--text); }
+.score-label { color: #b0a0a8; }
+.score-val { font-weight: 700; color: var(--text-dark); }
 
 .rate-badge {
     display: inline-block;
@@ -147,7 +166,7 @@ body {
 .rate-D { color: #546e7a; }
 
 .no-score {
-    color: rgba(255,255,255,0.15);
+    color: #c0b0b8;
     text-align: center;
     padding: 20px 0;
     font-size: 14px;
@@ -156,55 +175,61 @@ body {
 </head>
 <body>
 <div class="container">
-    <div class="song-header">
-        <div class="song-cover">
-            <img src="{{cover}}" alt="{{title}}">
-        </div>
-        <div class="song-info">
-            <div class="song-title">{{title}}</div>
-            <div class="song-meta"><span>歌手</span><span class="val">{{artist}}</span></div>
-            <div class="song-meta"><span>ID</span><span class="val">{{id}}</span> <span>类型</span><span class="val">{{type}}</span></div>
-            <div class="song-meta"><span>分类</span><span class="val">{{genre}}</span> <span>BPM</span><span class="val">{{bpm}}</span></div>
-        </div>
+    <div class="header-bar">
+        <h1>SCORE DETAILS</h1>
     </div>
 
-    <div class="diff-grid">
-        {{#difficulties}}
-        <div class="diff-card {{name}}">
-            <div class="diff-header">
-                <span class="diff-name">{{name}}</span>
-                <span class="diff-level">Lv.{{level}}</span>
+    <div class="content">
+        <div class="song-header">
+            <div class="song-cover">
+                <img src="{{cover}}" alt="{{title}}">
             </div>
-            {{#hasScore}}
-            <div class="score-info">
-                <div class="score-row">
-                    <span class="score-label">达成率</span>
-                    <span class="score-val">{{achievement}}%</span>
-                </div>
-                <div class="score-row">
-                    <span class="score-label">DX分</span>
-                    <span class="score-val">{{dxscore}}</span>
-                </div>
-                {{#fcStatus}}
-                <div class="score-row">
-                    <span class="score-label">连击</span>
-                    <span class="score-val">{{fcStatus}}</span>
-                </div>
-                {{/fcStatus}}
-                {{#fsStatus}}
-                <div class="score-row">
-                    <span class="score-label">同步</span>
-                    <span class="score-val">{{fsStatus}}</span>
-                </div>
-                {{/fsStatus}}
-                <span class="rate-badge rate-{{rate}}">{{rate}}</span>
+            <div class="song-info">
+                <div class="song-title">{{title}}</div>
+                <div class="song-meta"><span>Artist</span><span class="val">{{artist}}</span></div>
+                <div class="song-meta"><span>ID</span><span class="val">{{id}}</span> <span>Type</span><span class="val">{{type}}</span></div>
+                <div class="song-meta"><span>Genre</span><span class="val">{{genre}}</span> <span>BPM</span><span class="val">{{bpm}}</span></div>
             </div>
-            {{/hasScore}}
-            {{^hasScore}}
-            <div class="no-score">暂无成绩</div>
-            {{/hasScore}}
         </div>
-        {{/difficulties}}
+
+        <div class="diff-grid">
+            {{#difficulties}}
+            <div class="diff-card {{name}}">
+                <div class="diff-header">
+                    <span class="diff-name">{{name}}</span>
+                    <span class="diff-level">Lv.{{level}}</span>
+                </div>
+                {{#hasScore}}
+                <div class="score-info">
+                    <div class="score-row">
+                        <span class="score-label">Achievement</span>
+                        <span class="score-val">{{achievement}}%</span>
+                    </div>
+                    <div class="score-row">
+                        <span class="score-label">DX Score</span>
+                        <span class="score-val">{{dxscore}}</span>
+                    </div>
+                    {{#fcStatus}}
+                    <div class="score-row">
+                        <span class="score-label">Combo</span>
+                        <span class="score-val">{{fcStatus}}</span>
+                    </div>
+                    {{/fcStatus}}
+                    {{#fsStatus}}
+                    <div class="score-row">
+                        <span class="score-label">Sync</span>
+                        <span class="score-val">{{fsStatus}}</span>
+                    </div>
+                    {{/fsStatus}}
+                    <span class="rate-badge rate-{{rate}}">{{rate}}</span>
+                </div>
+                {{/hasScore}}
+                {{^hasScore}}
+                <div class="no-score">No Score</div>
+                {{/hasScore}}
+            </div>
+            {{/difficulties}}
+        </div>
     </div>
 </div>
 </body>
