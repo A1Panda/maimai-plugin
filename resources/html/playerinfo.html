@@ -14,10 +14,9 @@
 
 body {
     background-color: var(--bg-main);
-    padding: 40px 20px;
+    padding: 20px;
     display: flex;
     justify-content: center;
-    min-height: 100vh;
 }
 
 /* 全局背景图 */
@@ -148,26 +147,6 @@ body {
     object-fit: contain;
 }
 
-/* 称号：定位在名牌底部居中 */
-.trophy-row {
-    position: absolute;
-    bottom: 5px;
-    left: 50%;
-    transform: translateX(-50%);
-    min-width: 380px;
-    padding: 2px 25px;
-    background: linear-gradient(180deg, #f8f8f8 0%, #e0e0e0 40%, #c5c5c5 100%);
-    border: 2px solid #8c8c8c;
-    border-radius: 50px;
-    font-size: 14px;
-    font-weight: 800;
-    color: #4a3a42;
-    text-align: center;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-    z-index: 20;
-    white-space: nowrap;
-}
-
 /* 下方装饰网格 */
 .cosmetics-grid {
     display: grid;
@@ -219,7 +198,6 @@ body {
                             <img class="course-rank-img" src="{{courseRankAsset}}" alt="段位">
                         </div>
                     </div>
-                    <div class="trophy-row">{{trophy.name}}</div>
                 </div>
             </div>
         </div>
