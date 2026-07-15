@@ -52,13 +52,12 @@ class B50 {
                 const fsIcon = song.fs ? await adapter.getMusicIconAsset(song.fs) : null
                 const rateIcon = await adapter.getMusicRateAsset(song.rate)
                 const levelNum = String(song.level || '0').replace(/[^0-9]/g, '') || '0'
-                const jacketPath = await adapter.getJacketAsset(song.id)
 
                 return {
                     ...song,
                     song_id: String(song.id).padStart(5, '0'),
                     level_num: levelNum,
-                    jacket_url: jacketPath ? `file:///${jacketPath.replace(/\\/g, '/')}` : '',
+                    jacket_url: `https://maimai.lxns.net/assets/maimai/jacket/${song.id}.png`,
                     fc_icon: fcIcon ? `data:image/webp;base64,${fs.readFileSync(fcIcon).toString('base64')}` : '',
                     fs_icon: fsIcon ? `data:image/webp;base64,${fs.readFileSync(fsIcon).toString('base64')}` : '',
                     rate_icon: `data:image/webp;base64,${fs.readFileSync(rateIcon).toString('base64')}`
