@@ -32,13 +32,17 @@ class B50 {
             const resp = await fetch(url, {
                 signal: controller.signal,
                 headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Accept': 'image/avif,image/webp,image/png,image/svg+xml,image/*;q=0.8,*/*;q=0.5',
+                    'Referer': 'https://maimai.lxns.net/'
                 }
             })
             clearTimeout(timeout)
             if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
+            const contentType = (resp.headers.get('content-type') || '').toLowerCase()
+            // 确保返回的是图片类型，防止 HTML 错误页面被误当作图片
+            if (!contentType.startsWith('image/')) throw new Error(`非图片响应: ${contentType}`)
             const buf = Buffer.from(await resp.arrayBuffer())
-            const contentType = resp.headers.get('content-type') || 'image/png'
             return `data:${contentType};base64,${buf.toString('base64')}`
         } catch (e) {
             logger.warn(`[b50] 下载图片失败: ${url} - ${e.message}`)
