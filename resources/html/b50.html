@@ -6,7 +6,7 @@
 <style>
 :root {
     --bg-main: #fdf2f7;
-    --text-dark: #5c4b54;
+    --text-dark: #4a3a42;
     --sub-text: #9e8d97;
     --pink-main: #ff76b8;
     --gold-rating: #f0c342;
@@ -21,124 +21,101 @@
 body {
     background-color: var(--bg-main);
     background-image:
-        radial-gradient(#ffd9ec 1.5px, transparent 1.5px),
+        radial-gradient(#ffd9ec 1.2px, transparent 1.2px),
         linear-gradient(180deg, #fff 0%, var(--bg-main) 100%);
-    background-size: 24px 24px, 100% 100%;
-    padding: 35px 20px;
+    background-size: 20px 20px, 100% 100%;
+    padding: 20px 10px;
     display: flex;
     justify-content: center;
 }
-.container { width: 1500px; }
+.container { width: 1100px; }
 
-/* ===== 头部 ===== */
+/* ===== 头部：姓名框强化作为背景 ===== */
 .header {
     position: relative;
-    background: white;
-    border-radius: 24px;
+    background: #fff;
+    border-radius: 20px;
     border: 3px solid #ffcae5;
-    padding: 22px 40px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 40px;
-    box-shadow: 0 10px 0 rgba(255,202,229,0.4);
+    padding: 0;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 0 rgba(255,202,229,0.4);
     overflow: hidden;
-    min-height: 120px;
-}
-.header-frame {
-    position: absolute;
-    inset: 0;
-    width: 100%; height: 100%;
-    object-fit: cover;
-    opacity: 0.05;
-    pointer-events: none;
-    z-index: 0;
+    height: 140px;
+    display: flex;
+    align-items: center;
 }
 .header-plate {
     position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 500px;
-    opacity: 0.12;
-    pointer-events: none;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    opacity: 1.0;
     z-index: 0;
 }
 .user-block {
-    position: relative; z-index: 1;
-    display: flex; align-items: center; gap: 18px;
+    position: relative; z-index: 2;
+    display: flex; align-items: center;
+    gap: 20px;
+    padding-left: 35px;
 }
 .avatar {
-    width: 82px; height: 82px;
-    border-radius: 14px;
+    width: 90px; height: 90px;
+    border-radius: 15px;
     border: 4px solid #fff;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     flex-shrink: 0;
 }
-.name-area { display: flex; flex-direction: column; gap: 6px; }
+.name-area { display: flex; flex-direction: column; gap: 4px; }
 .rating-box {
-    background: #444;
+    background: rgba(60,60,60,0.95);
     color: var(--gold-rating);
-    padding: 3px 14px;
-    border-radius: 6px;
+    padding: 4px 15px;
+    border-radius: 8px;
     font-weight: 900;
-    font-size: 17px;
+    font-size: 19px;
     display: flex;
     align-items: center;
-    gap: 10px;
-    border-bottom: 2.5px solid #222;
+    gap: 12px;
+    border-bottom: 3px solid #111;
     width: fit-content;
 }
-.rating-sub {
-    font-size: 11px; opacity: 0.65; font-weight: 500;
-}
+.rating-sub { font-size: 12px; opacity: 0.8; font-weight: 600; }
 .nickname {
-    font-size: 30px; font-weight: 900;
+    font-size: 34px; font-weight: 900;
     color: var(--pink-main);
-    text-shadow: 1px 1px 0 #fff;
-}
-.header-logo {
-    position: relative; z-index: 1;
-    font-size: 22px; font-weight: 900;
-    color: #ffcae5; letter-spacing: 3px;
+    text-shadow: 2px 2px 0 #fff, -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff;
 }
 
 /* ===== 胶囊标题 ===== */
 .section-title {
     display: inline-block;
-    padding: 8px 40px;
+    padding: 8px 45px;
     border-radius: 50px;
     color: white;
     font-weight: 900;
-    font-size: 17px;
-    letter-spacing: 1px;
+    font-size: 18px;
     border: 3px solid white;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
-.section-title.standard {
-    background: #62d857;
-    box-shadow: 0 4px 16px rgba(98,216,87,0.4);
-}
-.section-title.dx {
-    background: #ff5eab;
-    box-shadow: 0 4px 16px rgba(255,94,171,0.4);
-}
+.section-title.standard { background: #62d857; box-shadow: 0 4px 12px rgba(98,216,87,0.4); }
+.section-title.dx { background: #ff5eab; box-shadow: 0 4px 12px rgba(255,94,171,0.4); }
 
-/* ===== 歌曲网格 ===== */
+/* ===== 4列网格 ===== */
 .song-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 13px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
     margin-bottom: 40px;
 }
 
 /* ===== 歌曲卡片 ===== */
 .song-card {
     position: relative;
-    height: 120px;
-    background: linear-gradient(135deg, #fff 0%, #fff0f6 100%);
-    border-radius: 12px;
+    height: 130px;
+    background: linear-gradient(135deg, #fff 0%, #fff4f9 100%);
+    border-radius: 14px;
     border: 2px solid #fff;
-    box-shadow: 0 4px 10px rgba(255,180,210,0.3);
+    box-shadow: 0 5px 12px rgba(255,180,210,0.25);
     overflow: hidden;
     display: flex;
 }
@@ -147,8 +124,9 @@ body {
 .card-top-bar {
     position: absolute;
     top: 0; left: 0; right: 0;
-    height: 5px;
+    height: 6px;
     z-index: 1;
+    border-radius: 14px 14px 0 0;
 }
 .song-card[data-lvn="1"] .card-top-bar,
 .song-card[data-lvn="2"] .card-top-bar,
@@ -169,128 +147,123 @@ body {
 /* 左侧信息区 */
 .card-left {
     flex: 1;
-    padding: 10px 10px 8px 12px;
+    padding: 15px 10px 10px 15px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     z-index: 2;
     min-width: 0;
 }
-
 .song-name {
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 900;
     color: var(--pink-main);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 140px;
 }
-
 .achieve-box {
-    margin: 1px 0;
     display: flex;
     align-items: baseline;
-    gap: 2px;
+    gap: 4px;
 }
 .achieve-box .arrows {
     color: var(--pink-main);
     font-size: 10px;
     letter-spacing: -1.5px;
-    opacity: 0.45;
+    opacity: 0.4;
     flex-shrink: 0;
 }
 .achieve-box .achv-val {
-    font-size: 19px;
+    font-size: 22px;
     font-weight: 900;
-    color: #444;
+    color: #333;
 }
-
 .lv-ra {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: bold;
-    color: #777;
-    line-height: 1.3;
+    color: #666;
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    gap: 6px;
 }
-.lv-ra b { color: #555; margin-right: 6px; }
 .lv-ra .ra-val { color: var(--color-master); }
-
 .rank-badge {
     background: var(--pink-main);
     color: #fff;
-    padding: 1px 9px;
-    border-radius: 4px;
-    font-size: 11px;
+    padding: 2px 10px;
+    border-radius: 5px;
+    font-size: 13px;
     font-weight: 900;
     width: fit-content;
-    line-height: 1.4;
 }
 
 /* 右侧封面区 */
 .card-right {
+    width: 95px;
     position: relative;
-    width: 80px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    padding-right: 6px;
 }
 .jacket {
-    width: 68px; height: 68px;
-    border-radius: 6px;
+    width: 80px; height: 80px;
+    border-radius: 8px;
     object-fit: cover;
     border: 2px solid #fff;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    z-index: 1;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
 }
+
+/* 类型标签：封面左上角 */
 .type-tag {
     position: absolute;
-    top: 8px; right: 6px;
-    font-size: 8px;
-    padding: 1px 5px;
-    border-radius: 3px;
-    font-weight: 800;
+    top: 10px; left: 8px;
+    font-size: 9px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-weight: 900;
     color: #fff;
-    z-index: 2;
-    white-space: nowrap;
-    letter-spacing: 0.5px;
+    z-index: 5;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 .type-tag.song-dx { background: var(--color-master); }
 .type-tag.song-std { background: var(--color-expert); }
 
-/* 右下角绶带编号 */
-.ribbon {
-    position: absolute;
-    bottom: -2px; right: -2px;
-    background: #ff4a8d;
-    color: #fff;
-    padding: 2px 12px;
-    font-size: 12px;
-    font-weight: 900;
-    border-radius: 8px 0 0 0;
-    box-shadow: -2px -2px 6px rgba(255,74,141,0.35);
-    z-index: 3;
-}
-
-/* 右上角 FC/FS 图标 */
+/* FC/FS 图标：封面右下区域纵向排列 */
 .song-icons {
     position: absolute;
-    top: 8px; right: 8px;
+    bottom: 30px; right: 8px;
     display: flex;
-    gap: 3px;
-    z-index: 2;
+    flex-direction: column;
+    gap: 4px;
+    z-index: 5;
 }
-.song-icons img { height: 16px; }
+.song-icons img {
+    height: 18px;
+    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
+}
+
+/* 绶带编号 */
+.ribbon {
+    position: absolute;
+    bottom: 0; right: 0;
+    background: #ff4a8d;
+    color: #fff;
+    padding: 3px 14px;
+    font-size: 14px;
+    font-weight: 900;
+    border-radius: 10px 0 0 0;
+    box-shadow: -2px -2px 8px rgba(255,74,141,0.3);
+    z-index: 10;
+}
 
 /* 页脚 */
 .footer {
     text-align: center;
-    padding: 20px;
+    padding: 24px;
     font-size: 12px;
-    color: #ccc;
+    color: #bbb;
     font-weight: 600;
     letter-spacing: 1px;
 }
@@ -299,9 +272,7 @@ body {
 <body>
 <div class="container">
     <div class="header">
-        {{#frameAsset}}<img class="header-frame" src="{{frameAsset}}" alt="Frame">{{/frameAsset}}
         <img class="header-plate" src="{{plateAsset}}" alt="Name Plate">
-
         <div class="user-block">
             <img class="avatar" src="{{iconAsset}}" alt="Icon">
             <div class="name-area">
@@ -312,8 +283,6 @@ body {
                 <div class="nickname">{{nickname}}</div>
             </div>
         </div>
-
-        <div class="header-logo">maimai MiLK</div>
     </div>
 
     <div class="section-title standard">STANDARD BEST 35</div>
@@ -328,7 +297,7 @@ body {
                 <span class="achv-val">{{achievements}}%</span>
             </div>
             <div class="lv-ra">
-                <b>{{level}}</b>
+                <span>Lv.{{level}}</span>
                 <span class="ra-val">RA:{{dx_rating}}</span>
             </div>
             <div class="rank-badge">{{rate}}</div>
@@ -359,7 +328,7 @@ body {
                 <span class="achv-val">{{achievements}}%</span>
             </div>
             <div class="lv-ra">
-                <b>{{level}}</b>
+                <span>Lv.{{level}}</span>
                 <span class="ra-val">RA:{{dx_rating}}</span>
             </div>
             <div class="rank-badge">{{rate}}</div>
