@@ -55,38 +55,39 @@ body {
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     width: 750px;
-    opacity: 0.18;
+    opacity: 0.08;
     pointer-events: none;
-    filter: blur(1px);
+    z-index: 0;
 }
 .user-block {
     position: relative;
     z-index: 1;
     display: flex;
     align-items: center;
-    gap: 24px;
-    padding: 24px 36px;
-    background: rgba(255,255,255,0.06);
-    backdrop-filter: blur(16px);
-    border-radius: 20px;
-    border: 1px solid rgba(255,255,255,0.10);
+    gap: 30px;
+    padding: 32px 52px;
+    background: rgba(20,18,40,0.65);
+    backdrop-filter: blur(12px);
+    border-radius: 24px;
+    border: 1px solid rgba(255,255,255,0.12);
 }
 .user-icon {
-    width: 96px; height: 96px;
+    width: 104px; height: 104px;
     border-radius: 50%;
     border: 3px solid rgba(255,255,255,0.18);
     box-shadow: 0 0 40px rgba(180,77,255,0.25);
 }
 .user-name {
-    font-size: 30px;
+    font-size: 42px;
     font-weight: 800;
+    line-height: 1.2;
     background: linear-gradient(135deg, #e0c3ff, #ffb3d9);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
 }
 .user-rating {
-    font-size: 22px;
+    font-size: 26px;
     font-weight: 700;
     color: var(--gold);
     text-shadow: 0 0 20px rgba(255,215,64,0.3);
@@ -136,7 +137,7 @@ body {
 
 .song-grid {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 12px;
     margin-bottom: 30px;
 }
