@@ -77,7 +77,7 @@ export class PlayerInfoHandler extends plugin {
                         }
                     } else {
                         logger.info(`[maimai-plugin] 未找到匹配的歌曲: ${id}`)
-                        if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id)
+                        try { if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id) } catch {}
                         return await e.reply('未找到匹配的歌曲，请检查输入是否正确', { at: true })
                     }
                 }
@@ -105,7 +105,7 @@ export class PlayerInfoHandler extends plugin {
                         }
                     } else {
                         logger.info(`[maimai-plugin] 未找到匹配的姓名框: ${id}`)
-                        if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id)
+                        try { if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id) } catch {}
                         return await e.reply('未找到匹配的姓名框，请检查输入是否正确', { at: true })
                     }
                 }
@@ -133,7 +133,7 @@ export class PlayerInfoHandler extends plugin {
                         }
                     } else {
                         logger.info(`[maimai-plugin] 未找到匹配的头像: ${id}`)
-                        if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id)
+                        try { if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id) } catch {}
                         return await e.reply('未找到匹配的头像，请检查输入是否正确', { at: true })
                     }
                 }
@@ -161,12 +161,12 @@ export class PlayerInfoHandler extends plugin {
                         }
                     } else {
                         logger.info(`[maimai-plugin] 未找到匹配的背景: ${id}`)
-                        if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id)
+                        try { if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id) } catch {}
                         return await e.reply('未找到匹配的背景，请检查输入是否正确', { at: true })
                     }
                 }
             } else if (type === '收藏品') {
-                if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id)
+                try { if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id) } catch {}
                 return await e.reply('收藏品搜索功能开发中，敬请期待', { at: true })
             } else if (type === '曲绘') {
                                 // 检查是否为纯数字ID
@@ -193,22 +193,29 @@ export class PlayerInfoHandler extends plugin {
                         }
                     } else {
                         logger.info(`[maimai-plugin] 未找到匹配的曲绘: ${id}`)
-                        if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id)
+                        try { if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id) } catch {}
                         return await e.reply('未找到匹配的曲绘，请检查输入是否正确', { at: true })
                     }
                 }
             }
                 
+            // 撤回等待消息（在发送结果前撤回）
+            try {
+                if (msg?.message_id && e.group) {
+                    await e.group.recallMsg(msg.message_id)
+                }
+            } catch (recallErr) {
+                logger.warn(`[maimai-plugin] 撤回search等待消息失败: ${recallErr.message}`)
+            }
+            
             // 如果是错误消息，直接返回
             if (!result.isImage) {
                 await e.reply(result.message, { at: true })
-                if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id)
                 return true
             }
             
-            // 发送图片并撤回等待消息
+            // 发送图片并删除临时文件
             await e.reply(segment.image(result.message))
-            if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id)
             if (fs.existsSync(result.message)) {
                 fs.unlinkSync(result.message)
             }
@@ -236,7 +243,16 @@ export class PlayerInfoHandler extends plugin {
 
             //获取对应的资源
             const result = await uploadAssets.uploadSearch(type, id)
-            if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id)
+            
+            // 撤回等待消息
+            try {
+                if (msg?.message_id && e.group) {
+                    await e.group.recallMsg(msg.message_id)
+                }
+            } catch (recallErr) {
+                logger.warn(`[maimai-plugin] 撤回upload等待消息失败: ${recallErr.message}`)
+            }
+            
             if (result) {
                 // 获取文件扩展名
                 const ext = result.split('.').pop().toLowerCase()

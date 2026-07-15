@@ -51,7 +51,7 @@ export class RandomHandler extends plugin {
             const id = await random.getRandomId(type, difficulty)
             
             if (!id) {
-                if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id)
+                try { if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id) } catch {}
                 await e.reply(`随机获取${type}失败，请稍后再试`, { at: true })
                 return false
             }
@@ -76,7 +76,7 @@ export class RandomHandler extends plugin {
                     result = await frameInfo.getFrameInfo(id)
                     break
                 default:
-                    if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id)
+                    try { if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id) } catch {}
                     if (asset) {
                         await e.reply([
                             `随机${type}ID为: ${id}`,
@@ -88,10 +88,17 @@ export class RandomHandler extends plugin {
                     return true
             }
 
+            // 撤回等待消息
+            try {
+                if (msg?.message_id && e.group) {
+                    await e.group.recallMsg(msg.message_id)
+                }
+            } catch (recallErr) {
+                logger.warn(`[maimai-plugin] 撤回random等待消息失败: ${recallErr.message}`)
+            }
             
             // 处理结果
             if (result) {
-                if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id)
                 if (type === '歌曲') {
                     // 先发送歌曲详细信息
                     await e.reply([
@@ -115,7 +122,6 @@ export class RandomHandler extends plugin {
                 return true
             }
             
-            if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id)
             await e.reply(`随机${type}ID为: ${id}，获取资源失败`, { at: true })
             return true
         } catch (err) {
