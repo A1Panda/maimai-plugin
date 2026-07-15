@@ -151,6 +151,14 @@ export default class APIAdapter {
 
 
 //资源类
+    // 获取资源基础 URL
+    getAssetsBaseURL() {
+        return this.api.getAssetsBaseURL()
+    }
+    // 获取 API 基础 URL
+    getBaseURL() {
+        return this.api.getBaseURL()
+    }
     // 获取头像资源
     async getIconAsset(iconId) {
         return await this.api.getIconAsset(iconId)

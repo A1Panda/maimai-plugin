@@ -1101,6 +1101,16 @@ export default class LXAPI {
 // 曲绘：/jacket/{song_id}.png
 // 音频：/music/{song_id}.mp3
 
+    // 获取资源基础 URL
+    getAssetsBaseURL() {
+        return `${this.assetsURL}/maimai`
+    }
+
+    // 获取 API 基础 URL（class_rank/course_rank 等非 CDN 资源）
+    getBaseURL() {
+        return this.baseURL
+    }
+
     // 添加一个通用的资源获取函数
     async fetchAssetWithRetry(url, retries = 3, timeout = 15000) {
         for (let i = 0; i < retries; i++) {

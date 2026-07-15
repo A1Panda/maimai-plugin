@@ -41,12 +41,13 @@ class B50 {
             const response = await adapter.getPlayerBest50(userData[userId].friendCode)
             const playerInfo = await adapter.getPlayerInfo(userData[userId].friendCode)
 
-            const iconAsset = await adapter.getIconAsset(playerInfo.data.icon.id)
-            const plateAsset = await adapter.getPlateAsset(playerInfo.data.name_plate.id)
+            const assetsBase = adapter.getAssetsBaseURL()
+            const iconAsset = `${assetsBase}/icon/${playerInfo.data.icon.id}.png`
+            const plateAsset = `${assetsBase}/plate/${playerInfo.data.name_plate.id}.png`
+            const frameAsset = playerInfo.data.frame?.id ? `${assetsBase}/frame/${playerInfo.data.frame.id}.png` : ''
             
             // 处理标准谱和DX谱的数据
             const processSong = async (song) => {
-                const jacketAsset = await adapter.getJacketAsset(song.id)
                 const fcIcon = song.fc ? await adapter.getMusicIconAsset(song.fc) : null
                 const fsIcon = song.fs ? await adapter.getMusicIconAsset(song.fs) : null
                 const rateIcon = await adapter.getMusicRateAsset(song.rate)
@@ -56,7 +57,7 @@ class B50 {
                     ...song,
                     song_id: String(song.id).padStart(5, '0'),
                     level_num: levelNum,
-                    jacket_url: `data:image/png;base64,${fs.readFileSync(jacketAsset).toString('base64')}`,
+                    jacket_url: `${assetsBase}/jacket/${song.id}.png`,
                     fc_icon: fcIcon ? `data:image/webp;base64,${fs.readFileSync(fcIcon).toString('base64')}` : '',
                     fs_icon: fsIcon ? `data:image/webp;base64,${fs.readFileSync(fsIcon).toString('base64')}` : '',
                     rate_icon: `data:image/webp;base64,${fs.readFileSync(rateIcon).toString('base64')}`
@@ -71,8 +72,9 @@ class B50 {
                 // 用户信息
                 nickname: playerInfo.data.name,
                 rating: playerInfo.data.rating,
-                iconAsset: `data:image/png;base64,${fs.readFileSync(iconAsset).toString('base64')}`,
-                plateAsset: `data:image/png;base64,${fs.readFileSync(plateAsset).toString('base64')}`,
+                iconAsset: iconAsset,
+                plateAsset: plateAsset,
+                frameAsset: frameAsset,
                 // B50数据
                 standard_total: response.data.standard_total,
                 dx_total: response.data.dx_total,
@@ -122,6 +124,11 @@ class B50 {
             template = template.replace(/\{\{rating\}\}/g, data.rating)
             template = template.replace(/\{\{iconAsset\}\}/g, data.iconAsset)
             template = template.replace(/\{\{plateAsset\}\}/g, data.plateAsset)
+            // 处理背景框，有则显示否则清空
+            template = template.replace(
+                /\{\{#frameAsset\}\}([\s\S]*?)\{\{\/frameAsset\}\}/g,
+                (_, inner) => data.frameAsset ? inner.replace(/\{\{frameAsset\}\}/g, data.frameAsset) : ''
+            )
             template = template.replace(/\{\{standard_total\}\}/g, data.standard_total)
             template = template.replace(/\{\{dx_total\}\}/g, data.dx_total)
             

@@ -50,14 +50,24 @@ body {
     pointer-events: none;
 }
 
+.header-frame {
+    position: absolute;
+    inset: 10px;
+    width: calc(100% - 20px);
+    height: calc(100% - 20px);
+    object-fit: contain;
+    opacity: 0.08;
+    pointer-events: none;
+    z-index: 0;
+}
 .name-plate {
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     width: 90%;
-    opacity: 0.12;
+    opacity: 0.14;
     pointer-events: none;
-    filter: blur(2px);
+    z-index: 1;
 }
 
 .avatar { position: relative; z-index: 1; flex-shrink: 0; margin-right: 20px; }
@@ -164,6 +174,7 @@ body {
 <body>
 <div class="container">
     <div class="header">
+        <img class="header-frame" src="{{frameAsset}}" alt="Frame">
         <img class="name-plate" src="{{plateAsset}}" alt="姓名框">
         <div class="avatar">
             <img class="icon" src="{{iconAsset}}" alt="头像">

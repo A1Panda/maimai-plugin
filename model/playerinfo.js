@@ -47,13 +47,16 @@ class PlayerInfo {
                 }
             }
 
-            // 获取资源文件的本地路径
-            const iconAsset = await adapter.getIconAsset(response.data.icon.id)
-            const plateAsset = await adapter.getPlateAsset(response.data.name_plate.id)
-            const classRankAsset = await adapter.getClassRankAsset(response.data.class_rank)
-            const courseRankAsset = await adapter.getCourseRankAsset(response.data.course_rank)
+            // 构建资源直链 URL
+            const assetsBase = adapter.getAssetsBaseURL()
+            const baseURL = adapter.getBaseURL()
+            const iconAsset = `${assetsBase}/icon/${response.data.icon.id}.png`
+            const plateAsset = `${assetsBase}/plate/${response.data.name_plate.id}.png`
+            const frameAsset = response.data.frame?.id ? `${assetsBase}/frame/${response.data.frame.id}.png` : ''
+            const classRankAsset = `${baseURL}/assets/maimai/class_rank/${response.data.class_rank}.webp`
+            const courseRankAsset = `${baseURL}/assets/maimai/course_rank/${response.data.course_rank}.webp`
 
-            // 准备渲染数据，使用 data: URL 格式
+            // 准备渲染数据
             const renderData = {
                 ...response.data,
                 icon: {
@@ -75,10 +78,11 @@ class PlayerInfo {
                     id: response.data.trophy?.id || '未知',
                     name: response.data.trophy?.name || '未知'
                 },
-                iconAsset: `data:image/png;base64,${fs.readFileSync(iconAsset).toString('base64')}`,
-                plateAsset: `data:image/png;base64,${fs.readFileSync(plateAsset).toString('base64')}`,
-                classRankAsset: `data:image/webp;base64,${fs.readFileSync(classRankAsset).toString('base64')}`,
-                courseRankAsset: `data:image/webp;base64,${fs.readFileSync(courseRankAsset).toString('base64')}`,
+                iconAsset: iconAsset,
+                plateAsset: plateAsset,
+                frameAsset: frameAsset,
+                classRankAsset: classRankAsset,
+                courseRankAsset: courseRankAsset,
                 // 格式化一些数据
                 rating: response.data.rating,
                 upload_time: new Date(response.data.upload_time).toLocaleString('zh-CN', {

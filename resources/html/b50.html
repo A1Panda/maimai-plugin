@@ -31,7 +31,7 @@ body {
 .header {
     position: relative;
     border-radius: 24px;
-    padding: 40px 30px;
+    padding: 50px 30px;
     margin-bottom: 30px;
     background: linear-gradient(145deg, rgba(180,77,255,0.10) 0%, rgba(255,77,166,0.08) 50%, rgba(0,229,255,0.05) 100%);
     border: 1px solid rgba(255,255,255,0.08);
@@ -39,43 +39,56 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 30px;
 }
 .header::before {
     content: '';
     position: absolute;
     inset: 0;
+    z-index: 0;
     background:
-        radial-gradient(ellipse 600px 300px at 30% 50%, rgba(180,77,255,0.15), transparent),
-        radial-gradient(ellipse 600px 300px at 70% 50%, rgba(255,77,166,0.12), transparent);
+        radial-gradient(ellipse 500px 250px at 50% 50%, rgba(180,77,255,0.12), transparent),
+        radial-gradient(ellipse 400px 200px at 50% 50%, rgba(0,229,255,0.06), transparent);
     pointer-events: none;
+}
+.header-frame {
+    position: absolute;
+    inset: 10px;
+    width: calc(100% - 20px);
+    height: calc(100% - 20px);
+    object-fit: contain;
+    opacity: 0.10;
+    pointer-events: none;
+    z-index: 0;
 }
 .header-plate {
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    width: 750px;
-    opacity: 0.08;
+    width: 680px;
+    opacity: 0.16;
     pointer-events: none;
-    z-index: 0;
+    z-index: 1;
 }
 .user-block {
     position: relative;
-    z-index: 1;
+    z-index: 2;
     display: flex;
     align-items: center;
     gap: 30px;
-    padding: 32px 52px;
-    background: rgba(20,18,40,0.65);
-    backdrop-filter: blur(12px);
+    padding: 36px 56px;
+    background: rgba(15,13,35,0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-radius: 24px;
     border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 4px 40px rgba(0,0,0,0.25);
 }
 .user-icon {
     width: 104px; height: 104px;
     border-radius: 50%;
     border: 3px solid rgba(255,255,255,0.18);
     box-shadow: 0 0 40px rgba(180,77,255,0.25);
+    flex-shrink: 0;
 }
 .user-name {
     font-size: 42px;
@@ -84,6 +97,7 @@ body {
     background: linear-gradient(135deg, #e0c3ff, #ffb3d9);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
     margin-bottom: 8px;
 }
 .user-rating {
@@ -91,26 +105,6 @@ body {
     font-weight: 700;
     color: var(--gold);
     text-shadow: 0 0 20px rgba(255,215,64,0.3);
-}
-
-.side-stat {
-    position: absolute;
-    z-index: 1;
-    top: 50%;
-    transform: translateY(-50%);
-    padding: 16px 24px;
-    background: rgba(255,255,255,0.04);
-    backdrop-filter: blur(12px);
-    border-radius: 16px;
-    border: 1px solid rgba(255,255,255,0.06);
-    text-align: center;
-}
-.side-stat.left { left: 40px; }
-.side-stat.right { right: 40px; }
-.side-stat .val {
-    font-size: 14px;
-    color: var(--sub);
-    font-weight: 600;
 }
 
 .section-title {
@@ -270,11 +264,7 @@ body {
 <body>
 <div class="container">
     <div class="header">
-        <div class="side-stat left">
-            <div class="val">Maimai-Plugin</div>
-            <div class="val" style="font-size:12px;opacity:0.5">By A1_Panda</div>
-        </div>
-
+        {{#frameAsset}}<img class="header-frame" src="{{frameAsset}}" alt="Frame">{{/frameAsset}}
         <img class="header-plate" src="{{plateAsset}}" alt="Name Plate">
 
         <div class="user-block">
@@ -283,11 +273,6 @@ body {
                 <div class="user-name">{{nickname}}</div>
                 <div class="user-rating">Rating {{rating}} = {{standard_total}} + {{dx_total}}</div>
             </div>
-        </div>
-
-        <div class="side-stat right">
-            <div class="val">Maimai-Plugin</div>
-            <div class="val" style="font-size:12px;opacity:0.5">By A1_Panda</div>
         </div>
     </div>
 
