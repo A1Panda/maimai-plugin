@@ -214,9 +214,9 @@ class B50 {
                 )
             })
             
-            // 设置视口大小（与CSS容器宽度1400px匹配）
+            // 设置视口大小（比 container 1550px 略宽避免白边）
             await page.setViewport({
-                width: 1450,
+                width: 1560,
                 height: 800
             })
             
