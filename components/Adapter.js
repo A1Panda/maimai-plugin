@@ -32,9 +32,49 @@ export default class APIAdapter {
     async getPlayerBest(friendCode, params) {
         return await this.api.getPlayerBest(friendCode, params)
     }
-    // 获取玩家Best 50 正常
+    //获取玩家Best 50 正常
     async getPlayerBest50(friendCode) {
         return await this.api.getPlayerBest50(friendCode)
+    }
+    //获取玩家Best 50 (AP)
+    async getPlayerAP50(friendCode) {
+        return await this.api.getPlayerAP50(friendCode)
+    }
+    //获取玩家缓存单曲所有谱面的成绩
+    async getPlayerSongBests(friendCode, params) {
+        return await this.api.getPlayerSongBests(friendCode, params)
+    }
+    //上传玩家成绩
+    async postPlayerScores(friendCode, scores) {
+        return await this.api.postPlayerScores(friendCode, scores)
+    }
+    //获取玩家Recent 50
+    async getPlayerRecents(friendCode) {
+        return await this.api.getPlayerRecents(friendCode)
+    }
+    //获取玩家所有最佳成绩（简化）
+    async getPlayerScores(friendCode) {
+        return await this.api.getPlayerScores(friendCode)
+    }
+    //获取玩家热力图
+    async getPlayerHeatmap(friendCode) {
+        return await this.api.getPlayerHeatmap(friendCode)
+    }
+    //获取玩家Rating趋势
+    async getPlayerTrend(friendCode, version) {
+        return await this.api.getPlayerTrend(friendCode, version)
+    }
+    //获取玩家成绩历史
+    async getPlayerScoreHistory(friendCode, params) {
+        return await this.api.getPlayerScoreHistory(friendCode, params)
+    }
+    //获取玩家收藏品进度
+    async getPlayerCollection(friendCode, collectionType, collectionId) {
+        return await this.api.getPlayerCollection(friendCode, collectionType, collectionId)
+    }
+    //上传玩家HTML数据
+    async postPlayerHtml(friendCode, html) {
+        return await this.api.postPlayerHtml(friendCode, html)
     }
     // 获取歌曲信息 正常
     async getSongInfo(songId) {

@@ -19,7 +19,7 @@
   "bugs": {
     "url": "https://github.com/A1Panda/maimai-plugin/issues"
   },
-  "homepage": "hhttps://github.com/A1Panda/maimai-plugin#readme",
+  "homepage": "https://github.com/A1Panda/maimai-plugin#readme",
   "dependencies": {
     "@vikadata/vika": "^1.3.0",
     "crypto-js": "^4.1.1",

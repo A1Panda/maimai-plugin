@@ -67,12 +67,15 @@ class ScoreInfo {
 
             // 处理各难度分数信息
             const diffNames = ['BASIC', 'ADVANCED', 'EXPERT', 'MASTER', 'Re:MASTER']
-            const difficulties = await Promise.all(diffs.map(async (diff, index) => {
+            const difficulties = await Promise.all(diffs.map(async (diff) => {
+                // 使用API返回的真实difficulty字段作为level_index
+                const levelIndex = diff.difficulty !== undefined ? diff.difficulty : 0
+                
                 // 构建查询参数
                 const params = {
                     song_id: songId,
                     song_type: songType,
-                    level_index: index
+                    level_index: levelIndex
                 }
 
                 // 获取该难度的成绩信息
@@ -81,7 +84,7 @@ class ScoreInfo {
                     scoreData = await adapter.getPlayerBest(friendCode, params)
                     //logger.info(`[maimai-plugin] 获取难度${index}成绩成功: ${JSON.stringify(scoreData)}`)
                 } catch (error) {
-                    logger.warn(`[maimai-plugin] 获取难度${index}成绩失败: ${error}`)
+                    logger.warn(`[maimai-plugin] 获取难度${levelIndex}成绩失败: ${error}`)
                 }
 
                 // 处理成绩数据
@@ -90,7 +93,7 @@ class ScoreInfo {
                 //logger.info(`[maimai-plugin] 获取成绩: ${JSON.stringify(scoreData)}`)
                 
                 return {
-                    name: diffNames[index],
+                    name: diffNames[levelIndex],
                     level: diff.level,
                     // 谱面信息
                     noteDesigner: diff.note_designer || '',
@@ -219,7 +222,6 @@ class ScoreInfo {
 
     // 根据分数判断评级
     getRateByScore(rate) {
-        //logger.info(`[maimai-plugin] 获取评级: ${rate}`)
         if (rate === 'sssp') return 'SSS+'
         if (rate === 'sss') return 'SSS'
         if (rate === 'ssp') return 'SS+'
@@ -232,8 +234,8 @@ class ScoreInfo {
         if (rate === 'bbb') return 'BBB'
         if (rate === 'bb') return 'BB'
         if (rate === 'b') return 'B'
-        if (rate === 'C') return 'C'
-        if (rate === 'D') return 'D'
+        if (rate === 'c') return 'C'
+        if (rate === 'd') return 'D'
     }
 }
 

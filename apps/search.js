@@ -165,7 +165,7 @@ export class PlayerInfoHandler extends plugin {
                     }
                 }
             } else if (type === '收藏品') {
-                result = await title.getTitle(id)
+                return await e.reply('收藏品搜索功能开发中，敬请期待', { at: true })
             } else if (type === '曲绘') {
                                 // 检查是否为纯数字ID
                 if (/^\d+$/.test(id)) {

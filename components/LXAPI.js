@@ -171,7 +171,13 @@ export default class LXAPI {
                 throw new Error('song_type 参数无效,必须为 standard/dx/utage 之一')
             }
 
-            const response = await fetch(`${this.baseURL}/api/v0/maimai/player/${friendCode}/best?song_id=${params.song_id}&song_type=${params.song_type}&level_index=${params.level_index}`, {
+            const query = new URLSearchParams()
+            if (params.song_id) query.set('song_id', params.song_id)
+            if (params.song_name) query.set('song_name', params.song_name)
+            if (params.song_type) query.set('song_type', params.song_type)
+            query.set('level_index', params.level_index)
+
+            const response = await fetch(`${this.baseURL}/api/v0/maimai/player/${friendCode}/best?${query}`, {
                 headers: {
                     'Authorization': this.token
                 }
@@ -188,17 +194,18 @@ export default class LXAPI {
                 return {
                     code: 200,
                     data: {
+                        id: 0,
+                        song_name: '',
                         achievements: 0,
                         fc: '',
                         fs: '',
                         dx_score: 0,
+                        dx_rating: 0,
+                        rate: '',
                         play_time: '',
                         type: '',
                         level: '',
                         level_index: 0,
-                        level_label: '',
-                        song_id: 0,
-                        title: '',
                         upload_time: ''
                     }
                 }
@@ -207,19 +214,19 @@ export default class LXAPI {
             const data = {
                 code: 200,
                 data: {
-                    achievements: rawData.data.achievements || 0, // 达成率
-                    fc: rawData.data.fc || '', // Full Combo 类型
-                    fs: rawData.data.fs || '', // Full Sync 类型
-                    dx_score: rawData.data.dx_score || 0, // DX分数
-                    rate: rawData.data.rate || '', // 评级
-                    play_time: rawData.data.play_time || '', // 游玩时间
-                    type: rawData.data.type || '', // 游玩类型
-                    level: rawData.data.level || '', // 难度等级
-                    level_index: rawData.data.level_index || 0, // 难度序号
-                    level_label: rawData.data.level_label || '', // 难度标签
-                    song_id: rawData.data.song_id || 0, // 歌曲ID
-                    title: rawData.data.title || '', // 歌曲标题
-                    upload_time: rawData.data.upload_time || '' // 上传时间
+                    id: rawData.data.id || 0,
+                    song_name: rawData.data.song_name || '',
+                    achievements: rawData.data.achievements || 0,
+                    fc: rawData.data.fc || '',
+                    fs: rawData.data.fs || '',
+                    dx_score: rawData.data.dx_score || 0,
+                    dx_rating: rawData.data.dx_rating || 0,
+                    rate: rawData.data.rate || '',
+                    play_time: rawData.data.play_time || '',
+                    type: rawData.data.type || '',
+                    level: rawData.data.level || '',
+                    level_index: rawData.data.level_index || 0,
+                    upload_time: rawData.data.upload_time || ''
                 }
             }
             return data
@@ -277,6 +284,36 @@ export default class LXAPI {
                         type: score.type || '',
                         play_time: score.play_time || '',
                         upload_time: score.upload_time || ''
+                    })),
+                    standard_selections: (rawData.data.standard_selections || []).map(score => ({
+                        id: score.id || 0,
+                        song_name: score.song_name || '',
+                        level: score.level || '',
+                        level_index: score.level_index || 0,
+                        achievements: score.achievements || 0,
+                        fc: score.fc || '',
+                        fs: score.fs || '',
+                        dx_score: score.dx_score || 0,
+                        dx_rating: score.dx_rating || 0,
+                        rate: score.rate || '',
+                        type: score.type || '',
+                        play_time: score.play_time || '',
+                        upload_time: score.upload_time || ''
+                    })),
+                    dx_selections: (rawData.data.dx_selections || []).map(score => ({
+                        id: score.id || 0,
+                        song_name: score.song_name || '',
+                        level: score.level || '',
+                        level_index: score.level_index || 0,
+                        achievements: score.achievements || 0,
+                        fc: score.fc || '',
+                        fs: score.fs || '',
+                        dx_score: score.dx_score || 0,
+                        dx_rating: score.dx_rating || 0,
+                        rate: score.rate || '',
+                        type: score.type || '',
+                        play_time: score.play_time || '',
+                        upload_time: score.upload_time || ''
                     }))
                 }
             }
@@ -287,8 +324,9 @@ export default class LXAPI {
         }
     }
 
-    // //6.获取玩家缓存的 All Perfect 50。
-    // // GET /api/v0/maimai/player/{friend_code}/bests/ap
+    //6.获取玩家缓存的 All Perfect 50。
+    // GET /api/v0/maimai/player/{friend_code}/bests/ap
+    // 响应体结构同 Best 50
     async getPlayerAP50(friendCode) {
         try {
             const response = await fetch(`${this.baseURL}/api/v0/maimai/player/${friendCode}/bests/ap`, {
@@ -303,20 +341,40 @@ export default class LXAPI {
 
             const data = {
                 code: 200,
-                data: rawData.data.map(score => ({
-                    achievements: score.achievements || 0,
-                    fc: score.fc || '',
-                    fs: score.fs || '',
-                    dx_score: score.dx_score || 0,
-                    play_time: score.play_time || '',
-                    type: score.type || '',
-                    level: score.level || '',
-                    level_index: score.level_index || 0,
-                    level_label: score.level_label || '',
-                    song_id: score.song_id || 0,
-                    title: score.title || '',
-                    upload_time: score.upload_time || ''
-                }))
+                data: {
+                    standard_total: rawData.data.standard_total || 0,
+                    dx_total: rawData.data.dx_total || 0,
+                    standard: (rawData.data.standard || []).map(score => ({
+                        id: score.id || 0,
+                        song_name: score.song_name || '',
+                        level: score.level || '',
+                        level_index: score.level_index || 0,
+                        achievements: score.achievements || 0,
+                        fc: score.fc || '',
+                        fs: score.fs || '',
+                        dx_score: score.dx_score || 0,
+                        dx_rating: score.dx_rating || 0,
+                        rate: score.rate || '',
+                        type: score.type || '',
+                        play_time: score.play_time || '',
+                        upload_time: score.upload_time || ''
+                    })),
+                    dx: (rawData.data.dx || []).map(score => ({
+                        id: score.id || 0,
+                        song_name: score.song_name || '',
+                        level: score.level || '',
+                        level_index: score.level_index || 0,
+                        achievements: score.achievements || 0,
+                        fc: score.fc || '',
+                        fs: score.fs || '',
+                        dx_score: score.dx_score || 0,
+                        dx_rating: score.dx_rating || 0,
+                        rate: score.rate || '',
+                        type: score.type || '',
+                        play_time: score.play_time || '',
+                        upload_time: score.upload_time || ''
+                    }))
+                }
             }
             return data
         } catch (error) {
@@ -326,28 +384,238 @@ export default class LXAPI {
     }
 
     //7.获取玩家缓存单曲所有谱面的成绩
-    // GET /api/v0/maimai/player/{friend_code}/bests
+    // GET /api/v0/maimai/player/{friend_code}/bests?song_id=&song_type=
+    async getPlayerSongBests(friendCode, params) {
+        try {
+            const query = new URLSearchParams()
+            if (params.song_id) query.set('song_id', params.song_id)
+            if (params.song_name) query.set('song_name', params.song_name)
+            if (params.song_type) query.set('song_type', params.song_type)
+            const response = await fetch(`${this.baseURL}/api/v0/maimai/player/${friendCode}/bests?${query}`, {
+                headers: { 'Authorization': `${this.token}` }
+            });
+            if (!response.ok) throw new Error(`API请求失败: ${response.status}`)
+            const rawData = await response.json()
+            return {
+                code: 200,
+                data: (rawData.data || []).map(score => ({
+                    id: score.id || 0,
+                    song_name: score.song_name || '',
+                    level: score.level || '',
+                    level_index: score.level_index || 0,
+                    achievements: score.achievements || 0,
+                    fc: score.fc || '',
+                    fs: score.fs || '',
+                    dx_score: score.dx_score || 0,
+                    dx_rating: score.dx_rating || 0,
+                    rate: score.rate || '',
+                    type: score.type || '',
+                    play_time: score.play_time || '',
+                    upload_time: score.upload_time || ''
+                }))
+            }
+        } catch (error) {
+            logger.error(`获取玩家单曲所有谱面成绩失败: ${error}`)
+            throw error
+        }
+    }
 
-    //8.上传玩家成绩。
-    // POST /api/v0/maimai/player/{friend_code}/scores  
+    //8.上传玩家成绩
+    // POST /api/v0/maimai/player/{friend_code}/scores
+    async postPlayerScores(friendCode, scores) {
+        try {
+            const response = await fetch(`${this.baseURL}/api/v0/maimai/player/${friendCode}/scores`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `${this.token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ scores })
+            });
+            if (!response.ok) throw new Error(`API请求失败: ${response.status}`)
+            return await response.json()
+        } catch (error) {
+            logger.error(`上传玩家成绩失败: ${error}`)
+            throw error
+        }
+    }
 
-    //9.获取玩家缓存的 Recent 50（仅增量爬取可用），按照 play_time 排序。
+    //9.获取玩家缓存的 Recent 50
     // GET /api/v0/maimai/player/{friend_code}/recents
+    async getPlayerRecents(friendCode) {
+        try {
+            const response = await fetch(`${this.baseURL}/api/v0/maimai/player/${friendCode}/recents`, {
+                headers: { 'Authorization': `${this.token}` }
+            });
+            if (!response.ok) throw new Error(`API请求失败: ${response.status}`)
+            const rawData = await response.json()
+            return {
+                code: 200,
+                data: (rawData.data || []).map(score => ({
+                    id: score.id || 0,
+                    song_name: score.song_name || '',
+                    level: score.level || '',
+                    level_index: score.level_index || 0,
+                    achievements: score.achievements || 0,
+                    fc: score.fc || '',
+                    fs: score.fs || '',
+                    dx_score: score.dx_score || 0,
+                    dx_rating: score.dx_rating || 0,
+                    rate: score.rate || '',
+                    type: score.type || '',
+                    play_time: score.play_time || '',
+                    upload_time: score.upload_time || ''
+                }))
+            }
+        } catch (error) {
+            logger.error(`获取玩家Recent 50失败: ${error}`)
+            throw error
+        }
+    }
 
     //10.获取玩家缓存的所有最佳成绩（简化后）
     // GET /api/v0/maimai/player/{friend_code}/scores
+    async getPlayerScores(friendCode) {
+        try {
+            const response = await fetch(`${this.baseURL}/api/v0/maimai/player/${friendCode}/scores`, {
+                headers: { 'Authorization': `${this.token}` }
+            });
+            if (!response.ok) throw new Error(`API请求失败: ${response.status}`)
+            const rawData = await response.json()
+            return {
+                code: 200,
+                data: (rawData.data || []).map(score => ({
+                    id: score.id || 0,
+                    song_name: score.song_name || '',
+                    level: score.level || '',
+                    level_index: score.level_index || 0,
+                    fc: score.fc || '',
+                    fs: score.fs || '',
+                    rate: score.rate || '',
+                    type: score.type || ''
+                }))
+            }
+        } catch (error) {
+            logger.error(`获取玩家所有最佳成绩失败: ${error}`)
+            throw error
+        }
+    }
 
-    //11.获取玩家 DX Rating 趋势。
+    //11.获取玩家成绩上传热力图
+    // GET /api/v0/maimai/player/{friend_code}/heatmap
+    async getPlayerHeatmap(friendCode) {
+        try {
+            const response = await fetch(`${this.baseURL}/api/v0/maimai/player/${friendCode}/heatmap`, {
+                headers: { 'Authorization': `${this.token}` }
+            });
+            if (!response.ok) throw new Error(`API请求失败: ${response.status}`)
+            const rawData = await response.json()
+            return { code: 200, data: rawData.data || {} }
+        } catch (error) {
+            logger.error(`获取玩家热力图失败: ${error}`)
+            throw error
+        }
+    }
+
+    //12.获取玩家 DX Rating 趋势
     // GET /api/v0/maimai/player/{friend_code}/trend
+    async getPlayerTrend(friendCode, version = null) {
+        try {
+            let url = `${this.baseURL}/api/v0/maimai/player/${friendCode}/trend`
+            if (version) url += `?version=${version}`
+            const response = await fetch(url, {
+                headers: { 'Authorization': `${this.token}` }
+            });
+            if (!response.ok) throw new Error(`API请求失败: ${response.status}`)
+            const rawData = await response.json()
+            return {
+                code: 200,
+                data: (rawData.data || []).map(trend => ({
+                    total: trend.total || 0,
+                    standard: trend.standard || 0,
+                    dx: trend.dx || 0,
+                    date: trend.date || ''
+                }))
+            }
+        } catch (error) {
+            logger.error(`获取玩家Rating趋势失败: ${error}`)
+            throw error
+        }
+    }
 
-    //12.获取玩家成绩上传历史记录。
+    //13.获取玩家成绩游玩历史记录
     // GET /api/v0/maimai/player/{friend_code}/score/history
+    async getPlayerScoreHistory(friendCode, params = {}) {
+        try {
+            const query = new URLSearchParams()
+            if (params.song_id) query.set('song_id', params.song_id)
+            if (params.song_type) query.set('song_type', params.song_type)
+            if (params.level_index !== undefined) query.set('level_index', params.level_index)
+            let url = `${this.baseURL}/api/v0/maimai/player/${friendCode}/score/history`
+            if (query.toString()) url += `?${query}`
+            const response = await fetch(url, {
+                headers: { 'Authorization': `${this.token}` }
+            });
+            if (!response.ok) throw new Error(`API请求失败: ${response.status}`)
+            const rawData = await response.json()
+            return {
+                code: 200,
+                data: (rawData.data || []).map(score => ({
+                    id: score.id || 0,
+                    song_name: score.song_name || '',
+                    level: score.level || '',
+                    level_index: score.level_index || 0,
+                    achievements: score.achievements || 0,
+                    fc: score.fc || '',
+                    fs: score.fs || '',
+                    dx_score: score.dx_score || 0,
+                    dx_rating: score.dx_rating || 0,
+                    rate: score.rate || '',
+                    type: score.type || '',
+                    play_time: score.play_time || '',
+                    upload_time: score.upload_time || ''
+                }))
+            }
+        } catch (error) {
+            logger.error(`获取玩家成绩历史失败: ${error}`)
+            throw error
+        }
+    }
 
-    //13.获取玩家姓名框进度。
-    // GET /api/v0/maimai/player/{friend_code}/plate/{plate_id}
+    //14.获取玩家收藏品进度
+    // GET /api/v0/maimai/player/{friend_code}/{collection_type}/{collection_id}
+    async getPlayerCollection(friendCode, collectionType, collectionId) {
+        try {
+            const response = await fetch(`${this.baseURL}/api/v0/maimai/player/${friendCode}/${collectionType}/${collectionId}`, {
+                headers: { 'Authorization': `${this.token}` }
+            });
+            if (!response.ok) throw new Error(`API请求失败: ${response.status}`)
+            return await response.json()
+        } catch (error) {
+            logger.error(`获取玩家收藏品进度失败: ${error}`)
+            throw error
+        }
+    }
 
-    //14.通过 NET 的 HTML 源代码上传玩家数据。
+    //15.通过 NET 的 HTML 源代码上传玩家数据
     // POST /api/v0/maimai/player/{friend_code}/html
+    async postPlayerHtml(friendCode, html) {
+        try {
+            const response = await fetch(`${this.baseURL}/api/v0/maimai/player/${friendCode}/html`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `${this.token}`,
+                    'Content-Type': 'text/plain'
+                },
+                body: html
+            });
+            if (!response.ok) throw new Error(`API请求失败: ${response.status}`)
+            return await response.json()
+        } catch (error) {
+            logger.error(`上传玩家HTML数据失败: ${error}`)
+            throw error
+        }
+    }
 
     //个人API需要个人Token
     //1.获取玩家信息。
@@ -388,6 +656,24 @@ export default class LXAPI {
                 throw new Error(`HTTP error! status: ${response.status}`)
             }
             const rawData = await response.json()
+            // 统一展平难度数据
+            const flattenDifficulty = (diff) => ({
+                type: diff.type,
+                difficulty: diff.difficulty,
+                level: diff.level,
+                level_value: diff.level_value,
+                note_designer: diff.note_designer,
+                version: diff.version,
+                notes: diff.notes ? {
+                    total: diff.notes.total,
+                    tap: diff.notes.tap,
+                    hold: diff.notes.hold,
+                    slide: diff.notes.slide,
+                    touch: diff.notes.touch,
+                    break: diff.notes.break
+                } : null
+            })
+
             const data = {
                 id: rawData.id,
                 title: rawData.title,
@@ -396,23 +682,9 @@ export default class LXAPI {
                 bpm: rawData.bpm,
                 version: rawData.version,
                 difficulties: {
-                    standard: rawData.difficulties.standard || [],
-                    dx: rawData.difficulties.dx.map(diff => ({
-                        type: diff.type,
-                        difficulty: diff.difficulty,
-                        level: diff.level,
-                        level_value: diff.level_value,
-                        note_designer: diff.note_designer,
-                        version: diff.version,
-                        notes: {
-                            total: diff.notes.total,
-                            tap: diff.notes.tap,
-                            hold: diff.notes.hold,
-                            slide: diff.notes.slide,
-                            touch: diff.notes.touch,
-                            break: diff.notes.break
-                        }
-                    }))
+                    standard: (rawData.difficulties.standard || []).map(flattenDifficulty),
+                    dx: (rawData.difficulties.dx || []).map(flattenDifficulty),
+                    utage: (rawData.difficulties.utage || []).map(flattenDifficulty)
                 }
             }
             // 调试输出
