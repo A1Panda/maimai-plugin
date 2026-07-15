@@ -153,9 +153,12 @@ class B50 {
         
         try {
             const page = await browser.newPage()
-            await page.setDefaultNavigationTimeout(15000)
+            await page.setDefaultNavigationTimeout(30000)
             
-            // 统计 base64 长度辅助调试
+            // 先设置视口，再加载内容
+            await page.setViewport({ width: 1450, height: 800 })
+            
+            // 统计 base64 辅助调试
             let embeddedCount = 0, emptyCount = 0
             if (data.iconAsset?.startsWith('data:')) embeddedCount++
             if (data.plateAsset?.startsWith('data:')) embeddedCount++
@@ -171,7 +174,7 @@ class B50 {
             template = template.replace(/\{\{rating\}\}/g, data.rating)
             template = template.replace(/\{\{iconAsset\}\}/g, data.iconAsset || '')
             template = template.replace(/\{\{plateAsset\}\}/g, data.plateAsset || '')
-            // 处理背景框，有则显示否则清空
+            // 处理背景框
             template = template.replace(
                 /\{\{#frameAsset\}\}([\s\S]*?)\{\{\/frameAsset\}\}/g,
                 (_, inner) => data.frameAsset ? inner.replace(/\{\{frameAsset\}\}/g, data.frameAsset) : ''
@@ -193,7 +196,6 @@ class B50 {
                 songHtml = songHtml.replace(/\{\{dx_rating\}\}/g, song.dx_rating.toFixed(2))
                 songHtml = songHtml.replace(/\{\{achievements\}\}/g, song.achievements.toFixed(4))
 
-                // FC/FS图标：有图标时直接替换为img标签，没有时清空
                 songHtml = songHtml.replace(
                     /\{\{#fc\}\}([\s\S]*?)\{\{\/fc\}\}/g,
                     song.fc_icon ? `<img src="${song.fc_icon}" alt="FC">` : ''
@@ -242,30 +244,35 @@ class B50 {
             })
             template = template.replace(/\{\{#dx\}\}[\s\S]*?\{\{\/dx\}\}/g, dxHtml)
             
-            // 设置页面内容
-            await page.setContent(template, { waitUntil: 'networkidle0', timeout: 15000 })
+            // 保存 HTML 到临时文件（调试用），然后用 goto 加载
+            const htmlPath = path.join(process.cwd(), 'temp', 'maimai-plugin', `b50_debug_${Date.now()}.html`)
+            const htmlDir = path.dirname(htmlPath)
+            if (!fs.existsSync(htmlDir)) fs.mkdirSync(htmlDir, { recursive: true })
+            fs.writeFileSync(htmlPath, template, 'utf8')
+            logger.info(`[b50] 调试HTML已保存: ${htmlPath} (${(template.length / 1024).toFixed(0)}KB)`)
             
-            // 设置视口大小（与CSS容器宽度1400px匹配）
-            await page.setViewport({
-                width: 1450,
-                height: 800
-            })
+            // 用 file:// 加载 HTML（内容已是 base64，无网络依赖）
+            await page.goto(`file:///${htmlPath.replace(/\\/g, '/')}`, { waitUntil: 'domcontentloaded', timeout: 30000 })
             
-            // 确保 .container 已渲染
+            // 等待渲染稳定
             await page.waitForSelector('.container', { timeout: 10000 })
+            await page.waitForTimeout(500)
             
-            // 确保临时目录存在
-            const dir = path.dirname(imagePath)
-            if (!fs.existsSync(dir)) {
-                fs.mkdirSync(dir, { recursive: true })
-            }
-            
-            // 直接对 .container 元素截图，消除白边
-            const container = await page.$('.container')
-            await container.screenshot({
-                path: imagePath,
-                type: 'png'
+            // 检查图片渲染情况
+            const imgStats = await page.evaluate(() => {
+                const imgs = document.querySelectorAll('img')
+                let ok = 0, fail = 0
+                imgs.forEach(img => {
+                    if (img.naturalWidth > 0 || img.complete) ok++
+                    else fail++
+                })
+                return { total: imgs.length, ok, fail }
             })
+            logger.info(`[b50] 图片渲染: ${imgStats.total}个, 成功${imgStats.ok}, 失败${imgStats.fail}`)
+            
+            // 直接对 .container 元素截图
+            const container = await page.$('.container')
+            await container.screenshot({ path: imagePath, type: 'png' })
             
             logger.info(`[b50] 渲染完成: ${imagePath}`)
             return imagePath
