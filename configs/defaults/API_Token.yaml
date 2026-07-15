@@ -1,14 +1,14 @@
 {
     #落雪API配置
     "LXapi": {
-        "token": "", #落雪开发者APItoken
+        "token": "", #落雪开发者APItoken（内置默认值，可不填）
         "userToken": "", #落雪个人API token (用于 /api/v0/user/* 端点)
         "baseURL": "https://maimai.lxns.net", #默认API地址
         "assetsURL": "https://assets2.lxns.net" #默认资源地址
     },
     #水鱼API配置
     "SYapi": {
-        "token": "xkZf95e2cTwdRAlvrNoHPCq3y70YBKQU", #水鱼开发者APItoken
+        "token": "", #水鱼开发者APItoken（内置默认值，可不填）
         "baseURL": "https://www.diving-fish.com" #默认API地址
     }
 }

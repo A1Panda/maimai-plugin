@@ -10,9 +10,10 @@ export default class SYAPI {
         const mainConfig = yaml.parse(fs.readFileSync('./plugins/maimai-plugin/configs/config.yaml', 'utf8'))
         this.tempPath = mainConfig.tempPath || './plugins/maimai-plugin/temp'
         this.baseURL = config.SYapi.baseURL || 'https://www.diving-fish.com'
-        this.token = config.SYapi.token || ''
-        this.assetsURL = config.LXapi.assetsURL || 'https://assets2.lxns.net'  // 曲绘/头像/音频用落雪CDN
-        this.lxBaseURL = config.LXapi.baseURL || 'https://maimai.lxns.net'    // 评级图标等资源用落雪主站
+        this.token = config.SYapi.token || 'xkZf95e2cTwdRAlvrNoHPCq3y70YBKQU'   // 水鱼开发者Token（内置默认）
+        this.assetsURL = config.LXapi.assetsURL || 'https://assets2.lxns.net'    // 曲绘/头像/音频用落雪CDN
+        this.lxBaseURL = config.LXapi.baseURL || 'https://maimai.lxns.net'       // 评级图标等资源用落雪主站
+        this.lxToken = config.LXapi.token || 'O-0yIEngnVsHgid6m5M2wlvQvmoDDLKIwEIfHtt0HEM=' // 落雪token，用于补充数据（内置默认）
 
         // 缓存 music_data
         this._musicData = null
@@ -63,7 +64,47 @@ export default class SYAPI {
         throw new Error('水鱼API不支持创建/修改玩家信息')
     }
 
-    // 获取玩家信息 - 使用 /dev/player/records (Developer-Token)
+    /**
+     * 从落雪API获取补充数据（icon/plate/frame/trophy等水鱼不提供的字段）
+     * @param {string|number} qq - QQ号
+     * @returns {Promise<Object|null>} 补充数据，失败返回 null
+     */
+    async _fetchLXFallback(qq) {
+        if (!this.lxToken) return null
+        try {
+            const url = `${this.lxBaseURL}/api/v0/maimai/player/qq/${qq}`
+            const response = await fetch(url, {
+                headers: { 'Authorization': `${this.lxToken}` }
+            })
+            if (!response.ok) return null
+            const rawData = await response.json()
+            const lx = rawData.data
+            if (!lx) return null
+            return {
+                // 称号
+                trophy: {
+                    id: lx.trophy?.id ?? 0,
+                    name: lx.trophy?.name ?? '',
+                    color: lx.trophy?.color ?? 'Normal'
+                },
+                // 段位
+                course_rank: lx.course_rank ?? 0,
+                class_rank: lx.class_rank ?? 0,
+                star: lx.star ?? 0,
+                // 头像/姓名框/背景框
+                icon: { id: lx.icon?.id ?? 0, name: lx.icon?.name ?? '', genre: lx.icon?.genre ?? '' },
+                name_plate: { id: lx.name_plate?.id ?? 0, name: lx.name_plate?.name ?? '', genre: lx.name_plate?.genre ?? '' },
+                frame: { id: lx.frame?.id ?? 0, name: lx.frame?.name ?? '', genre: lx.frame?.genre ?? '' },
+                // 上传时间
+                upload_time: lx.upload_time ?? ''
+            }
+        } catch (e) {
+            logger.warn(`[SYAPI] 从落雪获取补充数据失败: ${e.message}`)
+            return null
+        }
+    }
+
+    // 获取玩家信息 - 使用 /dev/player/records (Developer-Token)，缺失数据从落雪补全
     async getPlayerInfo(friendCode) {
         try {
             const response = await fetch(
@@ -78,8 +119,12 @@ export default class SYAPI {
                 throw new Error(`API请求失败: ${response.status}`)
             }
             const rawData = await response.json()
-            // 水鱼 /dev/player/records 返回: { nickname, rating, additional_rating, records, plate }
+
+            // 并行尝试从落雪获取补充数据（icon/plate/frame/trophy等）
+            const lxData = await this._fetchLXFallback(friendCode)
+
             // additional_rating: 0-10=段位初-十, 11-20=真初-真十, 21=真皆伝, 22=里皆伝
+            // 落雪有数据时优先使用落雪的 class_rank，否则用水鱼的 additional_rating
             const data = {
                 success: true,
                 code: 200,
@@ -87,18 +132,19 @@ export default class SYAPI {
                     name: rawData.nickname || '',
                     rating: rawData.rating || 0,
                     friend_code: parseInt(friendCode) || 0,
-                    // 水鱼API不提供trophy数据，用空值填充
-                    trophy: { id: 0, name: '', color: 'Normal' },
-                    // 水鱼的 additional_rating 对应 LX 的 class_rank（段位）
-                    class_rank: rawData.additional_rating ?? 0,
-                    // 水鱼API不提供course_rank（course模式段位），用空值填充
-                    course_rank: 0,
-                    star: rawData.star || 0,
-                    // 水鱼API不提供icon/plate/frame数据，用空值填充
-                    icon: { id: 0, name: '', genre: '' },
-                    name_plate: { id: 0, name: '', genre: '' },
-                    frame: { id: 0, name: '', genre: '' },
-                    upload_time: rawData.upload_time || ''
+                    // 称号：落雪补全，否则空
+                    trophy: lxData?.trophy || { id: 0, name: '', color: 'Normal' },
+                    // 段位：落雪优先（更精确），水鱼兜底
+                    class_rank: lxData?.class_rank ?? rawData.additional_rating ?? 0,
+                    // course段位：仅落雪有
+                    course_rank: lxData?.course_rank ?? 0,
+                    star: lxData?.star ?? 0,
+                    // 头像/姓名框/背景框：落雪补全
+                    icon: lxData?.icon || { id: 0, name: '', genre: '' },
+                    name_plate: lxData?.name_plate || { id: 0, name: '', genre: '' },
+                    frame: lxData?.frame || { id: 0, name: '', genre: '' },
+                    // 上传时间：落雪补全
+                    upload_time: lxData?.upload_time || rawData.upload_time || ''
                 }
             }
             return data

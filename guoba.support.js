@@ -101,16 +101,16 @@ export function supportGuoba() {
         {
           field: 'apiToken.lxToken',
           label: '开发者 Token',
-          bottomHelpMessage: '在 https://maimai.lxns.net 申请获取',
+          bottomHelpMessage: '已内置默认Token，无需填写即可使用。如需替换请在 https://maimai.lxns.net 申请',
           component: 'InputPassword',
-          componentProps: { placeholder: '请输入落雪开发者API Token' },
+          componentProps: { placeholder: '已内置，留空即用默认值' },
         },
         {
           field: 'apiToken.lxUserToken',
           label: '个人用户 Token',
-          bottomHelpMessage: '用于 /api/v0/user/* 端点，部分功能需要',
+          bottomHelpMessage: '用于部分高级功能，非必填。在落雪官网获取',
           component: 'InputPassword',
-          componentProps: { placeholder: '请输入落雪个人用户API Token（可选）' },
+          componentProps: { placeholder: '已内置，留空即用默认值' },
         },
         {
           field: 'apiToken.lxBaseURL',
@@ -132,9 +132,9 @@ export function supportGuoba() {
         {
           field: 'apiToken.syToken',
           label: '开发者 Token',
-          bottomHelpMessage: '在 https://www.diving-fish.com 申请，用于访问 /dev/* 端点',
+          bottomHelpMessage: '已内置默认Token，无需填写即可使用。如需替换请在 https://www.diving-fish.com 申请',
           component: 'InputPassword',
-          componentProps: { placeholder: '请输入水鱼开发者Token' },
+          componentProps: { placeholder: '已内置，留空即用默认值' },
         },
         {
           field: 'apiToken.syBaseURL',
