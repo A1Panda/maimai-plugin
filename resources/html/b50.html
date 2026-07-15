@@ -28,21 +28,21 @@ body {
 }
 .container { width: 1400px; }
 
-/* ===== 顶部区域：3层景深 ===== */
+/* ===== 顶部区域：200px 大视野 ===== */
 .header-wrapper {
     position: relative;
     width: 100%;
-    height: 180px;
+    height: 200px;
     margin-bottom: 30px;
     border-radius: 24px;
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(255,180,210,0.4);
+    box-shadow: 0 12px 35px rgba(255,180,210,0.4);
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* 第1层：大背景 (Frame) */
+/* 第1层：大背景 */
 .full-background-frame {
     position: absolute;
     top: 0; left: 0;
@@ -51,12 +51,12 @@ body {
     z-index: 1;
 }
 
-/* 第2层：姓名框 (Plate) 居中 */
+/* 第2层：姓名框 */
 .user-plate-container {
     position: relative;
     z-index: 2;
-    width: 650px;
-    height: 130px;
+    width: 680px;
+    height: 140px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -74,36 +74,35 @@ body {
     z-index: 10;
     display: flex;
     align-items: center;
-    gap: 25px;
+    gap: 30px;
     width: 100%;
-    padding: 0 40px;
+    padding: 0 50px;
 }
 .avatar {
-    width: 90px; height: 90px;
-    border-radius: 15px;
-    border: 3px solid #fff;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    width: 95px; height: 95px;
+    border-radius: 18px;
+    border: 4px solid #fff;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.25);
     flex-shrink: 0;
 }
-.info-text { display: flex; flex-direction: column; gap: 5px; }
+.info-text { display: flex; flex-direction: column; gap: 6px; }
 .rating-box {
-    background: rgba(30,30,30,0.85);
+    background: rgba(30,30,30,0.9);
     color: var(--gold-rating);
-    padding: 2px 12px;
-    border-radius: 6px;
+    padding: 3px 15px;
+    border-radius: 8px;
     font-weight: 900;
-    font-size: 18px;
+    font-size: 19px;
     width: fit-content;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
-.rating-sub { font-size: 11px; opacity: 0.7; margin-left: 8px; }
+.rating-sub { font-size: 12px; opacity: 0.75; margin-left: 8px; }
 .nickname {
-    font-size: 36px; font-weight: 900;
+    font-size: 38px; font-weight: 900;
     color: #fff;
     text-shadow:
         2px 2px 0 var(--pink-main), -2px -2px 0 var(--pink-main),
         2px -2px 0 var(--pink-main), -2px 2px 0 var(--pink-main),
-        3px 3px 5px rgba(0,0,0,0.3);
+        0 4px 8px rgba(0,0,0,0.3);
 }
 
 /* ===== 胶囊标题 ===== */
@@ -129,34 +128,46 @@ body {
     margin-bottom: 40px;
 }
 
-/* ===== 封面背景化卡片 ===== */
+/* ===== 右侧封面 + 渐变过渡卡片 ===== */
 .song-card {
     position: relative;
-    height: 180px;
+    height: 185px;
     background-color: #fff;
-    border-radius: 14px;
+    border-radius: 16px;
     border: 2.5px solid #fff;
-    box-shadow: 0 5px 15px rgba(255,118,184,0.15);
+    box-shadow: 0 6px 18px rgba(255,118,184,0.18);
     overflow: hidden;
-    padding: 12px;
     display: flex;
     flex-direction: column;
 }
+
+/* 封面图：右侧放置，mask 渐变淡入 */
 .card-bg-jacket {
     position: absolute;
-    inset: 0;
-    width: 100%; height: 100%;
+    top: 0; right: 0;
+    width: 70%; height: 100%;
     z-index: 1;
-    opacity: 0.25;
-    filter: blur(1px);
     object-fit: cover;
+    -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,0.9) 50%, rgba(0,0,0,0) 100%);
+    mask-image: linear-gradient(to left, rgba(0,0,0,0.9) 50%, rgba(0,0,0,0) 100%);
 }
+
+/* 高光切边：模拟参考图的105度渐变切面 */
+.song-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: linear-gradient(105deg, #fff 50%, rgba(255,255,255,0.4) 65%, transparent 75%);
+    z-index: 2;
+    pointer-events: none;
+}
+
 .card-top-bar {
     position: absolute;
     top: 0; left: 0; right: 0;
-    height: 5px;
-    z-index: 10;
-    border-radius: 14px 14px 0 0;
+    height: 6px;
+    z-index: 15;
+    border-radius: 16px 16px 0 0;
 }
 .song-card[data-lvn="1"] .card-top-bar,
 .song-card[data-lvn="2"] .card-top-bar,
@@ -178,6 +189,7 @@ body {
     position: relative;
     z-index: 10;
     height: 100%;
+    padding: 12px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -191,44 +203,66 @@ body {
     text-overflow: ellipsis;
     padding-right: 50px;
 }
-.achv-area { display: flex; align-items: center; margin: 5px 0; }
-.arrows { color: var(--pink-main); font-size: 11px; letter-spacing: -2px; opacity: 0.45; margin-right: 6px; flex-shrink: 0; }
-.achv-val { font-size: 22px; font-weight: 900; color: #333; }
-.meta-info { font-size: 11px; font-weight: bold; color: #666; line-height: 1.4; }
-.meta-info .ra { color: var(--color-master); }
+.achv-area { display: flex; align-items: center; margin: 4px 0; }
+.arrows { color: var(--pink-main); font-size: 10px; letter-spacing: -2px; opacity: 0.45; margin-right: 5px; flex-shrink: 0; }
+.achv-val { font-size: 24px; font-weight: 900; color: #333; }
+.meta-info { font-size: 11.5px; font-weight: bold; color: #666; line-height: 1.4; }
+.meta-info .ra-label { color: #555; }
+.meta-info .ra-val { color: var(--color-master); font-size: 13px; }
 
-.rank-tag {
+.bottom-tags {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.rank-badge {
     background: var(--pink-main);
     color: #fff;
     padding: 2px 10px;
     border-radius: 5px;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 900;
-    width: fit-content;
+    box-shadow: 0 2px 4px rgba(255,118,184,0.3);
 }
 
 /* 右上角图标 */
 .song-icons {
     position: absolute;
-    top: 10px; right: 10px;
+    top: 12px; right: 12px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    z-index: 15;
+    gap: 5px;
+    z-index: 20;
     align-items: flex-end;
 }
 .song-icons img {
-    height: 20px;
-    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
+    height: 22px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
 }
 
+/* 类型标签 (STD/DX) */
+.type-indicator {
+    position: absolute;
+    top: 40px; right: 10px;
+    font-size: 9px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-weight: 900;
+    color: #fff;
+    z-index: 20;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(2px);
+}
+
+/* 编号水印 */
 .ribbon-index {
     position: absolute;
-    bottom: 5px; right: 8px;
-    font-size: 16px;
+    bottom: 4px; right: 8px;
+    font-size: 18px;
     font-weight: 900;
-    color: rgba(255,118,184,0.2);
+    color: rgba(255,118,184,0.4);
     z-index: 10;
+    font-style: italic;
 }
 
 /* 页脚 */
@@ -246,10 +280,8 @@ body {
 <div class="container">
     <!-- ===== 头部 3层景深 ===== -->
     <div class="header-wrapper">
-        <!-- 第1层：大背景 Frame -->
         {{#frameAsset}}<img class="full-background-frame" src="{{frameAsset}}" alt="Frame">{{/frameAsset}}
 
-        <!-- 第2层：姓名框 Plate + 第3层：用户信息 -->
         <div class="user-plate-container">
             <img class="name-plate-img" src="{{plateAsset}}" alt="Name Plate">
             <div class="user-data-overlay">
@@ -286,10 +318,14 @@ body {
             </div>
             <div class="meta-info">
                 <div><b>Lv.{{level}}</b></div>
-                <div class="ra">RA:{{dx_rating}}</div>
+                <div class="ra-label">RA: <span class="ra-val">{{dx_rating}}</span></div>
             </div>
-            <div class="rank-tag">{{rate}}</div>
+            <div class="bottom-tags">
+                <div class="rank-badge">{{rate}}</div>
+            </div>
         </div>
+
+        <div class="type-indicator">STD</div>
         <div class="ribbon-index">#{{index}}</div>
     </div>
     {{/standard}}
@@ -316,10 +352,14 @@ body {
             </div>
             <div class="meta-info">
                 <div><b>Lv.{{level}}</b></div>
-                <div class="ra">RA:{{dx_rating}}</div>
+                <div class="ra-label">RA: <span class="ra-val">{{dx_rating}}</span></div>
             </div>
-            <div class="rank-tag">{{rate}}</div>
+            <div class="bottom-tags">
+                <div class="rank-badge">{{rate}}</div>
+            </div>
         </div>
+
+        <div class="type-indicator">DX</div>
         <div class="ribbon-index">#{{index}}</div>
     </div>
     {{/dx}}

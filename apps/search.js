@@ -77,7 +77,7 @@ export class PlayerInfoHandler extends plugin {
                         }
                     } else {
                         logger.info(`[maimai-plugin] 未找到匹配的歌曲: ${id}`)
-                        try { if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id) } catch {}
+                        try { const t = e.group || e.friend; if (msg?.message_id && t) await t.recallMsg(msg.message_id) } catch {}
                         return await e.reply('未找到匹配的歌曲，请检查输入是否正确', { at: true })
                     }
                 }
@@ -105,7 +105,7 @@ export class PlayerInfoHandler extends plugin {
                         }
                     } else {
                         logger.info(`[maimai-plugin] 未找到匹配的姓名框: ${id}`)
-                        try { if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id) } catch {}
+                        try { const t = e.group || e.friend; if (msg?.message_id && t) await t.recallMsg(msg.message_id) } catch {}
                         return await e.reply('未找到匹配的姓名框，请检查输入是否正确', { at: true })
                     }
                 }
@@ -133,7 +133,7 @@ export class PlayerInfoHandler extends plugin {
                         }
                     } else {
                         logger.info(`[maimai-plugin] 未找到匹配的头像: ${id}`)
-                        try { if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id) } catch {}
+                        try { const t = e.group || e.friend; if (msg?.message_id && t) await t.recallMsg(msg.message_id) } catch {}
                         return await e.reply('未找到匹配的头像，请检查输入是否正确', { at: true })
                     }
                 }
@@ -161,12 +161,12 @@ export class PlayerInfoHandler extends plugin {
                         }
                     } else {
                         logger.info(`[maimai-plugin] 未找到匹配的背景: ${id}`)
-                        try { if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id) } catch {}
+                        try { const t = e.group || e.friend; if (msg?.message_id && t) await t.recallMsg(msg.message_id) } catch {}
                         return await e.reply('未找到匹配的背景，请检查输入是否正确', { at: true })
                     }
                 }
             } else if (type === '收藏品') {
-                try { if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id) } catch {}
+                try { const t = e.group || e.friend; if (msg?.message_id && t) await t.recallMsg(msg.message_id) } catch {}
                 return await e.reply('收藏品搜索功能开发中，敬请期待', { at: true })
             } else if (type === '曲绘') {
                                 // 检查是否为纯数字ID
@@ -193,7 +193,7 @@ export class PlayerInfoHandler extends plugin {
                         }
                     } else {
                         logger.info(`[maimai-plugin] 未找到匹配的曲绘: ${id}`)
-                        try { if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id) } catch {}
+                        try { const t = e.group || e.friend; if (msg?.message_id && t) await t.recallMsg(msg.message_id) } catch {}
                         return await e.reply('未找到匹配的曲绘，请检查输入是否正确', { at: true })
                     }
                 }
@@ -201,8 +201,9 @@ export class PlayerInfoHandler extends plugin {
                 
             // 撤回等待消息（在发送结果前撤回）
             try {
-                if (msg?.message_id && e.group) {
-                    await e.group.recallMsg(msg.message_id)
+                const t = e.group || e.friend
+                if (msg?.message_id && t) {
+                    await t.recallMsg(msg.message_id)
                 }
             } catch (recallErr) {
                 logger.warn(`[maimai-plugin] 撤回search等待消息失败: ${recallErr.message}`)
@@ -246,8 +247,9 @@ export class PlayerInfoHandler extends plugin {
             
             // 撤回等待消息
             try {
-                if (msg?.message_id && e.group) {
-                    await e.group.recallMsg(msg.message_id)
+                const t = e.group || e.friend
+                if (msg?.message_id && t) {
+                    await t.recallMsg(msg.message_id)
                 }
             } catch (recallErr) {
                 logger.warn(`[maimai-plugin] 撤回upload等待消息失败: ${recallErr.message}`)

@@ -214,24 +214,14 @@ class B50 {
                 )
             })
             
-            // 设置视口大小
+            // 设置视口大小（与CSS容器宽度1400px匹配）
             await page.setViewport({
-                width: 2048,
+                width: 1450,
                 height: 800
             })
             
             // 等待内容加载完成
             await page.waitForSelector('.container')
-            
-            // 获取实际内容高度
-            const bodyHeight = await page.evaluate(() => {
-                return document.querySelector('.container').offsetHeight
-            })
-            // 调整视口高度
-            await page.setViewport({
-                width: 2048,
-                height: bodyHeight + 40
-            })
             
             // 确保临时目录存在
             const dir = path.dirname(imagePath)
@@ -239,11 +229,11 @@ class B50 {
                 fs.mkdirSync(dir, { recursive: true })
             }
             
-            // 截图
-            await page.screenshot({
-                type: 'png',
-                fullPage: true,
-                path: imagePath
+            // 直接对 .container 元素截图，消除白边
+            const container = await page.$('.container')
+            await container.screenshot({
+                path: imagePath,
+                type: 'png'
             })
             
             return imagePath

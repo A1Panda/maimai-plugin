@@ -42,10 +42,14 @@ export class ScoreInfoHandler extends plugin {
             // 获取分数信息
             const result = await scoreInfo.getScoreInfo(songQuery, targetId)
             
-            // 撤回等待消息（在发送结果前撤回，避免被后续发送打断）
+            // 撤回等待消息（在发送结果前撤回）
             try {
-                if (msg?.message_id && e.group) {
-                    await e.group.recallMsg(msg.message_id)
+                if (msg?.message_id) {
+                    if (e.group) {
+                        await e.group.recallMsg(msg.message_id)
+                    } else if (e.friend) {
+                        await e.friend.recallMsg(msg.message_id)
+                    }
                 }
             } catch (recallErr) {
                 logger.warn(`[maimai-plugin] 撤回scoresinfo等待消息失败: ${recallErr.message}`)

@@ -31,10 +31,14 @@ export class PlayerInfoHandler extends plugin {
             let msg = await e.reply('正在渲染b50信息请稍后...', { at: true })
             const result = await b50.getB50(targetId)
             
-            // 撤回等待消息（在发送结果前撤回，避免被后续发送打断）
+            // 撤回等待消息（在发送结果前撤回）
             try {
-                if (msg?.message_id && e.group) {
-                    await e.group.recallMsg(msg.message_id)
+                if (msg?.message_id) {
+                    if (e.group) {
+                        await e.group.recallMsg(msg.message_id)
+                    } else if (e.friend) {
+                        await e.friend.recallMsg(msg.message_id)
+                    }
                 }
             } catch (recallErr) {
                 logger.warn(`[maimai-plugin] 撤回b50等待消息失败: ${recallErr.message}`)

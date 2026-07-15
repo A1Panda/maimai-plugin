@@ -51,7 +51,7 @@ export class RandomHandler extends plugin {
             const id = await random.getRandomId(type, difficulty)
             
             if (!id) {
-                try { if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id) } catch {}
+                try { const t = e.group || e.friend; if (msg?.message_id && t) await t.recallMsg(msg.message_id) } catch {}
                 await e.reply(`随机获取${type}失败，请稍后再试`, { at: true })
                 return false
             }
@@ -76,7 +76,7 @@ export class RandomHandler extends plugin {
                     result = await frameInfo.getFrameInfo(id)
                     break
                 default:
-                    try { if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id) } catch {}
+                    try { const t = e.group || e.friend; if (msg?.message_id && t) await t.recallMsg(msg.message_id) } catch {}
                     if (asset) {
                         await e.reply([
                             `随机${type}ID为: ${id}`,
@@ -90,8 +90,9 @@ export class RandomHandler extends plugin {
 
             // 撤回等待消息
             try {
-                if (msg?.message_id && e.group) {
-                    await e.group.recallMsg(msg.message_id)
+                const t = e.group || e.friend
+                if (msg?.message_id && t) {
+                    await t.recallMsg(msg.message_id)
                 }
             } catch (recallErr) {
                 logger.warn(`[maimai-plugin] 撤回random等待消息失败: ${recallErr.message}`)
