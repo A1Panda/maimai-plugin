@@ -22,22 +22,22 @@ body {
         radial-gradient(#ffcae5 1.5px, transparent 1.5px),
         linear-gradient(180deg, #fff 0%, var(--bg-main) 100%);
     background-size: 26px 26px, 100% 100%;
-    padding: 15px 5px;
+    padding: 10px 5px;
     display: flex;
     justify-content: center;
 }
-.container { width: 1380px; }
+.container { width: 1400px; }
 
-/* ===== 头部：层级 plate(1) → user-block(3) → frame(4) ===== */
+/* ===== 头部：大背景覆盖 ===== */
 .header {
     position: relative;
-    border-radius: 20px;
+    border-radius: 24px;
     margin-bottom: 25px;
-    height: 150px;
+    height: 160px;
     overflow: hidden;
     display: flex;
     align-items: center;
-    box-shadow: 0 8px 20px rgba(255,180,210,0.3);
+    box-shadow: 0 8px 25px rgba(255,180,210,0.4);
     background: #fff;
 }
 .header-plate {
@@ -46,89 +46,99 @@ body {
     width: 100%; height: 100%;
     object-fit: cover;
     z-index: 1;
+    opacity: 0.8;
 }
 .header-frame {
     position: absolute;
     inset: 0;
     width: 100%; height: 100%;
-    object-fit: contain;
-    z-index: 4;
+    object-fit: cover;
+    z-index: 2;
     pointer-events: none;
 }
 .user-block {
     position: relative;
-    z-index: 3;
+    z-index: 10;
     display: flex; align-items: center;
-    gap: 25px;
-    padding-left: 50px;
+    gap: 30px;
+    padding-left: 60px;
 }
 .avatar {
-    width: 95px; height: 95px;
-    border-radius: 18px;
+    width: 100px; height: 100px;
+    border-radius: 20px;
     border: 4px solid #fff;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.25);
     flex-shrink: 0;
 }
-.name-area { display: flex; flex-direction: column; gap: 5px; }
+.name-area { display: flex; flex-direction: column; gap: 8px; }
 .rating-box {
-    background: #333;
+    background: rgba(40,40,40,0.9);
     color: var(--gold-rating);
-    padding: 3px 12px;
-    border-radius: 6px;
+    padding: 4px 16px;
+    border-radius: 8px;
     font-weight: 900;
-    font-size: 18px;
+    font-size: 20px;
     width: fit-content;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
-.rating-sub { font-size: 11px; opacity: 0.7; font-weight: 500; margin-left: 8px; }
+.rating-sub { font-size: 13px; opacity: 0.8; margin-left: 10px; }
 .nickname {
-    font-size: 38px; font-weight: 900;
-    color: var(--pink-main);
-    text-shadow: 2px 2px 0 #fff;
+    font-size: 42px; font-weight: 900;
+    color: #fff;
+    text-shadow: 2px 2px 0 var(--pink-main), -2px -2px 0 var(--pink-main), 2px -2px 0 var(--pink-main), -2px 2px 0 var(--pink-main);
 }
 
 /* ===== 胶囊标题 ===== */
 .section-title {
     display: inline-block;
-    padding: 8px 40px;
+    padding: 8px 50px;
     border-radius: 50px;
     color: white;
     font-weight: 900;
-    font-size: 17px;
+    font-size: 18px;
     border: 3px solid white;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
-.section-title.standard { background: #62d857; box-shadow: 0 4px 12px rgba(98,216,87,0.4); }
-.section-title.dx { background: #ff5eab; box-shadow: 0 4px 12px rgba(255,94,171,0.4); }
+.section-title.standard { background: #62d857; }
+.section-title.dx { background: #ff5eab; }
 
 /* ===== 5列网格 ===== */
 .song-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
-    margin-bottom: 30px;
+    gap: 12px;
+    margin-bottom: 40px;
 }
 
-/* ===== 瘦高卡片 ===== */
+/* ===== 封面背景化卡片 ===== */
 .song-card {
     position: relative;
-    height: 165px;
-    background: linear-gradient(135deg, #fff 0%, #fff8fb 100%);
-    border-radius: 12px;
-    border: 2px solid #fff;
-    box-shadow: 0 4px 10px rgba(255,118,184,0.15);
+    height: 175px;
+    border-radius: 14px;
+    border: 2.5px solid #fff;
+    box-shadow: 0 6px 15px rgba(255,118,184,0.2);
     display: flex;
     flex-direction: column;
-    padding: 10px;
+    padding: 12px;
     overflow: hidden;
+    background-color: #fff;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
-
-/* 顶部难度颜色条 */
+.card-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.82);
+    z-index: 2;
+}
 .card-top-bar {
     position: absolute;
     top: 0; left: 0; right: 0;
-    height: 5px;
-    z-index: 1;
-    border-radius: 12px 12px 0 0;
+    height: 6px;
+    z-index: 10;
+    border-radius: 14px 14px 0 0;
 }
 .song-card[data-lvn="1"] .card-top-bar,
 .song-card[data-lvn="2"] .card-top-bar,
@@ -146,121 +156,88 @@ body {
 .song-card[data-lvn="14"] .card-top-bar,
 .song-card[data-lvn="15"] .card-top-bar { background: var(--color-remaster); }
 
-/* 歌名 */
+/* 内容布局 */
+.song-content {
+    position: relative;
+    z-index: 5;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
 .song-name {
-    font-size: 11.5px;
+    font-size: 12px;
     font-weight: 900;
     color: var(--pink-main);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin-bottom: 10px;
-    padding-right: 10px;
+    padding-right: 50px;
 }
-
-/* 成就数值 */
 .achv-area {
     display: flex;
     align-items: center;
-    margin-bottom: 8px;
+    margin: 5px 0;
 }
-.arrows {
-    color: var(--pink-main);
-    font-size: 10px;
-    letter-spacing: -2px;
-    opacity: 0.35;
-    margin-right: 5px;
-    flex-shrink: 0;
-}
-.achv-val {
-    font-size: 21px;
-    font-weight: 900;
-    color: #444;
-}
+.arrows { color: var(--pink-main); font-size: 11px; letter-spacing: -2px; opacity: 0.5; margin-right: 6px; flex-shrink: 0; }
+.achv-val { font-size: 23px; font-weight: 900; color: #333; }
+.meta-area { font-size: 12px; font-weight: bold; color: #555; line-height: 1.5; }
+.meta-area .ra { color: var(--color-master); font-size: 13px; }
 
-/* 等级与 RA */
-.meta-area {
-    font-size: 11px;
-    font-weight: bold;
-    color: #888;
-    line-height: 1.4;
+/* 底部信息行 */
+.bottom-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
 }
-.meta-area b { color: #555; }
-.meta-area .ra { color: var(--color-master); }
-
-/* Rank 徽章 */
 .rank-badge {
-    position: absolute;
-    bottom: 10px; left: 10px;
     background: var(--pink-main);
     color: #fff;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 12px;
+    padding: 2px 10px;
+    border-radius: 5px;
+    font-size: 13px;
     font-weight: 900;
-    z-index: 5;
+}
+.ribbon-num {
+    font-size: 15px;
+    font-weight: 900;
+    color: rgba(0,0,0,0.15);
 }
 
-/* 右下封面区 */
-.jacket-box {
+/* FC/SSS/SYNC 图标 - 右上角 */
+.song-icons {
     position: absolute;
-    bottom: 10px; right: 8px;
-    width: 75px; height: 75px;
-    z-index: 3;
+    top: 10px; right: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    z-index: 10;
+    align-items: flex-end;
 }
-.jacket {
-    width: 100%; height: 100%;
-    border-radius: 6px;
-    object-fit: cover;
-    border: 2px solid #fff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+.song-icons img {
+    height: 22px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
 }
 
 /* 类型标签 */
-.type-tag {
+.type-label {
     position: absolute;
-    top: -5px; right: -5px;
-    font-size: 8px;
-    padding: 1px 5px;
-    border-radius: 3px;
+    bottom: 45px; right: 10px;
+    font-size: 10px;
     font-weight: 900;
     color: #fff;
+    padding: 1px 6px;
+    border-radius: 4px;
     z-index: 5;
+    opacity: 0.8;
 }
-.type-tag.song-dx { background: var(--color-master); }
-.type-tag.song-std { background: var(--color-expert); }
-
-/* FC/FS 图标 */
-.song-icons {
-    position: absolute;
-    top: 5px; right: 5px;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    z-index: 6;
-}
-.song-icons img {
-    height: 16px;
-    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.4));
-}
-
-/* 绶带编号 */
-.ribbon {
-    position: absolute;
-    bottom: 0; right: 0;
-    background: #ff4a8d;
-    color: #fff;
-    padding: 2px 10px;
-    font-size: 12px;
-    font-weight: 900;
-    border-radius: 8px 0 0 0;
-    z-index: 7;
-}
+.type-label.std { background: var(--color-expert); }
+.type-label.dx { background: var(--color-master); }
 
 /* 页脚 */
 .footer {
     text-align: center;
-    padding: 20px;
+    padding: 24px;
     font-size: 12px;
     color: #bbb;
     font-weight: 600;
@@ -271,9 +248,7 @@ body {
 <body>
 <div class="container">
     <div class="header">
-        <!-- 底层：姓名框 -->
         <img class="header-plate" src="{{plateAsset}}" alt="Name Plate">
-        <!-- 顶层：装饰框 -->
         {{#frameAsset}}<img class="header-frame" src="{{frameAsset}}" alt="Frame">{{/frameAsset}}
 
         <div class="user-block">
@@ -281,7 +256,7 @@ body {
             <div class="name-area">
                 <div class="rating-box">
                     RATING {{rating}}
-                    <span class="rating-sub">{{standard_total}}+{{dx_total}}</span>
+                    <span class="rating-sub">{{standard_total}} + {{dx_total}}</span>
                 </div>
                 <div class="nickname">{{nickname}}</div>
             </div>
@@ -291,33 +266,32 @@ body {
     <div class="section-title standard">STANDARD BEST 35</div>
     <div class="song-grid">
     {{#standard}}
-    <div class="song-card" data-lvn="{{level_num}}" data-rate="{{rate}}">
+    <div class="song-card" data-lvn="{{level_num}}" data-rate="{{rate}}" style="background-image: url('{{jacket_url}}');">
+        <div class="card-overlay"></div>
         <div class="card-top-bar"></div>
 
-        <div class="song-name">{{song_name}}</div>
-
-        <div class="achv-area">
-            <span class="arrows">>>>>>></span>
-            <span class="achv-val">{{achievements}}%</span>
+        <div class="song-icons">
+            <img src="{{rate_icon}}" alt="{{rate}}">
+            {{#fc}}<img src="{{fc_icon}}" alt="FC">{{/fc}}
+            {{#fs}}<img src="{{fs_icon}}" alt="FS">{{/fs}}
         </div>
 
-        <div class="meta-area">
-            <div><b>Lv.{{level}}</b></div>
-            <div class="ra">RA:{{dx_rating}}</div>
-        </div>
-
-        <div class="rank-badge">{{rate}}</div>
-
-        <div class="jacket-box">
-            <img class="jacket" src="{{jacket_url}}" alt="{{song_name}}">
-            <div class="type-tag song-std">STD</div>
-            <div class="song-icons">
-                {{#fc}}<img src="{{fc_icon}}" alt="FC">{{/fc}}
-                {{#fs}}<img src="{{fs_icon}}" alt="FS">{{/fs}}
-                <img src="{{rate_icon}}" alt="{{rate}}">
+        <div class="song-content">
+            <div class="song-name">{{song_name}}</div>
+            <div class="achv-area">
+                <span class="arrows">>>>>>></span>
+                <span class="achv-val">{{achievements}}%</span>
             </div>
-            <div class="ribbon">#{{index}}</div>
+            <div class="meta-area">
+                <div><b>Lv.{{level}}</b></div>
+                <div class="ra">RA:{{dx_rating}}</div>
+            </div>
+            <div class="bottom-info">
+                <div class="rank-badge">{{rate}}</div>
+                <div class="ribbon-num">#{{index}}</div>
+            </div>
         </div>
+        <div class="type-label std">STD</div>
     </div>
     {{/standard}}
     </div>
@@ -325,33 +299,32 @@ body {
     <div class="section-title dx">DX BEST 15</div>
     <div class="song-grid">
     {{#dx}}
-    <div class="song-card" data-lvn="{{level_num}}" data-rate="{{rate}}">
+    <div class="song-card" data-lvn="{{level_num}}" data-rate="{{rate}}" style="background-image: url('{{jacket_url}}');">
+        <div class="card-overlay"></div>
         <div class="card-top-bar"></div>
 
-        <div class="song-name">{{song_name}}</div>
-
-        <div class="achv-area">
-            <span class="arrows">>>>>>></span>
-            <span class="achv-val">{{achievements}}%</span>
+        <div class="song-icons">
+            <img src="{{rate_icon}}" alt="{{rate}}">
+            {{#fc}}<img src="{{fc_icon}}" alt="FC">{{/fc}}
+            {{#fs}}<img src="{{fs_icon}}" alt="FS">{{/fs}}
         </div>
 
-        <div class="meta-area">
-            <div><b>Lv.{{level}}</b></div>
-            <div class="ra">RA:{{dx_rating}}</div>
-        </div>
-
-        <div class="rank-badge">{{rate}}</div>
-
-        <div class="jacket-box">
-            <img class="jacket" src="{{jacket_url}}" alt="{{song_name}}">
-            <div class="type-tag song-dx">DX</div>
-            <div class="song-icons">
-                {{#fc}}<img src="{{fc_icon}}" alt="FC">{{/fc}}
-                {{#fs}}<img src="{{fs_icon}}" alt="FS">{{/fs}}
-                <img src="{{rate_icon}}" alt="{{rate}}">
+        <div class="song-content">
+            <div class="song-name">{{song_name}}</div>
+            <div class="achv-area">
+                <span class="arrows">>>>>>></span>
+                <span class="achv-val">{{achievements}}%</span>
             </div>
-            <div class="ribbon">#{{index}}</div>
+            <div class="meta-area">
+                <div><b>Lv.{{level}}</b></div>
+                <div class="ra">RA:{{dx_rating}}</div>
+            </div>
+            <div class="bottom-info">
+                <div class="rank-badge">{{rate}}</div>
+                <div class="ribbon-num">#{{index}}</div>
+            </div>
         </div>
+        <div class="type-label dx">DX</div>
     </div>
     {{/dx}}
     </div>
