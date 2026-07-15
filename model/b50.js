@@ -24,6 +24,23 @@ class B50 {
         }
     }
 
+    // 下载网络图片并转为 base64 data URI（不存本地文件）
+    async _fetchImageAsDataURI(url, timeoutMs = 10000) {
+        try {
+            const controller = new AbortController()
+            const timeout = setTimeout(() => controller.abort(), timeoutMs)
+            const resp = await fetch(url, { signal: controller.signal })
+            clearTimeout(timeout)
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
+            const buf = Buffer.from(await resp.arrayBuffer())
+            const contentType = resp.headers.get('content-type') || 'image/png'
+            return `data:${contentType};base64,${buf.toString('base64')}`
+        } catch (e) {
+            logger.warn(`[b50] 下载图片失败: ${url} - ${e.message}`)
+            return ''
+        }
+    }
+
     // 获取玩家best50
     async getB50(userId) {
         try {
@@ -41,23 +58,36 @@ class B50 {
             const response = await adapter.getPlayerBest50(userData[userId].friendCode)
             const playerInfo = await adapter.getPlayerInfo(userData[userId].friendCode)
 
-            const assetsBase = adapter.getAssetsBaseURL()
-            const iconAsset = playerInfo.data.icon?.id ? `${assetsBase}/icon/${playerInfo.data.icon.id}.png` : ''
-            const plateAsset = playerInfo.data.name_plate?.id ? `${assetsBase}/plate/${playerInfo.data.name_plate.id}.png` : ''
-            const frameAsset = playerInfo.data.frame?.id ? `${assetsBase}/frame/${playerInfo.data.frame.id}.png` : ''
+            // 预下载头像/姓名框/背景框为 base64 data URI（避免 Puppeteer 网络问题）
+            const [iconDataURI, plateDataURI, frameDataURI] = await Promise.all([
+                playerInfo.data.icon?.id ? this._fetchImageAsDataURI(`${adapter.getAssetsBaseURL()}/icon/${playerInfo.data.icon.id}.png`) : Promise.resolve(''),
+                playerInfo.data.name_plate?.id ? this._fetchImageAsDataURI(`${adapter.getAssetsBaseURL()}/plate/${playerInfo.data.name_plate.id}.png`) : Promise.resolve(''),
+                playerInfo.data.frame?.id ? this._fetchImageAsDataURI(`${adapter.getAssetsBaseURL()}/frame/${playerInfo.data.frame.id}.png`) : Promise.resolve('')
+            ])
             
-            // 处理标准谱和DX谱的数据
+            // 处理标准谱和DX谱的数据（jacket 下载为 base64）
             const processSong = async (song) => {
                 const fcIcon = song.fc ? await adapter.getMusicIconAsset(song.fc) : null
                 const fsIcon = song.fs ? await adapter.getMusicIconAsset(song.fs) : null
                 const rateIcon = await adapter.getMusicRateAsset(song.rate)
                 const levelNum = String(song.level || '0').replace(/[^0-9]/g, '') || '0'
 
+                // 预下载曲绘为 base64 data URI（多源 fallback）
+                let jacketDataURI = await this._fetchImageAsDataURI(
+                    `https://maimai.lxns.net/assets/maimai/jacket/${song.id}.png`
+                )
+                if (!jacketDataURI) {
+                    jacketDataURI = await this._fetchImageAsDataURI(`https://maimai.diving-fish.com/covers/${song.id}.png`)
+                }
+                if (!jacketDataURI) {
+                    jacketDataURI = await this._fetchImageAsDataURI(`https://assets2.lxns.net/maimai/jacket/${song.id}.png`)
+                }
+
                 return {
                     ...song,
                     song_id: String(song.id).padStart(5, '0'),
                     level_num: levelNum,
-                    jacket_url: `https://maimai.lxns.net/assets/maimai/jacket/${song.id}.png`,
+                    jacket_url: jacketDataURI,
                     fc_icon: fcIcon ? `data:image/webp;base64,${fs.readFileSync(fcIcon).toString('base64')}` : '',
                     fs_icon: fsIcon ? `data:image/webp;base64,${fs.readFileSync(fsIcon).toString('base64')}` : '',
                     rate_icon: `data:image/webp;base64,${fs.readFileSync(rateIcon).toString('base64')}`
@@ -76,9 +106,9 @@ class B50 {
                 // 用户信息
                 nickname: playerInfo.data.name,
                 rating: playerInfo.data.rating,
-                iconAsset: iconAsset,
-                plateAsset: plateAsset,
-                frameAsset: frameAsset,
+                iconAsset: iconDataURI,
+                plateAsset: plateDataURI,
+                frameAsset: frameDataURI,
                 // B50数据
                 standard_total: response.data.standard_total,
                 dx_total: response.data.dx_total,
@@ -112,13 +142,21 @@ class B50 {
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
-                '--allow-file-access-from-files',
                 '--disable-web-security'
             ]
         })
         
         try {
             const page = await browser.newPage()
+            await page.setDefaultNavigationTimeout(15000)
+            
+            // 统计 base64 长度辅助调试
+            let embeddedCount = 0, emptyCount = 0
+            if (data.iconAsset?.startsWith('data:')) embeddedCount++
+            if (data.plateAsset?.startsWith('data:')) embeddedCount++
+            data.standard.forEach(s => s.jacket_url?.startsWith('data:') ? embeddedCount++ : emptyCount++)
+            data.dx.forEach(s => s.jacket_url?.startsWith('data:') ? embeddedCount++ : emptyCount++)
+            logger.info(`[b50] 图片嵌入: ${embeddedCount}/${embeddedCount + emptyCount} base64, ${emptyCount} 缺失`)
             
             // 读取HTML模板
             let template = fs.readFileSync('./plugins/maimai-plugin/resources/html/b50.html', 'utf8')
@@ -126,8 +164,8 @@ class B50 {
             // 替换用户信息和基础数据
             template = template.replace(/\{\{nickname\}\}/g, data.nickname)
             template = template.replace(/\{\{rating\}\}/g, data.rating)
-            template = template.replace(/\{\{iconAsset\}\}/g, data.iconAsset)
-            template = template.replace(/\{\{plateAsset\}\}/g, data.plateAsset)
+            template = template.replace(/\{\{iconAsset\}\}/g, data.iconAsset || '')
+            template = template.replace(/\{\{plateAsset\}\}/g, data.plateAsset || '')
             // 处理背景框，有则显示否则清空
             template = template.replace(
                 /\{\{#frameAsset\}\}([\s\S]*?)\{\{\/frameAsset\}\}/g,
@@ -143,7 +181,7 @@ class B50 {
                 let songHtml = standardSection
                 songHtml = songHtml.replace(/\{\{song_name\}\}/g, song.song_name)
                 songHtml = songHtml.replace(/\{\{song_id\}\}/g, song.song_id)
-                songHtml = songHtml.replace(/\{\{jacket_url\}\}/g, song.jacket_url)
+                songHtml = songHtml.replace(/\{\{jacket_url\}\}/g, song.jacket_url || '')
                 songHtml = songHtml.replace(/\{\{level\}\}/g, song.level)
                 songHtml = songHtml.replace(/\{\{level_num\}\}/g, song.level_num)
                 songHtml = songHtml.replace(/\{\{dx_score\}\}/g, song.dx_score)
@@ -175,7 +213,7 @@ class B50 {
                 let songHtml = dxSection
                 songHtml = songHtml.replace(/\{\{song_name\}\}/g, song.song_name)
                 songHtml = songHtml.replace(/\{\{song_id\}\}/g, song.song_id)
-                songHtml = songHtml.replace(/\{\{jacket_url\}\}/g, song.jacket_url)
+                songHtml = songHtml.replace(/\{\{jacket_url\}\}/g, song.jacket_url || '')
                 songHtml = songHtml.replace(/\{\{level\}\}/g, song.level)
                 songHtml = songHtml.replace(/\{\{level_num\}\}/g, song.level_num)
                 songHtml = songHtml.replace(/\{\{dx_score\}\}/g, song.dx_score)
@@ -200,19 +238,7 @@ class B50 {
             template = template.replace(/\{\{#dx\}\}[\s\S]*?\{\{\/dx\}\}/g, dxHtml)
             
             // 设置页面内容
-            await page.setContent(template)
-            
-            // 等待图片加载
-            await page.waitForSelector('img')
-            await page.evaluate(() => {
-                return Promise.all(
-                    Array.from(document.images)
-                        .filter(img => !img.complete)
-                        .map(img => new Promise(resolve => {
-                            img.onload = img.onerror = resolve
-                        }))
-                )
-            })
+            await page.setContent(template, { waitUntil: 'networkidle0', timeout: 15000 })
             
             // 设置视口大小（与CSS容器宽度1400px匹配）
             await page.setViewport({
@@ -220,8 +246,8 @@ class B50 {
                 height: 800
             })
             
-            // 等待内容加载完成
-            await page.waitForSelector('.container')
+            // 确保 .container 已渲染
+            await page.waitForSelector('.container', { timeout: 10000 })
             
             // 确保临时目录存在
             const dir = path.dirname(imagePath)
@@ -236,6 +262,7 @@ class B50 {
                 type: 'png'
             })
             
+            logger.info(`[b50] 渲染完成: ${imagePath}`)
             return imagePath
             
         } finally {
