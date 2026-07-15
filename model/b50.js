@@ -256,7 +256,7 @@ class B50 {
             
             // 等待渲染稳定
             await page.waitForSelector('.container', { timeout: 10000 })
-            await page.waitForTimeout(500)
+            await new Promise(r => setTimeout(r, 500))
             
             // 检查图片渲染情况
             const imgStats = await page.evaluate(() => {
