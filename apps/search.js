@@ -9,6 +9,8 @@ import { frameInfo } from '../model/frameinfo.js'
 
 let searchHistory = {}  // 存储格式: { QQ号: { id: 搜索ID, type: 搜索类型 } }
 
+export { searchHistory }
+
 export class PlayerInfoHandler extends plugin {
     constructor() {
         super({

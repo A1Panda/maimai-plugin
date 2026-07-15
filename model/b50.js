@@ -3,17 +3,11 @@ import path from 'node:path'
 import yaml from 'yaml'
 import puppeteer from 'puppeteer'
 import APIAdapter from '../components/Adapter.js'
+import assetManager from '../components/AssetManager.js'
 
 class B50 {
     constructor() {
         this.userDataPath = './plugins/maimai-plugin/configs/userdata.yaml'
-        // 读取临时文件路径配置
-        try {
-            const mainConfig = yaml.parse(fs.readFileSync('./plugins/maimai-plugin/configs/config.yaml', 'utf8'))
-            this.tempPath = mainConfig.tempPath || './plugins/maimai-plugin/temp'
-        } catch {
-            this.tempPath = './plugins/maimai-plugin/temp'
-        }
     }
 
     // 获取用户数据
@@ -28,49 +22,6 @@ class B50 {
             logger.error('[maimai-plugin] 读取用户数据失败')
             logger.error(err)
             return {}
-        }
-    }
-
-    // 下载网络图片并转为 base64 data URI，支持本地缓存
-    async _fetchImageAsDataURI(url, cacheKey = '', timeoutMs = 10000) {
-        const cacheDir = path.join(process.cwd(), this.tempPath || 'temp/maimai-plugin', 'LX_assets', 'jackets')
-        const cachePath = cacheKey ? path.join(cacheDir, `${cacheKey}.png`) : null
-        
-        // 命中本地缓存，直接读取
-        if (cachePath && fs.existsSync(cachePath)) {
-            try {
-                const buf = fs.readFileSync(cachePath)
-                return `data:image/png;base64,${buf.toString('base64')}`
-            } catch {}
-        }
-        
-        try {
-            const controller = new AbortController()
-            const timeout = setTimeout(() => controller.abort(), timeoutMs)
-            const resp = await fetch(url, {
-                signal: controller.signal,
-                headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                    'Accept': 'image/avif,image/webp,image/png,image/svg+xml,image/*;q=0.8,*/*;q=0.5',
-                    'Referer': 'https://maimai.lxns.net/'
-                }
-            })
-            clearTimeout(timeout)
-            if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
-            const contentType = (resp.headers.get('content-type') || '').toLowerCase()
-            if (!contentType.startsWith('image/')) throw new Error(`非图片响应: ${contentType}`)
-            const buf = Buffer.from(await resp.arrayBuffer())
-            // 保存到本地缓存
-            if (cachePath) {
-                try {
-                    if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir, { recursive: true })
-                    fs.writeFileSync(cachePath, buf)
-                } catch {}
-            }
-            return `data:${contentType};base64,${buf.toString('base64')}`
-        } catch (e) {
-            logger.debug(`[b50] 下载图片失败: ${url} - ${e.message}`)
-            return ''
         }
     }
 
@@ -91,31 +42,23 @@ class B50 {
             const response = await adapter.getPlayerBest50(userData[userId].friendCode)
             const playerInfo = await adapter.getPlayerInfo(userData[userId].friendCode)
 
-            // 预下载头像/姓名框/背景框为 base64 data URI
+            // 头像/姓名框/背景框：通过 AssetManager 下载并转 base64
             const [iconDataURI, plateDataURI, frameDataURI] = await Promise.all([
-                playerInfo.data.icon?.id ? this._fetchImageAsDataURI(`${adapter.getAssetsBaseURL()}/icon/${playerInfo.data.icon.id}.png`) : Promise.resolve(''),
-                playerInfo.data.name_plate?.id ? this._fetchImageAsDataURI(`${adapter.getAssetsBaseURL()}/plate/${playerInfo.data.name_plate.id}.png`) : Promise.resolve(''),
-                playerInfo.data.frame?.id ? this._fetchImageAsDataURI(`${adapter.getAssetsBaseURL()}/frame/${playerInfo.data.frame.id}.png`) : Promise.resolve('')
+                playerInfo.data.icon?.id ? assetManager.getAssetAsBase64('icon', playerInfo.data.icon.id) : Promise.resolve(''),
+                playerInfo.data.name_plate?.id ? assetManager.getAssetAsBase64('plate', playerInfo.data.name_plate.id) : Promise.resolve(''),
+                playerInfo.data.frame?.id ? assetManager.getAssetAsBase64('frame', playerInfo.data.frame.id) : Promise.resolve('')
             ])
             
-            // 处理标准谱和DX谱的数据（jacket 下载为 base64）
+            // 处理标准谱和DX谱的数据（jacket/图标 下载为 base64）
             const processSong = async (song) => {
+                // 曲绘：AssetManager 统一管理（缓存 + 多源 fallback）
+                const jacketDataURI = await assetManager.getAssetAsBase64('jacket', song.id)
+                
+                // FC/FS/评级图标：仍走 adapter（有类型校验逻辑）
                 const fcIcon = song.fc ? await adapter.getMusicIconAsset(song.fc) : null
                 const fsIcon = song.fs ? await adapter.getMusicIconAsset(song.fs) : null
                 const rateIcon = await adapter.getMusicRateAsset(song.rate)
                 const levelNum = String(song.level || '0').replace(/[^0-9]/g, '') || '0'
-
-                // 预下载曲绘为 base64 data URI（多源 fallback + 本地缓存）
-                // assets2 优先（SD曲覆盖好，无WAF拦截），diving-fish 补充 DX 新曲
-                let jacketDataURI = await this._fetchImageAsDataURI(
-                    `https://assets2.lxns.net/maimai/jacket/${song.id}.png`, String(song.id)
-                )
-                if (!jacketDataURI) {
-                    jacketDataURI = await this._fetchImageAsDataURI(`https://maimai.diving-fish.com/covers/${song.id}.png`, String(song.id))
-                }
-                if (!jacketDataURI) {
-                    jacketDataURI = await this._fetchImageAsDataURI(`https://maimai.lxns.net/assets/maimai/jacket/${song.id}.png`, String(song.id))
-                }
 
                 return {
                     ...song,

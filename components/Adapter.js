@@ -151,14 +151,6 @@ export default class APIAdapter {
 
 
 //资源类
-    // 获取资源基础 URL
-    getAssetsBaseURL() {
-        return this.api.getAssetsBaseURL()
-    }
-    // 获取 API 基础 URL
-    getBaseURL() {
-        return this.api.getBaseURL()
-    }
     // 获取头像资源
     async getIconAsset(iconId) {
         return await this.api.getIconAsset(iconId)
@@ -166,6 +158,10 @@ export default class APIAdapter {
     // 获取姓名框资源
     async getPlateAsset(plateId) {
         return await this.api.getPlateAsset(plateId)
+    }
+    // 获取背景框资源
+    async getFrameAsset(frameId) {
+        return await this.api.getFrameAsset(frameId)
     }
     // 获取曲绘资源
     async getJacketAsset(songId) {

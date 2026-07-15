@@ -3,6 +3,7 @@ import path from 'node:path'
 import puppeteer from 'puppeteer'
 import Mustache from 'mustache'
 import APIAdapter from '../components/Adapter.js'
+import assetManager from '../components/AssetManager.js'
 
 class FrameInfo {
     // 获取背景信息
@@ -12,8 +13,8 @@ class FrameInfo {
             const adapter = new APIAdapter()
             const response = await adapter.getFrameInfo(frameId)
             
-            // 获取背景资源
-            //const frameAsset = await adapter.getFrameAsset(parseInt(frameId))
+            // 背景图片 - 通过 AssetManager 预下载为 base64
+            const frameAsset = await assetManager.getAssetAsBase64('frame', response.id)
 
             // 处理获取条件
             let requirements = []
@@ -92,7 +93,7 @@ class FrameInfo {
                 description: response.description,
                 genre: response.genre,
                 // 背景图片
-                frame: `${adapter.getAssetsBaseURL()}/frame/${response.id}.png`,
+                frame: frameAsset,
                 // 获取条件
                 hasRequirements: requirements.length > 0,
                 requirements: requirements
@@ -120,17 +121,15 @@ class FrameInfo {
     async render(data) {
         const imagePath = path.join(process.cwd(), 'temp', 'maimai-plugin', `frameinfo_${Date.now()}.png`)
         
-        // 启动浏览器
         const browser = await puppeteer.launch({
             headless: 'new',
-            args: [
-                '--no-sandbox',
-                '--disable-setuid-sandbox'
-            ]
+            args: ['--no-sandbox', '--disable-setuid-sandbox']
         })
         
         try {
             const page = await browser.newPage()
+            await page.setDefaultNavigationTimeout(15000)
+            await page.setViewport({ width: 1000, height: 800 })
             
             // 读取HTML模板
             let template = fs.readFileSync('./plugins/maimai-plugin/resources/html/frameinfo.html', 'utf8')
@@ -138,42 +137,18 @@ class FrameInfo {
             // 使用Mustache渲染模板
             const rendered = Mustache.render(template, data)
             
-            // 设置页面内容
-            await page.setContent(rendered)
+            // 保存 HTML 到临时文件，用 file:// 加载（全部 base64，无网络依赖）
+            const htmlPath = path.join(process.cwd(), 'temp', 'maimai-plugin', `frameinfo_${Date.now()}.html`)
+            const htmlDir = path.dirname(htmlPath)
+            if (!fs.existsSync(htmlDir)) fs.mkdirSync(htmlDir, { recursive: true })
+            fs.writeFileSync(htmlPath, rendered, 'utf8')
             
-            // 等待图片加载
-            if (data.frame) {
-                await page.waitForSelector('img')
-                await page.evaluate(() => {
-                    return Promise.all(
-                        Array.from(document.images)
-                            .filter(img => !img.complete)
-                            .map(img => new Promise(resolve => {
-                                img.onload = img.onerror = resolve
-                            }))
-                    )
-                })
-            }
-            
-            // 等待内容加载
-            await page.waitForSelector('.container')
+            await page.goto(`file:///${htmlPath.replace(/\\/g, '/')}`, { waitUntil: 'domcontentloaded', timeout: 15000 })
+            await page.waitForSelector('.container', { timeout: 10000 })
             
             // 获取实际内容高度
-            const bodyHeight = await page.evaluate(() => {
-                return document.querySelector('.container').offsetHeight
-            })
-            
-            // 设置视口大小
-            await page.setViewport({
-                width: 1000,
-                height: bodyHeight + 40
-            })
-            
-            // 确保临时目录存在
-            const dir = path.dirname(imagePath)
-            if (!fs.existsSync(dir)) {
-                fs.mkdirSync(dir, { recursive: true })
-            }
+            const bodyHeight = await page.evaluate(() => document.querySelector('.container').offsetHeight)
+            await page.setViewport({ width: 1000, height: bodyHeight + 40 })
             
             // 截图
             await page.screenshot({

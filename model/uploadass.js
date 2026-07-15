@@ -34,6 +34,9 @@ export class UploadAssets {
         if (type === '头像') {
             return await this.getIconAsset(parseInt(id))
         }
+        if (type === '背景') {
+            return await this.getFrameAsset(parseInt(id))
+        }
         if (type === '曲绘') {
             return await this.getJacketAsset(parseInt(id))
         }
@@ -51,6 +54,9 @@ export class UploadAssets {
         }
         if (type === '头像') {
             return await this.getIconAsset(parseInt(id))
+        }
+        if (type === '背景框') {
+            return await this.getFrameAsset(parseInt(id))
         }
         if (type === '曲绘') {
             return await this.getJacketAsset(parseInt(id))
@@ -89,6 +95,18 @@ export class UploadAssets {
             return await adapter.getPlateAsset(plateId)
         } catch (err) {
             logger.error('[maimai-plugin] 获取姓名框失败')
+            logger.error(err)
+            return null
+        }
+    }
+
+    // 获取背景框
+    async getFrameAsset(frameId) {
+        try {
+            const adapter = new APIAdapter()
+            return await adapter.getFrameAsset(frameId)
+        } catch (err) {
+            logger.error('[maimai-plugin] 获取背景框失败')
             logger.error(err)
             return null
         }

@@ -5,6 +5,7 @@ import { plateInfo } from '../model/Plateinfo.js'
 import { iconInfo } from '../model/iconinfo.js'
 import { frameInfo } from '../model/frameinfo.js'
 import { uploadAssets } from '../model/uploadass.js'
+import { searchHistory } from './search.js'
 
 export class RandomHandler extends plugin {
     constructor() {
@@ -56,8 +57,15 @@ export class RandomHandler extends plugin {
                 return false
             }
             
-            // 获取资源文件
-            const asset = type === '背景' ? null : await uploadAssets.uploadRandom(type, id)
+            // 获取资源文件（仅歌曲类型下载音频，其余类型提醒使用 #mai上传）
+            let asset = null
+            if (type === '歌曲') {
+                try {
+                    asset = await uploadAssets.uploadRandom(type, id)
+                } catch (e) {
+                    logger.warn(`[maimai-plugin] 随机资源下载失败: ${type}/${id} - ${e.message}`)
+                }
+            }
             
             // 获取资源信息
             let result
@@ -88,6 +96,20 @@ export class RandomHandler extends plugin {
                     return true
             }
 
+            // 保存搜索历史，支持后续上传
+            const historyType = type === '背景框' ? '背景' : type
+            let historyName = String(id)
+            if (type === '歌曲' || type === '曲绘') {
+                historyName = result.songname || String(id)
+            } else if (result?.name) {
+                historyName = result.name
+            }
+            searchHistory[e.user_id] = {
+                id: id,
+                type: historyType,
+                name: historyName
+            }
+
             // 撤回等待消息
             try {
                 const t = e.group || e.friend
@@ -111,14 +133,11 @@ export class RandomHandler extends plugin {
                         await e.reply(segment.record(asset))
                     }
                 } else if (result.isImage) {
-                    // 其他类型的图片资源
+                    // 其他类型的图片资源（不上传原图，提醒使用 #mai上传）
                     await e.reply([
-                        `随机${type}ID为: ${id}`,
+                        `随机${type}ID为: ${id}\n可使用 #mai上传 获取资源文件`,
                         segment.image(result.message)
                     ])
-                    if (asset) {
-                        await e.reply(segment.image(asset))
-                    }
                 }
                 return true
             }

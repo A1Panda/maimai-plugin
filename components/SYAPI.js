@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import yaml from 'yaml'
+import assetManager from './AssetManager.js'
 
 // 导出水鱼API类 - 完美适配水鱼 diving-fish API
 export default class SYAPI {
@@ -608,36 +609,93 @@ export default class SYAPI {
         }
     }
 
-    // ==================== 收藏品列表（水鱼不直接支持，返回空数据保证别名解析器不崩溃） ====================
+    // ==================== 收藏品列表（水鱼不直接支持，从落雪API补充获取） ====================
 
     async getIconList() {
-        // 水鱼API不支持头像列表，返回空数据避免别名解析器崩溃
-        logger.warn('[SYAPI] 水鱼API不支持头像列表，返回空数据')
-        return { icons: [] }
+        logger.mark('[SYAPI] 水鱼API不支持头像列表，尝试从落雪API获取...')
+        try {
+            const headers = { 'Content-Type': 'application/json' }
+            if (this.lxToken) headers['Authorization'] = this.lxToken
+            const response = await fetch(`${this.lxBaseURL}/api/v0/maimai/icon/list`, { headers })
+            if (!response.ok) throw new Error(`HTTP ${response.status}`)
+            const data = await response.json()
+            logger.mark(`[SYAPI] 从头像列表获取到 ${data?.icons?.length || 0} 个条目`)
+            return data
+        } catch (error) {
+            logger.warn(`[SYAPI] 从落雪获取头像列表失败: ${error.message}，返回空数据`)
+            return { icons: [] }
+        }
     }
 
     async getIconInfo(iconId) {
-        throw new Error('水鱼API不支持头像信息 - 请使用落雪API')
+        try {
+            const headers = { 'Content-Type': 'application/json' }
+            if (this.lxToken) headers['Authorization'] = this.lxToken
+            const response = await fetch(`${this.lxBaseURL}/api/v0/maimai/icon/${iconId}`, { headers })
+            if (!response.ok) throw new Error(`HTTP ${response.status}`)
+            return await response.json()
+        } catch (error) {
+            logger.error(`[SYAPI] 从落雪获取头像信息失败(id=${iconId}): ${error.message}`)
+            throw error
+        }
     }
 
     async getPlateList() {
-        // 水鱼API不支持姓名框列表，返回空数据避免别名解析器崩溃
-        logger.warn('[SYAPI] 水鱼API不支持姓名框列表，返回空数据')
-        return { plates: [] }
+        logger.mark('[SYAPI] 水鱼API不支持姓名框列表，尝试从落雪API获取...')
+        try {
+            const headers = { 'Content-Type': 'application/json' }
+            if (this.lxToken) headers['Authorization'] = this.lxToken
+            const response = await fetch(`${this.lxBaseURL}/api/v0/maimai/plate/list`, { headers })
+            if (!response.ok) throw new Error(`HTTP ${response.status}`)
+            const data = await response.json()
+            logger.mark(`[SYAPI] 姓名框列表获取到 ${data?.plates?.length || 0} 个条目`)
+            return data
+        } catch (error) {
+            logger.warn(`[SYAPI] 从落雪获取姓名框列表失败: ${error.message}，返回空数据`)
+            return { plates: [] }
+        }
     }
 
     async getPlateInfo(plateId) {
-        throw new Error('水鱼API不支持姓名框信息 - 请使用落雪API')
+        try {
+            const headers = { 'Content-Type': 'application/json' }
+            if (this.lxToken) headers['Authorization'] = this.lxToken
+            const response = await fetch(`${this.lxBaseURL}/api/v0/maimai/plate/${plateId}`, { headers })
+            if (!response.ok) throw new Error(`HTTP ${response.status}`)
+            return await response.json()
+        } catch (error) {
+            logger.error(`[SYAPI] 从落雪获取姓名框信息失败(id=${plateId}): ${error.message}`)
+            throw error
+        }
     }
 
     async getFrameList() {
-        // 水鱼API不支持背景框列表，返回空数据避免别名解析器崩溃
-        logger.warn('[SYAPI] 水鱼API不支持背景框列表，返回空数据')
-        return { frames: [] }
+        logger.mark('[SYAPI] 水鱼API不支持背景框列表，尝试从落雪API获取...')
+        try {
+            const headers = { 'Content-Type': 'application/json' }
+            if (this.lxToken) headers['Authorization'] = this.lxToken
+            const response = await fetch(`${this.lxBaseURL}/api/v0/maimai/frame/list`, { headers })
+            if (!response.ok) throw new Error(`HTTP ${response.status}`)
+            const data = await response.json()
+            logger.mark(`[SYAPI] 背景框列表获取到 ${data?.frames?.length || 0} 个条目`)
+            return data
+        } catch (error) {
+            logger.warn(`[SYAPI] 从落雪获取背景框列表失败: ${error.message}，返回空数据`)
+            return { frames: [] }
+        }
     }
 
     async getFrameInfo(frameId) {
-        throw new Error('水鱼API不支持背景框信息 - 请使用落雪API')
+        try {
+            const headers = { 'Content-Type': 'application/json' }
+            if (this.lxToken) headers['Authorization'] = this.lxToken
+            const response = await fetch(`${this.lxBaseURL}/api/v0/maimai/frame/${frameId}`, { headers })
+            if (!response.ok) throw new Error(`HTTP ${response.status}`)
+            return await response.json()
+        } catch (error) {
+            logger.error(`[SYAPI] 从落雪获取背景框信息失败(id=${frameId}): ${error.message}`)
+            throw error
+        }
     }
 
     async getCollectionGenreList() {
@@ -656,157 +714,53 @@ export default class SYAPI {
         throw new Error('水鱼API不支持通用收藏品信息 - 请使用落雪API')
     }
 
-    // ==================== 资源类（复用落雪CDN） ====================
-
-    getAssetsBaseURL() {
-        return `${this.assetsURL}/maimai`
-    }
-
-    getBaseURL() {
-        return this.lxBaseURL
-    }
-
-    async fetchAssetWithRetry(url, retries = 3, timeout = 15000) {
-        for (let i = 0; i < retries; i++) {
-            try {
-                const controller = new AbortController()
-                const timeoutId = setTimeout(() => controller.abort(), timeout)
-                const response = await fetch(url, { signal: controller.signal })
-                clearTimeout(timeoutId)
-                if (!response.ok) {
-                    // 404/403 等客户端错误不重试，直接抛出让调用方 fallback
-                    if (response.status >= 400 && response.status < 500) {
-                        throw Object.assign(new Error(`HTTP ${response.status}`), { status: response.status, noRetry: true })
-                    }
-                    throw new Error(`HTTP error! status: ${response.status}`)
-                }
-                return await response.arrayBuffer()
-            } catch (error) {
-                // 4xx 错误不重试
-                if (error.noRetry) throw error
-                logger.warn(`[maimai-plugin] 第${i + 1}次获取资源失败: ${url}`)
-                if (i === retries - 1) throw new Error(`获取资源失败: ${url}, 已重试${retries}次`)
-                await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)))
-            }
-        }
-    }
+    // ==================== 资源获取（委托 AssetManager） ====================
 
     async getIconAsset(iconId) {
-        const path = `${this.tempPath}/LX_assets/icons/${iconId}.png`
-        if (!fs.existsSync(path)) {
-            const url = `${this.assetsURL}/maimai/icon/${iconId}.png`
-            const buffer = await this.fetchAssetWithRetry(url)
-            await fs.promises.mkdir(`${this.tempPath}/LX_assets/icons`, { recursive: true })
-            await fs.promises.writeFile(path, Buffer.from(buffer))
-        }
-        return path
+        return assetManager.getAsset('icon', iconId)
     }
 
     async getPlateAsset(plateId) {
-        const path = `${this.tempPath}/LX_assets/plates/${plateId}.png`
-        if (!fs.existsSync(path)) {
-            const url = `${this.assetsURL}/maimai/plate/${plateId}.png`
-            const buffer = await this.fetchAssetWithRetry(url)
-            await fs.promises.mkdir(`${this.tempPath}/LX_assets/plates`, { recursive: true })
-            await fs.promises.writeFile(path, Buffer.from(buffer))
-        }
-        return path
+        return assetManager.getAsset('plate', plateId)
+    }
+
+    async getFrameAsset(frameId) {
+        return assetManager.getAsset('frame', frameId)
     }
 
     async getJacketAsset(songId) {
-        const path = `${this.tempPath}/LX_assets/jackets/${songId}.png`
-        if (!fs.existsSync(path)) {
-            try {
-                // 主源：落雪主站（覆盖所有ID，23/23 全命中）
-                let url = `${this.lxBaseURL}/assets/maimai/jacket/${songId}.png`
-                let buffer = await this.fetchAssetWithRetry(url)
-                await fs.promises.mkdir(`${this.tempPath}/LX_assets/jackets`, { recursive: true })
-                await fs.promises.writeFile(path, Buffer.from(buffer))
-            } catch (error) {
-                try {
-                    // 备用源1：水鱼 cover CDN（DX新曲）
-                    const url = `https://maimai.diving-fish.com/covers/${songId}.png`
-                    const buffer = await this.fetchAssetWithRetry(url)
-                    await fs.promises.mkdir(`${this.tempPath}/LX_assets/jackets`, { recursive: true })
-                    await fs.promises.writeFile(path, Buffer.from(buffer))
-                } catch (error2) {
-                    try {
-                        // 备用源2：落雪 CDN（旧曲）
-                        const url = `${this.assetsURL}/maimai/jacket/${songId}.png`
-                        const buffer = await this.fetchAssetWithRetry(url)
-                        await fs.promises.mkdir(`${this.tempPath}/LX_assets/jackets`, { recursive: true })
-                        await fs.promises.writeFile(path, Buffer.from(buffer))
-                    } catch (error3) {
-                        logger.warn(`[SYAPI] 曲绘资源获取失败(三源均404): ${songId}`)
-                        const defaultPath = './plugins/maimai-plugin/resources/assets/default_jacket.png'
-                        if (fs.existsSync(defaultPath)) return defaultPath
-                        throw error3
-                    }
-                }
-            }
+        try {
+            return await assetManager.getAsset('jacket', songId)
+        } catch {
+            const defaultPath = './plugins/maimai-plugin/resources/assets/default_jacket.png'
+            if (fs.existsSync(defaultPath)) return defaultPath
+            throw new Error(`曲绘资源获取失败: ${songId}`)
         }
-        return path
     }
 
     async getMusicAsset(songId) {
-        const path = `${this.tempPath}/LX_assets/music/${songId}.mp3`
-        if (!fs.existsSync(path)) {
-            const url = `${this.assetsURL}/maimai/music/${songId}.mp3`
-            const buffer = await this.fetchAssetWithRetry(url)
-            await fs.promises.mkdir(`${this.tempPath}/LX_assets/music`, { recursive: true })
-            await fs.promises.writeFile(path, Buffer.from(buffer))
-        }
-        return path
+        return assetManager.getAsset('music', songId)
     }
 
     async getClassRankAsset(id) {
-        const path = `${this.tempPath}/LX_assets/class_rank/${id}.webp`
-        if (!fs.existsSync(path)) {
-            const url = `${this.lxBaseURL}/assets/maimai/class_rank/${id}.webp`
-            const buffer = await this.fetchAssetWithRetry(url)
-            await fs.promises.mkdir(`${this.tempPath}/LX_assets/class_rank`, { recursive: true })
-            await fs.promises.writeFile(path, Buffer.from(buffer))
-        }
-        return path
+        return assetManager.getAsset('class_rank', id)
     }
 
     async getCourseRankAsset(id) {
-        const path = `${this.tempPath}/LX_assets/course_rank/${id}.webp`
-        if (!fs.existsSync(path)) {
-            const url = `${this.lxBaseURL}/assets/maimai/course_rank/${id}.webp`
-            const buffer = await this.fetchAssetWithRetry(url)
-            await fs.promises.mkdir(`${this.tempPath}/LX_assets/course_rank`, { recursive: true })
-            await fs.promises.writeFile(path, Buffer.from(buffer))
-        }
-        return path
+        return assetManager.getAsset('course_rank', id)
     }
 
     async getMusicRateAsset(rate) {
-        const path = `${this.tempPath}/LX_assets/music_rank/${rate}.webp`
-        if (!fs.existsSync(path)) {
-            const url = `${this.lxBaseURL}/assets/maimai/music_rank/${rate}.webp`
-            const buffer = await this.fetchAssetWithRetry(url)
-            await fs.promises.mkdir(`${this.tempPath}/LX_assets/music_rank`, { recursive: true })
-            await fs.promises.writeFile(path, Buffer.from(buffer))
-        }
-        return path
+        return assetManager.getAsset('music_rate', rate)
     }
 
     async getMusicIconAsset(type) {
         const validTypes = ['fcp', 'fc', 'app', 'ap', 'fsdp', 'fsd', 'fsp', 'fs', 'sync']
         if (!validTypes.includes(type)) return null
-        const path = `${this.tempPath}/LX_assets/music_icon/${type}.webp`
-        if (!fs.existsSync(path)) {
-            try {
-                const url = `${this.lxBaseURL}/assets/maimai/music_icon/${type}.webp`
-                const buffer = await this.fetchAssetWithRetry(url)
-                await fs.promises.mkdir(`${this.tempPath}/LX_assets/music_icon`, { recursive: true })
-                await fs.promises.writeFile(path, Buffer.from(buffer))
-            } catch (error) {
-                logger.error(`[maimai-plugin] 获取音乐图标失败: ${type}`)
-                return null
-            }
+        try {
+            return await assetManager.getAsset('music_icon', type)
+        } catch {
+            return null
         }
-        return path
     }
 }

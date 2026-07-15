@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import yaml from 'yaml'
+import assetManager from './AssetManager.js'
 
 
 // 导出落雪API类
@@ -1101,177 +1102,56 @@ export default class LXAPI {
 // 曲绘：/jacket/{song_id}.png
 // 音频：/music/{song_id}.mp3
 
-    // 获取资源基础 URL
-    getAssetsBaseURL() {
-        return `${this.assetsURL}/maimai`
-    }
+    // ==================== 资源获取（委托 AssetManager） ====================
 
-    // 获取 API 基础 URL（class_rank/course_rank 等非 CDN 资源）
-    getBaseURL() {
-        return this.baseURL
-    }
-
-    // 添加一个通用的资源获取函数
-    async fetchAssetWithRetry(url, retries = 3, timeout = 15000) {
-        for (let i = 0; i < retries; i++) {
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), timeout);
-                
-                const response = await fetch(url, {
-                    signal: controller.signal,
-                    timeout: timeout
-                });
-                
-                clearTimeout(timeoutId);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                return await response.arrayBuffer();
-            } catch (error) {
-                logger.warn(`[maimai-plugin] 第${i + 1}次获取资源失败: ${url}`);
-                logger.warn(error);
-                
-                if (i === retries - 1) {
-                    throw new Error(`获取资源失败: ${url}, 已重试${retries}次`);
-                }
-                
-                // 等待一段时间后重试
-                await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
-            }
-        }
-    }
-
-    // 获取头像资源 icon
     async getIconAsset(iconId) {
-        const path = `${this.tempPath}/LX_assets/icons/${iconId}.png`
-        if (!fs.existsSync(path)) {
-            const url = `${this.assetsURL}/maimai/icon/${iconId}.png`
-            const response = await fetch(url)
-            const buffer = await response.arrayBuffer()
-            await fs.promises.mkdir(`${this.tempPath}/LX_assets/icons`, { recursive: true })
-            await fs.promises.writeFile(path, Buffer.from(buffer))
-        }
-        return path
+        return assetManager.getAsset('icon', iconId)
     }
 
-    // 获取姓名框资源 name_plate 
     async getPlateAsset(plateId) {
-        const path = `${this.tempPath}/LX_assets/plates/${plateId}.png` 
-        if (!fs.existsSync(path)) {
-            const url = `${this.assetsURL}/maimai/plate/${plateId}.png`
-            const response = await fetch(url)
-            const buffer = await response.arrayBuffer()
-            await fs.promises.mkdir(`${this.tempPath}/LX_assets/plates`, { recursive: true })
-            await fs.promises.writeFile(path, Buffer.from(buffer))
-        }
-        return path
+        return assetManager.getAsset('plate', plateId)
     }
 
-    // 获取曲绘资源
+    async getFrameAsset(frameId) {
+        return assetManager.getAsset('frame', frameId)
+    }
+
     async getJacketAsset(songId) {
-        const path = `${this.tempPath}/LX_assets/jackets/${songId}.png`
-        if (!fs.existsSync(path)) {
-            try {
-                const url = `${this.assetsURL}/maimai/jacket/${songId}.png`
-                const buffer = await this.fetchAssetWithRetry(url);
-                await fs.promises.mkdir(`${this.tempPath}/LX_assets/jackets`, { recursive: true })
-                await fs.promises.writeFile(path, Buffer.from(buffer))
-            } catch (error) {
-                logger.error(`[maimai-plugin] 获取曲绘资源失败: ${songId}`);
-                // 使用默认图片
-                const defaultPath = './plugins/maimai-plugin/resources/assets/default_jacket.png'
-                if (fs.existsSync(defaultPath)) {
-                    return defaultPath
-                }
-                throw error;
-            }
+        try {
+            return await assetManager.getAsset('jacket', songId)
+        } catch (error) {
+            logger.error(`[maimai-plugin] 获取曲绘资源失败: ${songId}`)
+            const defaultPath = './plugins/maimai-plugin/resources/assets/default_jacket.png'
+            if (fs.existsSync(defaultPath)) return defaultPath
+            throw error
         }
-        return path
     }
 
-    // 获取音频资源
     async getMusicAsset(songId) {
-        const path = `${this.tempPath}/LX_assets/music/${songId}.mp3`
-        if (!fs.existsSync(path)) {
-            const url = `${this.assetsURL}/maimai/music/${songId}.mp3`
-            const response = await fetch(url)
-            const buffer = await response.arrayBuffer()
-            await fs.promises.mkdir(`${this.tempPath}/LX_assets/music`, { recursive: true })
-            await fs.promises.writeFile(path, Buffer.from(buffer))
-        }
-        return path
+        return assetManager.getAsset('music', songId)
     }
 
-
-
-//图标使用baseURL
-
-    //获取class_rank https://maimai.lxns.net/assets/maimai/class_rank/{id}.webp
     async getClassRankAsset(id) {
-        const path = `${this.tempPath}/LX_assets/class_rank/${id}.webp`
-        if (!fs.existsSync(path)) {
-            const url = `${this.baseURL}/assets/maimai/class_rank/${id}.webp`
-            const response = await fetch(url)
-            const buffer = await response.arrayBuffer()
-            await fs.promises.mkdir(`${this.tempPath}/LX_assets/class_rank`, { recursive: true })
-            await fs.promises.writeFile(path, Buffer.from(buffer))
-        }
-        return path
+        return assetManager.getAsset('class_rank', id)
     }
 
-    //获取course_rank https://maimai.lxns.net/assets/maimai/course_rank/{id}.webp
     async getCourseRankAsset(id) {
-        const path = `${this.tempPath}/LX_assets/course_rank/${id}.webp`
-        if (!fs.existsSync(path)) {
-            const url = `${this.baseURL}/assets/maimai/course_rank/${id}.webp`
-            const response = await fetch(url)
-            const buffer = await response.arrayBuffer()
-            await fs.promises.mkdir(`${this.tempPath}/LX_assets/course_rank`, { recursive: true })
-            await fs.promises.writeFile(path, Buffer.from(buffer))
-        }
-        return path
+        return assetManager.getAsset('course_rank', id)
     }
 
-
-    //	https://maimai.lxns.net/assets/maimai/music_rank/{等级}.webp
-    //获取等级Rate图标资源
     async getMusicRateAsset(rate) {
-        const path = `${this.tempPath}/LX_assets/music_rank/${rate}.webp`
-        if (!fs.existsSync(path)) {
-            const url = `${this.baseURL}/assets/maimai/music_rank/${rate}.webp`
-            const response = await fetch(url)
-            const buffer = await response.arrayBuffer()
-            await fs.promises.mkdir(`${this.tempPath}/LX_assets/music_rank`, { recursive: true })
-            await fs.promises.writeFile(path, Buffer.from(buffer))
-        }
-        return path
+        return assetManager.getAsset('music_rate', rate)
     }
 
-
-
-    // 获取音乐图标资源Fc/FS
     async getMusicIconAsset(type) {
         const validTypes = ['fcp', 'fc', 'app', 'ap', 'fsdp', 'fsd', 'fsp', 'fs', 'sync']
-        if (!validTypes.includes(type)) {
-            return null;
+        if (!validTypes.includes(type)) return null
+        try {
+            return await assetManager.getAsset('music_icon', type)
+        } catch (error) {
+            logger.error(`[maimai-plugin] 获取音乐图标失败: ${type}`)
+            return null
         }
-        
-        const path = `${this.tempPath}/LX_assets/music_icon/${type}.webp`
-        if (!fs.existsSync(path)) {
-            try {
-                const url = `${this.baseURL}/assets/maimai/music_icon/${type}.webp`
-                const buffer = await this.fetchAssetWithRetry(url);
-                await fs.promises.mkdir(`${this.tempPath}/LX_assets/music_icon`, { recursive: true })
-                await fs.promises.writeFile(path, Buffer.from(buffer))
-            } catch (error) {
-                logger.error(`[maimai-plugin] 获取音乐图标失败: ${type}`);
-                return null;
-            }
-        }
-        return path
     }
 
 }

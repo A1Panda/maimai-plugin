@@ -3,6 +3,7 @@ import path from 'node:path'
 import yaml from 'yaml'
 import puppeteer from 'puppeteer'
 import APIAdapter from '../components/Adapter.js'
+import assetManager from '../components/AssetManager.js'
 
 class PlayerInfo {
     constructor() {
@@ -47,14 +48,14 @@ class PlayerInfo {
                 }
             }
 
-            // 构建资源直链 URL（id=0时水鱼API无此数据，使用空值）
-            const assetsBase = adapter.getAssetsBaseURL()
-            const baseURL = adapter.getBaseURL()
-            const iconAsset = response.data.icon?.id ? `${assetsBase}/icon/${response.data.icon.id}.png` : ''
-            const plateAsset = response.data.name_plate?.id ? `${assetsBase}/plate/${response.data.name_plate.id}.png` : ''
-            const frameAsset = response.data.frame?.id ? `${assetsBase}/frame/${response.data.frame.id}.png` : ''
-            const classRankAsset = response.data.class_rank ? `${baseURL}/assets/maimai/class_rank/${response.data.class_rank}.webp` : ''
-            const courseRankAsset = response.data.course_rank ? `${baseURL}/assets/maimai/course_rank/${response.data.course_rank}.webp` : ''
+            // 通过 AssetManager 预下载所有资源为 base64 data URI
+            const [iconAsset, plateAsset, frameAsset, classRankAsset, courseRankAsset] = await Promise.all([
+                response.data.icon?.id ? assetManager.getAssetAsBase64('icon', response.data.icon.id) : Promise.resolve(''),
+                response.data.name_plate?.id ? assetManager.getAssetAsBase64('plate', response.data.name_plate.id) : Promise.resolve(''),
+                response.data.frame?.id ? assetManager.getAssetAsBase64('frame', response.data.frame.id) : Promise.resolve(''),
+                response.data.class_rank ? assetManager.getAssetAsBase64('class_rank', response.data.class_rank) : Promise.resolve(''),
+                response.data.course_rank ? assetManager.getAssetAsBase64('course_rank', response.data.course_rank) : Promise.resolve('')
+            ])
 
             // 准备渲染数据
             const renderData = {
@@ -120,22 +121,20 @@ class PlayerInfo {
 
     // 渲染玩家信息
     async render(data) {
-        // 使用Yunzai-Bot的临时文件夹，改为.png后缀
         const imagePath = path.join(process.cwd(), 'temp', 'maimai-plugin', `playerinfo_${Date.now()}.png`)
         
-        // 启动浏览器
         const browser = await puppeteer.launch({
             headless: 'new',
             args: [
                 '--no-sandbox',
-                '--disable-setuid-sandbox',
-                '--allow-file-access-from-files',  // 允许访问本地文件
-                '--disable-web-security'  // 禁用web安全策略
+                '--disable-setuid-sandbox'
             ]
         })
         
         try {
             const page = await browser.newPage()
+            await page.setDefaultNavigationTimeout(15000)
+            await page.setViewport({ width: 850, height: 1000 })
             
             // 读取HTML模板
             let template = fs.readFileSync('./plugins/maimai-plugin/resources/html/playerinfo.html', 'utf8')
@@ -146,44 +145,18 @@ class PlayerInfo {
                 return value !== undefined ? value : match
             })
             
-            // 设置页面内容
-            await page.setContent(template)
+            // 保存 HTML 到临时文件，用 file:// 加载（全部 base64，无网络依赖）
+            const htmlPath = path.join(process.cwd(), 'temp', 'maimai-plugin', `playerinfo_${Date.now()}.html`)
+            const htmlDir = path.dirname(htmlPath)
+            if (!fs.existsSync(htmlDir)) fs.mkdirSync(htmlDir, { recursive: true })
+            fs.writeFileSync(htmlPath, template, 'utf8')
             
-            // 等待图片加载完成
-            await page.waitForSelector('img')
-            await page.evaluate(() => {
-                return Promise.all(
-                    Array.from(document.images)
-                        .filter(img => !img.complete)
-                        .map(img => new Promise(resolve => {
-                            img.onload = img.onerror = resolve
-                        }))
-                )
-            })
-            
-            // 设置视口大小
-            await page.setViewport({
-                width: 850,
-                height: 1000
-            })
-            
-            // 等待内容加载完成
-            await page.waitForSelector('.container')
+            await page.goto(`file:///${htmlPath.replace(/\\/g, '/')}`, { waitUntil: 'domcontentloaded', timeout: 15000 })
+            await page.waitForSelector('.container', { timeout: 10000 })
             
             // 获取实际内容高度并重设视口
-            const bodyHeight = await page.evaluate(() => {
-                return document.querySelector('.container').offsetHeight
-            })
-            await page.setViewport({
-                width: 850,
-                height: bodyHeight + 80
-            })
-            
-            // 确保临时目录存在
-            const dir = path.dirname(imagePath)
-            if (!fs.existsSync(dir)) {
-                fs.mkdirSync(dir, { recursive: true })
-            }
+            const bodyHeight = await page.evaluate(() => document.querySelector('.container').offsetHeight)
+            await page.setViewport({ width: 850, height: bodyHeight + 80 })
             
             // 截图
             await page.screenshot({
