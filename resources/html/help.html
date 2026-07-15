@@ -1,113 +1,125 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>帮助菜单</title>
-    <style>
-        body {
-            font-family: "Microsoft YaHei", sans-serif;
-            margin: 0;
-            padding: 20px;
-            background: #f0f2f5;
-            font-weight: bold;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            padding: 24px;
-        }
-        .title {
-            text-align: center;
-            color: #1a73e8;
-            font-size: 26px;
-            font-weight: bold;
-            margin-bottom: 24px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid #e8f0fe;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        }
-        .command-group {
-            margin-bottom: 24px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 16px;
-        }
-        .group-title {
-            font-size: 18px;
-            color: #202124;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #e8eaed;
-            font-weight: bold;
-        }
-        .command-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .command-item {
-            display: flex;
-            align-items: flex-start;
-            padding: 10px;
-            border-bottom: 1px dashed #e8eaed;
-            transition: background-color 0.2s;
-        }
-        .command-item:last-child {
-            border-bottom: none;
-        }
-        .command-item:hover {
-            background-color: #f1f3f4;
-            border-radius: 4px;
-        }
-        .command {
-            color: #1a73e8;
-            font-weight: bold;
-            padding: 4px 8px;
-            background: #e8f0fe;
-            border-radius: 4px;
-            min-width: 120px;
-            margin-right: 12px;
-        }
-        .description {
-            color: #5f6368;
-            flex: 1;
-            line-height: 1.5;
-            padding: 4px 0;
-            font-weight: bold;
-            text-align: right;
-        }
-        .footer {
-            text-align: center;
-            color: #80868b;
-            font-size: 14px;
-            margin-top: 24px;
-            padding-top: 16px;
-            border-top: 1px solid #e8eaed;
-            font-weight: bold;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>帮助菜单</title>
+<style>
+:root {
+    --card-bg: rgba(255,255,255,0.06);
+    --text: #e0e0f0;
+    --sub: #9090b0;
+    --dx-pink: #ff4da6;
+    --dx-purple: #b44dff;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+    background: linear-gradient(145deg, #0a0a1a 0%, #13132b 30%, #1a0a2e 55%, #0d1b2a 100%);
+    color: var(--text);
+    font-family: "Microsoft YaHei", -apple-system, sans-serif;
+    padding: 24px;
+}
+
+.container {
+    max-width: 580px;
+    margin: 0 auto;
+    background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+    border-radius: 20px;
+    padding: 28px;
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+.page-title {
+    font-size: 24px;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    background: linear-gradient(135deg, var(--dx-pink), var(--dx-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 2px;
+}
+
+.group {
+    margin-bottom: 20px;
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 14px;
+    padding: 16px;
+}
+.group:last-child { margin-bottom: 0; }
+
+.group-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--dx-pink);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    letter-spacing: 1px;
+}
+
+.cmd-list { list-style: none; }
+
+.cmd-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-radius: 8px;
+    transition: background 0.15s;
+    gap: 12px;
+}
+.cmd-item:hover { background: rgba(255,255,255,0.04); }
+
+.cmd-code {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--dx-purple);
+    padding: 4px 10px;
+    background: rgba(180,77,255,0.08);
+    border: 1px solid rgba(180,77,255,0.12);
+    border-radius: 8px;
+    white-space: nowrap;
+}
+.cmd-desc {
+    font-size: 13px;
+    color: var(--sub);
+    text-align: right;
+    font-weight: 600;
+}
+
+.footer {
+    text-align: center;
+    padding-top: 20px;
+    margin-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    font-size: 12px;
+    color: rgba(255,255,255,0.15);
+    font-weight: 600;
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="title">{{title}}</div>
-        {{#groups}}
-        <div class="command-group">
-            <div class="group-title">{{groupTitle}}</div>
-            <ul class="command-list">
-                {{#commands}}
-                <li class="command-item">
-                    <span class="command">{{command}}</span>
-                    <span class="description">{{description}}</span>
-                </li>
-                {{/commands}}
-            </ul>
-        </div>
-        {{/groups}}
-        <div class="footer">{{footer}}</div>
+<div class="container">
+    <div class="page-title">{{title}}</div>
+    {{#groups}}
+    <div class="group">
+        <div class="group-title">{{groupTitle}}</div>
+        <ul class="cmd-list">
+            {{#commands}}
+            <li class="cmd-item">
+                <span class="cmd-code">{{command}}</span>
+                <span class="cmd-desc">{{description}}</span>
+            </li>
+            {{/commands}}
+        </ul>
     </div>
+    {{/groups}}
+    <div class="footer">{{footer}}</div>
+</div>
 </body>
 </html>

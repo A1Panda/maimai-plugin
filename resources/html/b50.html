@@ -1,528 +1,336 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>B50成绩单</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            margin: 0;
-            padding: 20px;
-            background: #f5f5f5;
-            color: #333;
-            font-family: "Microsoft YaHei", sans-serif;
-            min-width: 2048px;
-        }
-        
-        .container {
-            width: 2800px;
-            margin: 0 auto;
-            padding: 25px;
-            background: #ffffff;
-            border-radius: 20px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        }
-        
-        /* 头部样式优化 */
-        .header {
-            position: relative;
-            padding: 30px 0;
-            margin-bottom: 30px;
-            background: linear-gradient(135deg, #f6f8fc 0%, #e9f0f7 100%);
-            border-radius: 15px;
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
-            overflow: visible;
-        }
-        
-        .header-plate {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 800px;
-            height: auto;
-            object-fit: cover;
-            z-index: 0;
-            opacity: 0.9;
-            pointer-events: none;
-        }
-        
-        .user-info {
-            position: relative;
-            z-index: 2;
-            width: 30%;
-            margin: 0 auto;
-            padding: 20px 30px;
-            background: #ffffff00;
-            border-radius: 18px;
-            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
-            border: 1px solid #ffffff00;
-            display: flex;
-            align-items: center;
-            gap: 25px;
-        }
-        
-        .user-avatar {
-            position: relative;
-            z-index: inherit;
-        }
-        
-        .user-icon {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-            border: 3px solid #fff;
-        }
-        
-        .user-details {
-            position: relative;
-            z-index: inherit;
-            flex: 1;
-            display: flex;
-            gap: 25px;
-        }
-        
-        .user-basic {
-            padding: 10px 15px;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.646), rgba(255, 255, 255, 0.52));
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        }
-        
-        .user-name {
-            font-size: 28px;
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 8px;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        }
-        
-        .user-rating {
-            font-size: 24px;
-            color: #e67e22;
-            font-weight: bold;
-        }
-        
-        
-        .score-label {
-            font-size: 16px;
-            color: #7f8c8d;
-            margin-bottom: 5px;
-        }
-        
-        .score-value {
-            font-size: 26px;
-            font-weight: bold;
-            color: #e67e22;
-        }
-        
-        /* 歌曲列表样式优化 */
-        .song-section {
-            background: #ffffff;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-            margin-bottom: 30px;
-        }
-        
-        .song-section h2 {
-            font-size: 28px;
-            color: #2c3e50;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #ecf0f1;
-        }
-        
-        .song-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 20px;
-        }
-        
-        .song-card {
-            position: relative;
-            background: linear-gradient(135deg, #ffffff, #f8f9fa);
-            padding: 15px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
-            transition: all 0.3s ease;
-            height: 100px;
-            display: flex;
-            align-items: center;
-            border: 1px solid #eef2f7;
-        }
-        
-        .song-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            filter: brightness(1.05);
-        }
-        
-        .song-jacket {
-            width: 85px;
-            height: 85px;
-            border-radius: 12px;
-            margin-right: 15px;
-            object-fit: cover;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-        
-        .song-info {
-            flex: 1;
-            min-width: 0;
-            padding-right: 85px;
-        }
-        
-        .song-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 8px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .song-details {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            font-size: 14px;
-            color: #7f8c8d;
-        }
-        
-        .song-rating {
-            color: #e67e22;
-            font-weight: bold;
-        }
-        
-        .song-achievements {
-            position: absolute;
-            top: 12px;
-            right: 15px;
-            font-size: 22px;
-            font-weight: bold;
-            color: #e67e22;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        }
-        
-        .song-icons {
-            position: absolute;
-            bottom: 12px;
-            right: 15px;
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-        
-        .song-icons img {
-            height: 26px;
-            width: auto;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
-        }
-        
-        .song-id {
-            position: absolute;
-            top: 12px;
-            left: 15px;
-            font-size: 14px;
-            color: #95a5a6;
-            font-family: monospace;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 2px 6px;
-            border-radius: 4px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-        
-        /* 添加左右信息框样式 */
-        .side-info {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.646), rgba(255, 255, 255, 0.52));
-            padding: 15px 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            text-align: center;
-        }
+<meta charset="UTF-8">
+<title>B50成绩单</title>
+<style>
+:root {
+    --bg: #0a0a1a;
+    --card-bg: rgba(255,255,255,0.06);
+    --text: #e0e0f0;
+    --sub: #9090b0;
+    --basic: #4caf50;
+    --advanced: #ffc107;
+    --expert: #f44336;
+    --master: #ab47bc;
+    --remaster: #42a5f5;
+    --gold: #ffd740;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
 
-        .side-info.left {
-            left: 50px;
-        }
+body {
+    background: linear-gradient(145deg, #0a0a1a 0%, #13132b 30%, #1a0a2e 55%, #0d1b2a 80%, #0a0a1a 100%);
+    color: var(--text);
+    font-family: "Microsoft YaHei", -apple-system, sans-serif;
+    min-height: 100vh;
+    padding: 30px;
+}
 
-        .side-info.right {
-            right: 50px;
-        }
+.container { width: 1800px; margin: 0 auto; }
 
-        .side-info-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 5px;
-        }
+.header {
+    position: relative;
+    border-radius: 24px;
+    padding: 40px 30px;
+    margin-bottom: 30px;
+    background: linear-gradient(145deg, rgba(180,77,255,0.10) 0%, rgba(255,77,166,0.08) 50%, rgba(0,229,255,0.05) 100%);
+    border: 1px solid rgba(255,255,255,0.08);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+}
+.header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 600px 300px at 30% 50%, rgba(180,77,255,0.15), transparent),
+        radial-gradient(ellipse 600px 300px at 70% 50%, rgba(255,77,166,0.12), transparent);
+    pointer-events: none;
+}
+.header-plate {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 750px;
+    opacity: 0.18;
+    pointer-events: none;
+    filter: blur(1px);
+}
+.user-block {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 24px 36px;
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(16px);
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.10);
+}
+.user-icon {
+    width: 96px; height: 96px;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.18);
+    box-shadow: 0 0 40px rgba(180,77,255,0.25);
+}
+.user-name {
+    font-size: 30px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #e0c3ff, #ffb3d9);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+}
+.user-rating {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gold);
+    text-shadow: 0 0 20px rgba(255,215,64,0.3);
+}
 
-        .side-info-value {
-            font-size: 24px;
-            color: #e67e22;
-            font-weight: bold;
-        }
+.side-stat {
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 16px 24px;
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.06);
+    text-align: center;
+}
+.side-stat.left { left: 40px; }
+.side-stat.right { right: 40px; }
+.side-stat .val {
+    font-size: 14px;
+    color: var(--sub);
+    font-weight: 600;
+}
 
-        /* 难度等级背景色样式 */
-        /* Basic 1-1+ */
-        .song-card[data-level="1"] {
-            background: linear-gradient(135deg, #ffffff, #c4e1ff);
-        }
-        .song-card[data-level="1+"] {
-            background: linear-gradient(135deg, #ffffff, #b3d9ff);
-        }
+.section-title {
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 18px;
+    padding: 12px 20px;
+    border-radius: 12px;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.section-title.standard {
+    background: linear-gradient(135deg, rgba(0,229,255,0.08), rgba(0,191,165,0.04));
+    border: 1px solid rgba(0,229,255,0.12);
+    color: #00e5ff;
+}
+.section-title.dx {
+    background: linear-gradient(135deg, rgba(255,77,166,0.10), rgba(180,77,255,0.06));
+    border: 1px solid rgba(255,77,166,0.12);
+    color: #ff4da6;
+}
 
-        /* Basic 2-2+ */
-        .song-card[data-level="2"] {
-            background: linear-gradient(135deg, #ffffff, #c4e1ff);
-        }
-        .song-card[data-level="2+"] {
-            background: linear-gradient(135deg, #ffffff, #b3d9ff);
-        }
+.song-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+    margin-bottom: 30px;
+}
 
-        /* Basic 3-3+ */
-        .song-card[data-level="3"] {
-            background: linear-gradient(135deg, #ffffff, #c4e1ff);
-        }
-        .song-card[data-level="3+"] {
-            background: linear-gradient(135deg, #ffffff, #b3d9ff);
-        }
+.song-card {
+    position: relative;
+    background: var(--card-bg);
+    backdrop-filter: blur(8px);
+    border-radius: 14px;
+    padding: 12px;
+    border: 1px solid rgba(255,255,255,0.05);
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    overflow: hidden;
+}
+.song-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255,255,255,0.16);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+}
 
-        /* Advanced 4-4+ */
-        .song-card[data-level="4"] {
-            background: linear-gradient(135deg, #ffffff, #ffeb99);
-        }
-        .song-card[data-level="4+"] {
-            background: linear-gradient(135deg, #ffffff, #ffe680);
-        }
+/* 难度左边条 */
+.song-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    border-radius: 4px 0 0 4px;
+    opacity: 0.85;
+}
+/* BASIC 1-3+ */
+.song-card[data-lvn="1"]::before,
+.song-card[data-lvn="2"]::before,
+.song-card[data-lvn="3"]::before { background: var(--basic); }
+/* ADVANCED 4-6+ */
+.song-card[data-lvn="4"]::before,
+.song-card[data-lvn="5"]::before,
+.song-card[data-lvn="6"]::before { background: var(--advanced); }
+/* EXPERT 7-9+ */
+.song-card[data-lvn="7"]::before,
+.song-card[data-lvn="8"]::before,
+.song-card[data-lvn="9"]::before { background: var(--expert); }
+/* MASTER 10-12+ */
+.song-card[data-lvn="10"]::before,
+.song-card[data-lvn="11"]::before,
+.song-card[data-lvn="12"]::before { background: var(--master); }
+/* Re:MASTER 13-15 */
+.song-card[data-lvn="13"]::before,
+.song-card[data-lvn="14"]::before,
+.song-card[data-lvn="15"]::before { background: var(--remaster); }
 
-        /* Advanced 5-5+ */
-        .song-card[data-level="5"] {
-            background: linear-gradient(135deg, #ffffff, #ffeb99);
-        }
-        .song-card[data-level="5+"] {
-            background: linear-gradient(135deg, #ffffff, #ffe680);
-        }
+.song-jacket {
+    width: 70px; height: 70px;
+    border-radius: 10px;
+    object-fit: cover;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+}
+.song-info { flex:1; min-width:0; }
+.song-title {
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 4px;
+    color: #f0f0ff;
+}
+.song-meta {
+    font-size: 12px;
+    color: var(--sub);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
 
-        /* Advanced 6-6+ */
-        .song-card[data-level="6"] {
-            background: linear-gradient(135deg, #ffffff, #ffeb99);
-        }
-        .song-card[data-level="6+"] {
-            background: linear-gradient(135deg, #ffffff, #ffe680);
-        }
+.song-achv {
+    position: absolute;
+    top: 10px; right: 12px;
+    font-size: 20px;
+    font-weight: 900;
+}
+/* Rate coloring via data-rate attribute */
+.song-card[data-rate="sssp"] .song-achv,
+.song-card[data-rate="sss"] .song-achv { color: #ffd740; text-shadow: 0 0 12px rgba(255,215,64,0.4); }
+.song-card[data-rate="ssp"] .song-achv,
+.song-card[data-rate="ss"] .song-achv { color: #ff9100; }
+.song-card[data-rate="sp"] .song-achv,
+.song-card[data-rate="s"] .song-achv { color: #ef5350; }
+.song-card[data-rate="aaa"] .song-achv,
+.song-card[data-rate="aa"] .song-achv { color: #ab47bc; }
+.song-card[data-rate="a"] .song-achv { color: #42a5f5; }
+.song-card[data-rate="bbb"] .song-achv,
+.song-card[data-rate="bb"] .song-achv,
+.song-card[data-rate="b"] .song-achv { color: #78909c; }
+.song-card[data-rate="c"] .song-achv,
+.song-card[data-rate="d"] .song-achv { color: #546e7a; }
 
-        /* Expert 7-7+ */
-        .song-card[data-level="7"] {
-            background: linear-gradient(135deg, #ffffff, #ffb3b3);
-        }
-        .song-card[data-level="7+"] {
-            background: linear-gradient(135deg, #ffffff, #ff9999);
-        }
+.song-icons {
+    position: absolute;
+    bottom: 8px; right: 10px;
+    display: flex;
+    gap: 4px;
+}
+.song-icons img { height: 22px; }
 
-        /* Expert 8-8+ */
-        .song-card[data-level="8"] {
-            background: linear-gradient(135deg, #ffffff, #ffb3b3);
-        }
-        .song-card[data-level="8+"] {
-            background: linear-gradient(135deg, #ffffff, #ff9999);
-        }
+/* DX Rating 数值小标签 */
+.dx-rating-tag {
+    position: absolute;
+    bottom: 8px; left: 86px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 8px;
+    background: rgba(180,77,255,0.12);
+    color: #b44dff;
+}
 
-        /* Expert 9-9+ */
-        .song-card[data-level="9"] {
-            background: linear-gradient(135deg, #ffffff, #ffb3b3);
-        }
-        .song-card[data-level="9+"] {
-            background: linear-gradient(135deg, #ffffff, #ff9999);
-        }
-
-        /* Master 10-10+ */
-        .song-card[data-level="10"] {
-            background: linear-gradient(135deg, #ffffff, #d9b3ff);
-        }
-        .song-card[data-level="10+"] {
-            background: linear-gradient(135deg, #ffffff, #cc99ff);
-        }
-
-        /* Master 11-11+ */
-        .song-card[data-level="11"] {
-            background: linear-gradient(135deg, #ffffff, #d9b3ff);
-        }
-        .song-card[data-level="11+"] {
-            background: linear-gradient(135deg, #ffffff, #cc99ff);
-        }
-
-        /* Master 12-12+ */
-        .song-card[data-level="12"] {
-            background: linear-gradient(135deg, #ffffff, #d9b3ff);
-        }
-        .song-card[data-level="12+"] {
-            background: linear-gradient(135deg, #ffffff, #cc99ff);
-        }
-
-        /* Re:Master 13-13+ */
-        .song-card[data-level="13"] {
-            background: linear-gradient(135deg, #ffffff, #ff99cc);
-        }
-        .song-card[data-level="13+"] {
-            background: linear-gradient(135deg, #ffffff, #ff80bf);
-        }
-
-        /* Re:Master 14-14+ */
-        .song-card[data-level="14"] {
-            background: linear-gradient(135deg, #ffffff, #ff99cc);
-        }
-        .song-card[data-level="14+"] {
-            background: linear-gradient(135deg, #ffffff, #ff80bf);
-        }
-
-        /* Re:Master 15 */
-        .song-card[data-level="15"] {
-            background: linear-gradient(135deg, #ffffff, #ff99cc);
-        }
-
-        /* 难度等级文字颜色 */
-        /* Basic 1-3+ */
-        .song-card[data-level="1"] .song-details span:first-child,
-        .song-card[data-level="1+"] .song-details span:first-child,
-        .song-card[data-level="2"] .song-details span:first-child,
-        .song-card[data-level="2+"] .song-details span:first-child,
-        .song-card[data-level="3"] .song-details span:first-child,
-        .song-card[data-level="3+"] .song-details span:first-child {
-            color: #27ae60;
-        }
-
-        /* Advanced 4-6+ */
-        .song-card[data-level="4"] .song-details span:first-child,
-        .song-card[data-level="4+"] .song-details span:first-child,
-        .song-card[data-level="5"] .song-details span:first-child,
-        .song-card[data-level="5+"] .song-details span:first-child,
-        .song-card[data-level="6"] .song-details span:first-child,
-        .song-card[data-level="6+"] .song-details span:first-child {
-            color: #f39c12;
-        }
-
-        /* Expert 7-9+ */
-        .song-card[data-level="7"] .song-details span:first-child,
-        .song-card[data-level="7+"] .song-details span:first-child,
-        .song-card[data-level="8"] .song-details span:first-child,
-        .song-card[data-level="8+"] .song-details span:first-child,
-        .song-card[data-level="9"] .song-details span:first-child,
-        .song-card[data-level="9+"] .song-details span:first-child {
-            color: #c0392b;
-        }
-
-        /* Master 10-12+ */
-        .song-card[data-level="10"] .song-details span:first-child,
-        .song-card[data-level="10+"] .song-details span:first-child,
-        .song-card[data-level="11"] .song-details span:first-child,
-        .song-card[data-level="11+"] .song-details span:first-child,
-        .song-card[data-level="12"] .song-details span:first-child,
-        .song-card[data-level="12+"] .song-details span:first-child {
-            color: #8e44ad;
-        }
-
-        /* Re:Master 13-15 */
-        .song-card[data-level="13"] .song-details span:first-child,
-        .song-card[data-level="13+"] .song-details span:first-child,
-        .song-card[data-level="14"] .song-details span:first-child,
-        .song-card[data-level="14+"] .song-details span:first-child,
-        .song-card[data-level="15"] .song-details span:first-child {
-            color: #2980b9;
-        }
-    </style>
+.footer {
+    text-align: center;
+    padding: 24px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.16);
+    font-weight: 600;
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="side-info left">
-                <div class="side-info-value">Power by Maimai-Plugin && Yunzai-Bot</div>
-                <div class="side-info-title">Maimai-Plugin By A1_Panda</div>
-            </div>
-            
-            <img class="header-plate" src="{{plateAsset}}" alt="Name Plate">
+<div class="container">
+    <div class="header">
+        <div class="side-stat left">
+            <div class="val">Maimai-Plugin</div>
+            <div class="val" style="font-size:12px;opacity:0.5">By A1_Panda</div>
+        </div>
+
+        <img class="header-plate" src="{{plateAsset}}" alt="Name Plate">
+
+        <div class="user-block">
+            <img class="user-icon" src="{{iconAsset}}" alt="Icon">
             <div class="user-info">
-                <div class="user-avatar">
-                    <img class="user-icon" src="{{iconAsset}}" alt="User Icon">
-                </div>
-                <div class="user-details">
-                    <div class="user-basic">
-                        <div class="user-name">{{nickname}}</div>
-                        <div class="user-rating">Rating: {{rating}} = {{standard_total}} + {{dx_total}}</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="side-info right">
-                <div class="side-info-value">Power by Maimai-Plugin && Yunzai-Bot</div>
-                <div class="side-info-title">Maimai-Plugin By A1_Panda</div>
+                <div class="user-name">{{nickname}}</div>
+                <div class="user-rating">Rating {{rating}} = {{standard_total}} + {{dx_total}}</div>
             </div>
         </div>
-        
-        <div class="song-list">
-            <div class="song-section">
-                <h2>Standard 35曲目</h2>
-                <div class="song-grid">
-                {{#standard}}
-                <div class="song-card" data-level="{{level}}">
-                    <div class="song-id">{{song_id}}</div>
-                    <img class="song-jacket" src="{{jacket_url}}" alt="{{song_name}}">
-                    <div class="song-info">
-                        <div class="song-title">{{song_name}}</div>
-                        <div class="song-details">
-                            <span>难度: {{level}}</span>
-                            <span>DX分数: {{dx_score}}</span>
-                            <span class="song-rating">Rating: {{dx_rating}}</span>
-                        </div>
-                        <div class="song-icons">                           
-                            {{#fc}}<img src="{{fc_icon}}" alt="FC">{{/fc}}
-                            {{#fs}}<img src="{{fs_icon}}" alt="FS">{{/fs}}
-                            <img src="{{rate_icon}}" alt="{{rate}}">                            
-                        </div>
-                    </div>
-                    <div class="song-achievements">{{achievements}}%</div>
-                </div>
-                {{/standard}}
-                </div>
-            </div>
-            
-            <div class="song-section">
-                <h2>DX 15曲目</h2>
-                <div class="song-grid">
-                {{#dx}}
-                <div class="song-card" data-level="{{level}}">
-                    <div class="song-id">{{song_id}}</div>
-                    <img class="song-jacket" src="{{jacket_url}}" alt="{{song_name}}">
-                    <div class="song-info">
-                        <div class="song-title">{{song_name}}</div>
-                        <div class="song-details">
-                            <span>难度: {{level}}</span>
-                            <span>DX分数: {{dx_score}}</span>
-                            <span class="song-rating">Rating: {{dx_rating}}</span>
-                        </div>
-                        <div class="song-icons">                            
-                            {{#fc}}<img src="{{fc_icon}}" alt="FC">{{/fc}}
-                            {{#fs}}<img src="{{fs_icon}}" alt="FS">{{/fs}}
-                            <img src="{{rate_icon}}" alt="{{rate}}">
-                        </div>
-                    </div>
-                    <div class="song-achievements">{{achievements}}%</div>
-                </div>
-                {{/dx}}
-                </div>
-            </div>
+
+        <div class="side-stat right">
+            <div class="val">Maimai-Plugin</div>
+            <div class="val" style="font-size:12px;opacity:0.5">By A1_Panda</div>
         </div>
     </div>
+
+    <div class="section-title standard">STANDARD Best 35</div>
+    <div class="song-grid">
+    {{#standard}}
+    <div class="song-card" data-lvn="{{level_num}}" data-rate="{{rate}}">
+        <img class="song-jacket" src="{{jacket_url}}" alt="{{song_name}}">
+        <div class="song-info">
+            <div class="song-title">{{song_name}}</div>
+            <div class="song-meta">Lv.{{level}} &middot; {{dx_score}}</div>
+        </div>
+        <div class="song-achv">{{achievements}}%</div>
+        <div class="song-icons">
+            {{#fc}}<img src="{{fc_icon}}" alt="FC">{{/fc}}
+            {{#fs}}<img src="{{fs_icon}}" alt="FS">{{/fs}}
+            <img src="{{rate_icon}}" alt="{{rate}}">
+        </div>
+        <div class="dx-rating-tag">{{dx_rating}}</div>
+    </div>
+    {{/standard}}
+    </div>
+
+    <div class="section-title dx">DX Best 15</div>
+    <div class="song-grid">
+    {{#dx}}
+    <div class="song-card" data-lvn="{{level_num}}" data-rate="{{rate}}">
+        <img class="song-jacket" src="{{jacket_url}}" alt="{{song_name}}">
+        <div class="song-info">
+            <div class="song-title">{{song_name}}</div>
+            <div class="song-meta">Lv.{{level}} &middot; {{dx_score}}</div>
+        </div>
+        <div class="song-achv">{{achievements}}%</div>
+        <div class="song-icons">
+            {{#fc}}<img src="{{fc_icon}}" alt="FC">{{/fc}}
+            {{#fs}}<img src="{{fs_icon}}" alt="FS">{{/fs}}
+            <img src="{{rate_icon}}" alt="{{rate}}">
+        </div>
+        <div class="dx-rating-tag">{{dx_rating}}</div>
+    </div>
+    {{/dx}}
+    </div>
+
+    <div class="footer">maimai DX &middot; Powered by Maimai-Plugin & Yunzai-Bot</div>
+</div>
 </body>
 </html>

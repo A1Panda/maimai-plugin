@@ -1,220 +1,187 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>歌曲信息</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 20px;
-            font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
-            background: #f5f5f5;
-        }
-        .container {
-            width: 900px;
-            margin: 20px auto;
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border: 2px solid #e0e0ff;
-        }
-        .header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #e0e0ff;
-            gap: 20px;
-        }
-        .jacket {
-            width: 180px;
-            height: 180px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        .song-info {
-            flex: 1;
-        }
-        .title {
-            font-size: 28px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 10px;
-        }
-        .artist {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 15px;
-        }
-        .basic-info {
-            display: grid;
-            grid-template-columns: repeat(4, auto);
-            gap: 10px;
-            margin-bottom: 20px;
-            align-items: center;
-        }
-        .basic-info-item {
-            padding: 10px;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .basic-info-label {
-            font-size: 14px;
-            color: #666;
-            margin-right: 5px;
-        }
-        .basic-info-value {
-            font-size: 16px;
-            color: #333;
-            font-weight: bold;
-        }
-        .difficulties {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 20px;
-        }
-        .difficulty-table-header {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            align-items: center;
-            padding: 10px 15px;
-            background: #2b0a5b;
-            color: white;
-            font-weight: bold;
-            border-radius: 8px;
-            text-align: center;
-            margin-bottom: -5px;
-        }
-        .difficulty-name {
-            text-align: left;
-            padding-left: 10px;
-            font-size: 14px;
-            color: #333;
-            font-weight: bold;
-            font-size: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-        .difficulty {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            align-items: center;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-        }
-        .difficulty:nth-child(1) { background: #98FB98; }
-        .difficulty:nth-child(2) { background: #FFA500; }
-        .difficulty:nth-child(3) { background: #FF69B4; }
-        .difficulty:nth-child(4) { background: #9370DB; }
-        .difficulty:nth-child(5) { background: #DDA0DD; }
-        
-        .difficulty-header {
-            font-size: 18px;
-            font-weight: bold;
-            display: flex;
-            flex-direction: column;
-            color: #333;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .difficulty-level {
-            font-size: 20px;
-            font-weight: bold;
-        }
-        
-        .difficulty-value {
-            font-size: 14px;
-            color: #555;
-        }
-        
-        .difficulty-designer {
-            font-size: 12px;
-            color: #666;
-            margin-top: 2px;
-        }
-        
-        .difficulty-info {
-            font-size: 12px;
-            color: #555;
-        }
-        
-        .notes-info {
-            display: grid;
-            grid-template-columns: repeat(1, 1fr);
-            gap: 10px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 20px;
-        }
-        .note-item {
-            font-size: 14px;
-            color: #333;
-            font-weight: bold;
-        }
-        .note-label {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 2px;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>歌曲信息</title>
+<style>
+:root {
+    --bg: #0a0a1a;
+    --card-bg: rgba(255,255,255,0.06);
+    --text: #e0e0f0;
+    --sub: #9090b0;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+    background: linear-gradient(145deg, #0a0a1a 0%, #13132b 30%, #1a0a2e 55%, #0d1b2a 100%);
+    color: var(--text);
+    font-family: "Microsoft YaHei", -apple-system, sans-serif;
+    padding: 24px;
+}
+
+.container {
+    width: 920px;
+    margin: 0 auto;
+    background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+    border-radius: 20px;
+    padding: 24px;
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+.header {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.jacket {
+    width: 170px; height: 170px;
+    border-radius: 14px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    flex-shrink: 0;
+}
+.song-info { flex:1; }
+.title {
+    font-size: 28px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #e0c3ff, #ffb3d9);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 10px;
+}
+.artist { font-size: 15px; color: var(--sub); margin-bottom: 12px; }
+
+.meta-row {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+.meta-item {
+    padding: 8px 16px;
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.meta-label { font-size: 12px; color: var(--sub); }
+.meta-val { font-size: 15px; font-weight: 700; color: var(--text); }
+
+/* 难度表头 */
+.diff-table-header {
+    display: grid;
+    grid-template-columns: 160px repeat(6, 1fr);
+    align-items: center;
+    padding: 12px 16px;
+    background: rgba(180,77,255,0.08);
+    border: 1px solid rgba(180,77,255,0.12);
+    border-radius: 12px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--sub);
+    text-align: center;
+}
+.diff-table-header > :first-child { text-align: left; padding-left: 8px; }
+
+/* 难度行 */
+.diff-row {
+    display: grid;
+    grid-template-columns: 160px repeat(6, 1fr);
+    align-items: center;
+    padding: 14px 16px;
+    border-radius: 12px;
+    margin-bottom: 6px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.04);
+    background: var(--card-bg);
+    transition: all 0.2s;
+}
+.diff-row:hover { border-color: rgba(255,255,255,0.1); }
+
+/* 难度行颜色 */
+.diff-row:nth-child(2) { border-left: 4px solid #4caf50; }
+.diff-row:nth-child(3) { border-left: 4px solid #ff9800; }
+.diff-row:nth-child(4) { border-left: 4px solid #e53935; }
+.diff-row:nth-child(5) { border-left: 4px solid #9c27b0; }
+.diff-row:nth-child(6) { border-left: 4px solid #1e88e5; }
+
+.diff-name {
+    text-align: left;
+    padding-left: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.diff-name .name { font-size: 14px; font-weight: 800; }
+.diff-name .level-tag {
+    font-size: 12px;
+    color: var(--sub);
+}
+.diff-name .designer {
+    font-size: 11px;
+    color: rgba(255,255,255,0.2);
+    margin-top: 2px;
+}
+
+.note-val {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text);
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <img class="jacket" src="{{jacket}}" alt="{{title}}">
-            <div class="song-info">
-                <div class="title">{{title}}</div>
-                <div class="artist">{{artist}}</div>
-                <div class="basic-info">
-                    <div class="basic-info-item">
-                        <div class="basic-info-label">ID</div>
-                        <div class="basic-info-value">{{id}}</div>
-                    </div>
-                    <div class="basic-info-item">
-                        <div class="basic-info-label">BPM</div>
-                        <div class="basic-info-value">{{bpm}}</div>
-                    </div>
-                    <div class="basic-info-item">
-                        <div class="basic-info-label">分类</div>
-                        <div class="basic-info-value">{{genre}}</div>
-                    </div>
+<div class="container">
+    <div class="header">
+        <img class="jacket" src="{{jacket}}" alt="{{title}}">
+        <div class="song-info">
+            <div class="title">{{title}}</div>
+            <div class="artist">{{artist}}</div>
+            <div class="meta-row">
+                <div class="meta-item">
+                    <span class="meta-label">ID</span>
+                    <span class="meta-val">{{id}}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">BPM</span>
+                    <span class="meta-val">{{bpm}}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">分类</span>
+                    <span class="meta-val">{{genre}}</span>
                 </div>
             </div>
-        </div>
-
-        <div class="difficulties">
-            <div class="difficulty-table-header">
-                <div class="difficulty-name"></div>
-                <div>TOTAL</div>
-                <div>TAP</div>
-                <div>HOLD</div>
-                <div>SLIDE</div>
-                <div>TOUCH</div>
-                <div>BREAK</div>
-            </div>
-            {{#difficulties.dx}}
-            <div class="difficulty">
-                <div class="difficulty-name">
-                    <div class="difficulty-level">{{difficulty_name}}</div>
-                    <div class="difficulty-value">{{level}} ({{level_value}})</div>
-                    <div class="difficulty-designer">谱师: {{note_designer}}</div>
-                </div>
-                <div class="notes-info">{{notes.total}}</div>
-                <div class="notes-info">{{notes.tap}}</div>
-                <div class="notes-info">{{notes.hold}}</div>
-                <div class="notes-info">{{notes.slide}}</div>
-                <div class="notes-info">{{notes.touch}}</div>
-                <div class="notes-info">{{notes.break}}</div>
-            </div>
-            {{/difficulties.dx}}
         </div>
     </div>
+
+    <div class="diff-table-header">
+        <div>难度</div>
+        <div>TOTAL</div>
+        <div>TAP</div>
+        <div>HOLD</div>
+        <div>SLIDE</div>
+        <div>TOUCH</div>
+        <div>BREAK</div>
+    </div>
+
+    {{#difficulties.dx}}
+    <div class="diff-row">
+        <div class="diff-name">
+            <span class="name">{{difficulty_name}}</span>
+            <span class="level-tag">{{level}} ({{level_value}})</span>
+            <span class="designer">谱师: {{note_designer}}</span>
+        </div>
+        <div class="note-val">{{notes.total}}</div>
+        <div class="note-val">{{notes.tap}}</div>
+        <div class="note-val">{{notes.hold}}</div>
+        <div class="note-val">{{notes.slide}}</div>
+        <div class="note-val">{{notes.touch}}</div>
+        <div class="note-val">{{notes.break}}</div>
+    </div>
+    {{/difficulties.dx}}
+</div>
 </body>
 </html>

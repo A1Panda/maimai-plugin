@@ -12,12 +12,38 @@ export default class LXAPI {
         this.tempPath = mainConfig.tempPath || './plugins/maimai-plugin/temp'
         this.baseURL = config.LXapi.baseURL || 'https://maimai.lxns.net'
         this.token = config.LXapi.token || 'O-0yIEngnVsHgid6m5M2wlvQvmoDDLKIwEIfHtt0HEM='
+        this.userToken = config.LXapi.userToken || ''  // 个人 API token
         this.assetsURL = config.LXapi.assetsURL || 'https://assets2.lxns.net'
+    }
+
+    // 通用请求头生成
+    _getAuthHeaders(useUserToken = false) {
+        const token = useUserToken ? this.userToken : this.token
+        return { 'Authorization': `${token}` }
     }
 
     //开发者功能列表 需要开发者Token
     //1.创建或修改玩家信息
     // POST /api/v0/maimai/player
+    async postPlayerInfo(playerData) {
+        try {
+            const response = await fetch(`${this.baseURL}/api/v0/maimai/player`, {
+                method: 'POST',
+                headers: {
+                    ...this._getAuthHeaders(),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(playerData)
+            })
+            if (!response.ok) {
+                throw new Error(`API请求失败: ${response.status}`)
+            }
+            return await response.json()
+        } catch (error) {
+            logger.error(`创建/修改玩家信息失败: ${error}`)
+            throw error
+        }
+    }
 
     //2.获取玩家信息
     // GET /api/v0/maimai/player/{friend_code}
@@ -200,6 +226,7 @@ export default class LXAPI {
                         fc: '',
                         fs: '',
                         dx_score: 0,
+                        dx_star: 0,
                         dx_rating: 0,
                         rate: '',
                         play_time: '',
@@ -220,6 +247,7 @@ export default class LXAPI {
                     fc: rawData.data.fc || '',
                     fs: rawData.data.fs || '',
                     dx_score: rawData.data.dx_score || 0,
+                    dx_star: rawData.data.dx_star || 0,
                     dx_rating: rawData.data.dx_rating || 0,
                     rate: rawData.data.rate || '',
                     play_time: rawData.data.play_time || '',
@@ -264,6 +292,7 @@ export default class LXAPI {
                         fc: score.fc || '',
                         fs: score.fs || '',
                         dx_score: score.dx_score || 0,
+                        dx_star: score.dx_star || 0,
                         dx_rating: score.dx_rating || 0,
                         rate: score.rate || '',
                         type: score.type || '',
@@ -279,6 +308,7 @@ export default class LXAPI {
                         fc: score.fc || '',
                         fs: score.fs || '',
                         dx_score: score.dx_score || 0,
+                        dx_star: score.dx_star || 0,
                         dx_rating: score.dx_rating || 0,
                         rate: score.rate || '',
                         type: score.type || '',
@@ -294,6 +324,7 @@ export default class LXAPI {
                         fc: score.fc || '',
                         fs: score.fs || '',
                         dx_score: score.dx_score || 0,
+                        dx_star: score.dx_star || 0,
                         dx_rating: score.dx_rating || 0,
                         rate: score.rate || '',
                         type: score.type || '',
@@ -309,6 +340,7 @@ export default class LXAPI {
                         fc: score.fc || '',
                         fs: score.fs || '',
                         dx_score: score.dx_score || 0,
+                        dx_star: score.dx_star || 0,
                         dx_rating: score.dx_rating || 0,
                         rate: score.rate || '',
                         type: score.type || '',
@@ -353,6 +385,7 @@ export default class LXAPI {
                         fc: score.fc || '',
                         fs: score.fs || '',
                         dx_score: score.dx_score || 0,
+                        dx_star: score.dx_star || 0,
                         dx_rating: score.dx_rating || 0,
                         rate: score.rate || '',
                         type: score.type || '',
@@ -368,6 +401,7 @@ export default class LXAPI {
                         fc: score.fc || '',
                         fs: score.fs || '',
                         dx_score: score.dx_score || 0,
+                        dx_star: score.dx_star || 0,
                         dx_rating: score.dx_rating || 0,
                         rate: score.rate || '',
                         type: score.type || '',
@@ -407,6 +441,7 @@ export default class LXAPI {
                     fc: score.fc || '',
                     fs: score.fs || '',
                     dx_score: score.dx_score || 0,
+                    dx_star: score.dx_star || 0,
                     dx_rating: score.dx_rating || 0,
                     rate: score.rate || '',
                     type: score.type || '',
@@ -460,6 +495,7 @@ export default class LXAPI {
                     fc: score.fc || '',
                     fs: score.fs || '',
                     dx_score: score.dx_score || 0,
+                    dx_star: score.dx_star || 0,
                     dx_rating: score.dx_rating || 0,
                     rate: score.rate || '',
                     type: score.type || '',
@@ -569,6 +605,7 @@ export default class LXAPI {
                     fc: score.fc || '',
                     fs: score.fs || '',
                     dx_score: score.dx_score || 0,
+                    dx_star: score.dx_star || 0,
                     dx_rating: score.dx_rating || 0,
                     rate: score.rate || '',
                     type: score.type || '',
@@ -620,22 +657,161 @@ export default class LXAPI {
     //个人API需要个人Token
     //1.获取玩家信息。
     // GET /api/v0/user/maimai/player
+    async getUserPlayerInfo() {
+        try {
+            const response = await fetch(`${this.baseURL}/api/v0/user/maimai/player`, {
+                headers: this._getAuthHeaders(true)
+            })
+            if (!response.ok) {
+                throw new Error(`API请求失败: ${response.status}`)
+            }
+            const rawData = await response.json()
+            return {
+                success: true,
+                code: 200,
+                data: {
+                    name: rawData.data.name || '',
+                    rating: rawData.data.rating || 0,
+                    friend_code: rawData.data.friend_code || 0,
+                    trophy: {
+                        id: rawData.data.trophy?.id || 0,
+                        name: rawData.data.trophy?.name || '',
+                        color: rawData.data.trophy?.color || 'Normal'
+                    },
+                    course_rank: rawData.data.course_rank || 0,
+                    class_rank: rawData.data.class_rank || 0,
+                    star: rawData.data.star || 0,
+                    icon: {
+                        id: rawData.data.icon?.id || 0,
+                        name: rawData.data.icon?.name || '',
+                        genre: rawData.data.icon?.genre || ''
+                    },
+                    name_plate: {
+                        id: rawData.data.name_plate?.id || 0,
+                        name: rawData.data.name_plate?.name || '',
+                        genre: rawData.data.name_plate?.genre || ''
+                    },
+                    frame: {
+                        id: rawData.data.frame?.id || 0,
+                        name: rawData.data.frame?.name || '',
+                        genre: rawData.data.frame?.genre || ''
+                    },
+                    upload_time: rawData.data.upload_time || ''
+                }
+            }
+        } catch (error) {
+            logger.error(`获取个人玩家信息失败: ${error}`)
+            throw error
+        }
+    }
 
     //2.获取玩家所有成绩。
-    //GET /api/v0/user/maimai/player/scores
+    // GET /api/v0/user/maimai/player/scores
+    async getUserPlayerScores() {
+        try {
+            const response = await fetch(`${this.baseURL}/api/v0/user/maimai/player/scores`, {
+                headers: this._getAuthHeaders(true)
+            })
+            if (!response.ok) {
+                throw new Error(`API请求失败: ${response.status}`)
+            }
+            const rawData = await response.json()
+            return {
+                code: 200,
+                data: (rawData.data || []).map(score => ({
+                    id: score.id || 0,
+                    song_name: score.song_name || '',
+                    level: score.level || '',
+                    level_index: score.level_index || 0,
+                    achievements: score.achievements || 0,
+                    fc: score.fc || '',
+                    fs: score.fs || '',
+                    dx_score: score.dx_score || 0,
+                    dx_star: score.dx_star || 0,
+                    dx_rating: score.dx_rating || 0,
+                    rate: score.rate || '',
+                    type: score.type || '',
+                    play_time: score.play_time || '',
+                    upload_time: score.upload_time || ''
+                }))
+            }
+        } catch (error) {
+            logger.error(`获取个人玩家所有成绩失败: ${error}`)
+            throw error
+        }
+    }
 
     //3.上传玩家成绩。
-    //POST /api/v0/user/maimai/player/scores
+    // POST /api/v0/user/maimai/player/scores
+    async postUserPlayerScores(scores) {
+        try {
+            const response = await fetch(`${this.baseURL}/api/v0/user/maimai/player/scores`, {
+                method: 'POST',
+                headers: {
+                    ...this._getAuthHeaders(true),
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ scores })
+            })
+            if (!response.ok) throw new Error(`API请求失败: ${response.status}`)
+            return await response.json()
+        } catch (error) {
+            logger.error(`上传个人玩家成绩失败: ${error}`)
+            throw error
+        }
+    }
 
     //4.获取玩家成绩上传历史记录。
-    //GET /api/v0/user/maimai/player/score/history
+    // GET /api/v0/user/maimai/player/score/history
+    async getUserPlayerScoreHistory(params = {}) {
+        try {
+            const query = new URLSearchParams()
+            if (params.song_id) query.set('song_id', params.song_id)
+            if (params.song_type) query.set('song_type', params.song_type)
+            if (params.level_index !== undefined) query.set('level_index', params.level_index)
+            let url = `${this.baseURL}/api/v0/user/maimai/player/score/history`
+            if (query.toString()) url += `?${query}`
+            const response = await fetch(url, {
+                headers: this._getAuthHeaders(true)
+            })
+            if (!response.ok) throw new Error(`API请求失败: ${response.status}`)
+            const rawData = await response.json()
+            return {
+                code: 200,
+                data: (rawData.data || []).map(score => ({
+                    id: score.id || 0,
+                    song_name: score.song_name || '',
+                    level: score.level || '',
+                    level_index: score.level_index || 0,
+                    achievements: score.achievements || 0,
+                    fc: score.fc || '',
+                    fs: score.fs || '',
+                    dx_score: score.dx_score || 0,
+                    dx_star: score.dx_star || 0,
+                    dx_rating: score.dx_rating || 0,
+                    rate: score.rate || '',
+                    type: score.type || '',
+                    play_time: score.play_time || '',
+                    upload_time: score.upload_time || ''
+                }))
+            }
+        } catch (error) {
+            logger.error(`获取个人玩家成绩历史失败: ${error}`)
+            throw error
+        }
+    }
 
 //公共API无需任何Token  
     //1.获取曲目列表
     //GET /api/v0/maimai/song/list
-    async getSongList() {
+    async getSongList(params = {}) {
         try {
-            const response = await fetch(`${this.baseURL}/api/v0/maimai/song/list`)
+            const query = new URLSearchParams()
+            if (params.version) query.set('version', params.version)
+            if (params.notes) query.set('notes', params.notes)
+            let url = `${this.baseURL}/api/v0/maimai/song/list`
+            if (query.toString()) url += `?${query}`
+            const response = await fetch(url)
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`)
             }
@@ -649,9 +825,13 @@ export default class LXAPI {
 
     //2.获取曲目信息。
     //GET /api/v0/maimai/song/{song_id}
-    async getSongInfo(songId) {
+    async getSongInfo(songId, params = {}) {
         try {
-            const response = await fetch(`${this.baseURL}/api/v0/maimai/song/${songId}`)
+            const query = new URLSearchParams()
+            if (params.version) query.set('version', params.version)
+            let url = `${this.baseURL}/api/v0/maimai/song/${songId}`
+            if (query.toString()) url += `?${query}`
+            const response = await fetch(url)
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`)
             }
@@ -680,7 +860,11 @@ export default class LXAPI {
                 artist: rawData.artist,
                 genre: rawData.genre,
                 bpm: rawData.bpm,
+                map: rawData.map || null,           // 曲目所属区域
                 version: rawData.version,
+                rights: rawData.rights || null,     // 版权信息
+                locked: rawData.locked || false,     // 是否需要解锁
+                disabled: rawData.disabled || false, // 是否被禁用
                 difficulties: {
                     standard: (rawData.difficulties.standard || []).map(flattenDifficulty),
                     dx: (rawData.difficulties.dx || []).map(flattenDifficulty),
@@ -854,6 +1038,57 @@ export default class LXAPI {
             return data
         } catch (error) {
             logger.error(`获取收藏品分类信息失败: ${error}`)
+            throw error
+        }
+    }
+
+    //12.获取收藏品列表（通用端点，替代单独的 icon/plate/frame 列表）
+    // GET /api/v0/maimai/{collection_type}/list
+    async getCollectionList(collectionType, params = {}) {
+        try {
+            const validTypes = ['trophy', 'icon', 'plate', 'frame']
+            if (!validTypes.includes(collectionType)) {
+                throw new Error(`无效的收藏品类型: ${collectionType}, 必须为 trophy/icon/plate/frame 之一`)
+            }
+            const query = new URLSearchParams()
+            if (params.version) query.set('version', params.version)
+            if (params.required) query.set('required', params.required)
+            let url = `${this.baseURL}/api/v0/maimai/${collectionType}/list`
+            if (query.toString()) url += `?${query}`
+            const response = await fetch(url)
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
+            const data = await response.json()
+            logger.debug(`[maimai-plugin] API返回数据: ${JSON.stringify(data)}`)
+            return data
+        } catch (error) {
+            logger.error(`获取收藏品列表(${collectionType})失败: ${error}`)
+            throw error
+        }
+    }
+
+    //13.获取收藏品信息（通用端点）
+    // GET /api/v0/maimai/{collection_type}/{collection_id}
+    async getCollectionInfo(collectionType, collectionId, params = {}) {
+        try {
+            const validTypes = ['trophy', 'icon', 'plate', 'frame']
+            if (!validTypes.includes(collectionType)) {
+                throw new Error(`无效的收藏品类型: ${collectionType}, 必须为 trophy/icon/plate/frame 之一`)
+            }
+            const query = new URLSearchParams()
+            if (params.version) query.set('version', params.version)
+            let url = `${this.baseURL}/api/v0/maimai/${collectionType}/${collectionId}`
+            if (query.toString()) url += `?${query}`
+            const response = await fetch(url)
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
+            const data = await response.json()
+            logger.debug(`[maimai-plugin] API返回数据: ${JSON.stringify(data)}`)
+            return data
+        } catch (error) {
+            logger.error(`获取收藏品信息(${collectionType}/${collectionId})失败: ${error}`)
             throw error
         }
     }

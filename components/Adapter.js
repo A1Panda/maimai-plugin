@@ -19,7 +19,11 @@ export default class APIAdapter {
     }
 
 // 代理所有API方法
-// 公共API类
+// 开发者API类
+    // 创建/修改玩家信息
+    async postPlayerInfo(playerData) {
+        return await this.api.postPlayerInfo(playerData)
+    }
     // 获取玩家信息 正常
     async getPlayerInfo(friendCode) {
         return await this.api.getPlayerInfo(friendCode)
@@ -76,6 +80,22 @@ export default class APIAdapter {
     async postPlayerHtml(friendCode, html) {
         return await this.api.postPlayerHtml(friendCode, html)
     }
+    //个人API - 获取玩家信息
+    async getUserPlayerInfo() {
+        return await this.api.getUserPlayerInfo()
+    }
+    //个人API - 获取玩家所有成绩
+    async getUserPlayerScores() {
+        return await this.api.getUserPlayerScores()
+    }
+    //个人API - 上传玩家成绩
+    async postUserPlayerScores(scores) {
+        return await this.api.postUserPlayerScores(scores)
+    }
+    //个人API - 获取玩家成绩历史
+    async getUserPlayerScoreHistory(params = {}) {
+        return await this.api.getUserPlayerScoreHistory(params)
+    }
     // 获取歌曲信息 正常
     async getSongInfo(songId) {
         return await this.api.getSongInfo(songId)
@@ -119,6 +139,14 @@ export default class APIAdapter {
     //背景框信息
     async getFrameInfo(frameId) {
         return await this.api.getFrameInfo(frameId)
+    }
+    //通用收藏品列表
+    async getCollectionList(collectionType, params = {}) {
+        return await this.api.getCollectionList(collectionType, params)
+    }
+    //通用收藏品信息
+    async getCollectionInfo(collectionType, collectionId, params = {}) {
+        return await this.api.getCollectionInfo(collectionType, collectionId, params)
     }
 
 

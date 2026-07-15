@@ -45,37 +45,26 @@ class B50 {
             const plateAsset = await adapter.getPlateAsset(playerInfo.data.name_plate.id)
             
             // 处理标准谱和DX谱的数据
-            const processedStandard = await Promise.all(response.data.standard.map(async song => {
+            const processSong = async (song) => {
                 const jacketAsset = await adapter.getJacketAsset(song.id)
                 const fcIcon = song.fc ? await adapter.getMusicIconAsset(song.fc) : null
                 const fsIcon = song.fs ? await adapter.getMusicIconAsset(song.fs) : null
                 const rateIcon = await adapter.getMusicRateAsset(song.rate)
-                
-                return {
-                    ...song,
-                    song_id: song.id.toString().padStart(5, '0'),
-                    jacket_url: `data:image/png;base64,${fs.readFileSync(jacketAsset).toString('base64')}`,
-                    fc_icon: fcIcon ? `data:image/webp;base64,${fs.readFileSync(fcIcon).toString('base64')}` : null,
-                    fs_icon: fsIcon ? `data:image/webp;base64,${fs.readFileSync(fsIcon).toString('base64')}` : null,
-                    rate_icon: `data:image/webp;base64,${fs.readFileSync(rateIcon).toString('base64')}`
-                }
-            }))
+                const levelNum = String(song.level || '0').replace(/[^0-9]/g, '') || '0'
 
-            const processedDX = await Promise.all(response.data.dx.map(async song => {
-                const jacketAsset = await adapter.getJacketAsset(song.id)
-                const fcIcon = song.fc ? await adapter.getMusicIconAsset(song.fc) : null
-                const fsIcon = song.fs ? await adapter.getMusicIconAsset(song.fs) : null
-                const rateIcon = await adapter.getMusicRateAsset(song.rate)
-                
                 return {
                     ...song,
-                    song_id: song.id.toString().padStart(5, '0'),
+                    song_id: String(song.id).padStart(5, '0'),
+                    level_num: levelNum,
                     jacket_url: `data:image/png;base64,${fs.readFileSync(jacketAsset).toString('base64')}`,
-                    fc_icon: fcIcon ? `data:image/webp;base64,${fs.readFileSync(fcIcon).toString('base64')}` : null,
-                    fs_icon: fsIcon ? `data:image/webp;base64,${fs.readFileSync(fsIcon).toString('base64')}` : null,
+                    fc_icon: fcIcon ? `data:image/webp;base64,${fs.readFileSync(fcIcon).toString('base64')}` : '',
+                    fs_icon: fsIcon ? `data:image/webp;base64,${fs.readFileSync(fsIcon).toString('base64')}` : '',
                     rate_icon: `data:image/webp;base64,${fs.readFileSync(rateIcon).toString('base64')}`
                 }
-            }))
+            }
+
+            const processedStandard = await Promise.all(response.data.standard.map(processSong))
+            const processedDX = await Promise.all(response.data.dx.map(processSong))
 
             // 准备渲染数据
             const renderData = {
@@ -145,32 +134,28 @@ class B50 {
                 songHtml = songHtml.replace(/\{\{song_id\}\}/g, song.song_id)
                 songHtml = songHtml.replace(/\{\{jacket_url\}\}/g, song.jacket_url)
                 songHtml = songHtml.replace(/\{\{level\}\}/g, song.level)
+                songHtml = songHtml.replace(/\{\{level_num\}\}/g, song.level_num)
                 songHtml = songHtml.replace(/\{\{dx_score\}\}/g, song.dx_score)
                 songHtml = songHtml.replace(/\{\{dx_rating\}\}/g, song.dx_rating.toFixed(2))
                 songHtml = songHtml.replace(/\{\{achievements\}\}/g, song.achievements.toFixed(4))
-                
-                // 处理FC/FS图标
-                if (song.fc_icon) {
-                    songHtml = songHtml.replace(/\{\{#fc\}\}([\s\S]*?)\{\{\/fc\}\}/g, 
-                        `<img src="${song.fc_icon}" alt="FC">`)
-                } else {
-                    songHtml = songHtml.replace(/\{\{#fc\}\}([\s\S]*?)\{\{\/fc\}\}/g, '')
-                }
-                
-                if (song.fs_icon) {
-                    songHtml = songHtml.replace(/\{\{#fs\}\}([\s\S]*?)\{\{\/fs\}\}/g, 
-                        `<img src="${song.fs_icon}" alt="FS">`)
-                } else {
-                    songHtml = songHtml.replace(/\{\{#fs\}\}([\s\S]*?)\{\{\/fs\}\}/g, '')
-                }
-                
+
+                // FC/FS图标：有图标时直接替换为img标签，没有时清空
+                songHtml = songHtml.replace(
+                    /\{\{#fc\}\}([\s\S]*?)\{\{\/fc\}\}/g,
+                    song.fc_icon ? `<img src="${song.fc_icon}" alt="FC">` : ''
+                )
+                songHtml = songHtml.replace(
+                    /\{\{#fs\}\}([\s\S]*?)\{\{\/fs\}\}/g,
+                    song.fs_icon ? `<img src="${song.fs_icon}" alt="FS">` : ''
+                )
+
                 songHtml = songHtml.replace(/\{\{rate_icon\}\}/g, song.rate_icon)
                 songHtml = songHtml.replace(/\{\{rate\}\}/g, song.rate)
-                
+
                 standardHtml += songHtml
             })
             template = template.replace(/\{\{#standard\}\}[\s\S]*?\{\{\/standard\}\}/g, standardHtml)
-            
+
             // 处理DX谱面列表
             const dxSection = template.match(/\{\{#dx\}\}([\s\S]*?)\{\{\/dx\}\}/)?.[1] || ''
             let dxHtml = ''
@@ -180,27 +165,23 @@ class B50 {
                 songHtml = songHtml.replace(/\{\{song_id\}\}/g, song.song_id)
                 songHtml = songHtml.replace(/\{\{jacket_url\}\}/g, song.jacket_url)
                 songHtml = songHtml.replace(/\{\{level\}\}/g, song.level)
+                songHtml = songHtml.replace(/\{\{level_num\}\}/g, song.level_num)
                 songHtml = songHtml.replace(/\{\{dx_score\}\}/g, song.dx_score)
                 songHtml = songHtml.replace(/\{\{dx_rating\}\}/g, song.dx_rating.toFixed(2))
                 songHtml = songHtml.replace(/\{\{achievements\}\}/g, song.achievements.toFixed(4))
-                
-                if (song.fc_icon) {
-                    songHtml = songHtml.replace(/\{\{#fc\}\}([\s\S]*?)\{\{\/fc\}\}/g, 
-                        `<img src="${song.fc_icon}" alt="FC">`)
-                } else {
-                    songHtml = songHtml.replace(/\{\{#fc\}\}([\s\S]*?)\{\{\/fc\}\}/g, '')
-                }
-                
-                if (song.fs_icon) {
-                    songHtml = songHtml.replace(/\{\{#fs\}\}([\s\S]*?)\{\{\/fs\}\}/g, 
-                        `<img src="${song.fs_icon}" alt="FS">`)
-                } else {
-                    songHtml = songHtml.replace(/\{\{#fs\}\}([\s\S]*?)\{\{\/fs\}\}/g, '')
-                }
-                
+
+                songHtml = songHtml.replace(
+                    /\{\{#fc\}\}([\s\S]*?)\{\{\/fc\}\}/g,
+                    song.fc_icon ? `<img src="${song.fc_icon}" alt="FC">` : ''
+                )
+                songHtml = songHtml.replace(
+                    /\{\{#fs\}\}([\s\S]*?)\{\{\/fs\}\}/g,
+                    song.fs_icon ? `<img src="${song.fs_icon}" alt="FS">` : ''
+                )
+
                 songHtml = songHtml.replace(/\{\{rate_icon\}\}/g, song.rate_icon)
                 songHtml = songHtml.replace(/\{\{rate\}\}/g, song.rate)
-                
+
                 dxHtml += songHtml
             })
             template = template.replace(/\{\{#dx\}\}[\s\S]*?\{\{\/dx\}\}/g, dxHtml)
