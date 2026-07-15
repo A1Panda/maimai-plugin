@@ -1,0 +1,8 @@
+{
+  "name": "maimai-plugin",
+  "displayName": "舞萌DX查分器",
+  "version": "1.4.6",
+  "author": "A1Panda",
+  "description": "maimai DX 舞萌查分器插件，支持B50/成绩查询、别名搜索、随机推歌、猜谜游戏等功能",
+  "homepage": "https://github.com/A1Panda/maimai-plugin"
+}
