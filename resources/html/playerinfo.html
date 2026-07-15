@@ -2,228 +2,245 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>玩家信息 - MiLK Style</title>
+<title>玩家信息 - MiLK 2024 Style</title>
 <style>
 :root {
     --bg-main: #fdf2f7;
     --pink-main: #ff76b8;
-    --text-dark: #5c4b54;
-    --card-white: rgba(255, 255, 255, 0.95);
-    --accent-purple: #9f51dc;
-    --gold: #ffa000;
+    --text-dark: #4a3a42;
+    --gold-rating: #f0c342;
+    --plate-white: #ffffff;
 }
-* { margin:0; padding:0; box-sizing:border-box; }
+
+* { margin:0; padding:0; box-sizing:border-box; font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; }
 
 body {
     background-color: var(--bg-main);
     background-image: radial-gradient(#ffcae5 1.5px, transparent 1.5px);
     background-size: 20px 20px;
-    color: var(--text-dark);
-    font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
     padding: 30px;
+    display: flex;
+    justify-content: center;
 }
 
 .container {
-    max-width: 700px;
-    margin: 0 auto;
-    background: var(--card-white);
-    border-radius: 24px;
-    padding: 0;
+    width: 850px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(8px);
+    border-radius: 30px;
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(255, 118, 184, 0.2);
+    box-shadow: 0 15px 40px rgba(255, 118, 184, 0.25);
     border: 3px solid #fff;
+    position: relative;
+    z-index: 10;
 }
 
-/* 头部：姓名框 + 头像 */
+/* ===== 1. 全局底层大背景 (Frame) ===== */
+.full-page-frame {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    z-index: -1;
+    opacity: 0.4;
+}
+
+/* ===== 2. 头部：复刻名牌布局 ===== */
 .header {
     position: relative;
+    height: 220px;
     display: flex;
     align-items: center;
-    padding: 30px 28px;
-    background: linear-gradient(135deg, #fff0f5, #ffe8f0);
-    border-bottom: 2px dashed #ffdeed;
-    min-height: 160px;
-}
-.header::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    background: radial-gradient(ellipse 300px 160px at 50% 50%, rgba(255,118,184,0.08), transparent);
-    pointer-events: none;
+    justify-content: center;
+    padding: 0 20px;
 }
 
-.header-frame {
+/* 名牌图片层 */
+.name-plate-base {
     position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
+    width: 96%; height: 160px;
     object-fit: contain;
-    opacity: 0.12;
-    pointer-events: none;
-    z-index: 0;
-}
-.name-plate {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90%;
-    opacity: 0.3;
-    pointer-events: none;
     z-index: 1;
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1));
 }
 
-.avatar { position: relative; z-index: 2; flex-shrink: 0; margin-right: 20px; }
-.icon {
-    width: 88px; height: 88px;
-    border-radius: 50%;
-    border: 4px solid var(--pink-main);
-    box-shadow: 0 0 25px rgba(255,118,184,0.25);
-}
-
-.info { position: relative; z-index: 2; flex: 1; }
-
-.name {
-    font-size: 26px;
-    font-weight: 800;
-    color: var(--pink-main);
-    margin-bottom: 8px;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.05);
-}
-
-.rating {
-    display: inline-block;
-    font-size: 16px;
-    font-weight: 700;
-    padding: 4px 14px;
-    border-radius: 20px;
-    background: linear-gradient(135deg, rgba(255,160,0,0.12), rgba(255,200,0,0.08));
-    color: var(--gold);
-    border: 1px solid rgba(255,160,0,0.15);
-    margin-bottom: 10px;
-}
-
-.game-stats {
+/* 内容覆盖层 */
+.user-info-wrapper {
+    position: relative;
+    z-index: 10;
     display: flex;
-    gap: 12px;
     align-items: center;
-    margin-top: 8px;
-}
-.stat-item { display: flex; align-items: center; gap: 4px; }
-.stat-item img { height: 28px; }
-.stat-item.star { color: var(--gold); font-size: 16px; font-weight: 700; }
-
-/* 装扮区 */
-.cosmetics {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    padding: 24px 28px;
+    width: 90%;
+    height: 140px;
+    gap: 15px;
+    padding-left: 20px;
 }
 
-.cosmetic-card {
-    background: #fffafa;
-    border-radius: 16px;
-    padding: 16px;
-    transition: all 0.2s;
-    border-bottom: 3px solid #ffdeed;
+/* 头像 */
+.avatar-box {
+    flex-shrink: 0;
+    width: 100px; height: 100px;
+    background: #555;
+    border-radius: 12px;
+    border: 3px solid #4a3a42;
+    overflow: hidden;
 }
-.cosmetic-card:hover {
-    background: #fff0f5;
+.avatar-box img { width: 100%; height: 100%; object-fit: cover; }
+
+/* 属性中心区 */
+.main-data {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
 }
-.cosmetic-label {
-    font-size: 11px;
-    color: #b0a0a8;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 6px;
-}
-.cosmetic-name {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--text-dark);
-    margin-bottom: 2px;
-}
-.cosmetic-genre {
-    font-size: 12px;
-    color: #c0b0b8;
-}
-.cosmetic-id {
-    float: right;
-    font-size: 11px;
-    font-family: monospace;
-    color: #c0b0b8;
-    padding: 2px 8px;
-    background: #f0e8ec;
+
+/* 第一行：Rating & 段位 */
+.row-top { display: flex; align-items: center; gap: 15px; }
+.rating-pill {
+    background: rgba(30, 30, 30, 0.9);
+    color: var(--gold-rating);
+    padding: 2px 14px;
     border-radius: 6px;
+    font-weight: 900;
+    font-size: 18px;
+    font-style: italic;
+    border-bottom: 3px solid #000;
+}
+.rank-badge { height: 35px; }
+
+/* 第二行：姓名框 */
+.name-box {
+    background: #fff;
+    border-radius: 6px;
+    padding: 4px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 2px solid #555;
+    height: 45px;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+}
+.user-name { font-size: 24px; font-weight: 900; color: #333; }
+.level-tag {
+    background: #fff;
+    color: #ff4a8d;
+    border: 1.5px solid #ff4a8d;
+    border-radius: 20px;
+    padding: 1px 12px;
+    font-size: 14px;
+    font-weight: 900;
 }
 
-/* 底部 */
+/* 第三行：称号 */
+.title-pill {
+    background: linear-gradient(180deg, #e0e0e0, #c0c0c0);
+    border: 2px solid #999;
+    border-radius: 50px;
+    padding: 2px 20px;
+    color: #555;
+    font-size: 13px;
+    font-weight: 800;
+    text-align: center;
+    width: fit-content;
+}
+
+/* ===== 3. Cosmetics 装饰格优化 ===== */
+.cosmetics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    padding: 20px 30px 30px;
+}
+.cos-item {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 18px;
+    padding: 15px;
+    border-bottom: 4px solid #ffcae5;
+    display: flex;
+    flex-direction: column;
+}
+.cos-id { align-self: flex-end; font-size: 10px; color: #ccc; font-family: monospace; }
+.cos-label { font-size: 11px; font-weight: 900; color: var(--pink-main); margin-bottom: 5px; }
+.cos-name { font-size: 15px; font-weight: 700; color: var(--text-dark); }
+
+/* Footer */
 .footer {
+    padding: 15px 30px;
+    background: rgba(255, 255, 255, 0.5);
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 16px 28px;
-    border-top: 2px dashed #ffdeed;
-    font-size: 13px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #9e8d97;
+    border-top: 2px dashed #ffcae5;
 }
-.friend-code { color: #b0a0a8; font-weight: 600; }
-.upload-time { color: #c0b0b8; font-size: 12px; }
 </style>
 </head>
 <body>
-<div class="container">
-    <div class="header">
-        <img class="header-frame" src="{{frameAsset}}" alt="Frame">
-        <img class="name-plate" src="{{plateAsset}}" alt="姓名框">
-        <div class="avatar">
-            <img class="icon" src="{{iconAsset}}" alt="头像">
-        </div>
-        <div class="info">
-            <div class="name">{{name}}</div>
-            <div class="rating">Rating {{rating}}</div>
-            <div class="game-stats">
-                <div class="stat-item">
-                    <img src="{{courseRankAsset}}" alt="段位">
+
+    {{#frameAsset}}<img class="full-page-frame" src="{{frameAsset}}">{{/frameAsset}}
+
+    <div class="container">
+        <!-- 名牌 Header -->
+        <div class="header">
+            <img class="name-plate-base" src="{{plateAsset}}" alt="Plate">
+
+            <div class="user-info-wrapper">
+                <!-- 头像区域 -->
+                <div class="avatar-box">
+                    <img src="{{iconAsset}}" alt="Avatar">
                 </div>
-                <div class="stat-item">
-                    <img src="{{classRankAsset}}" alt="阶级" style="height:38px">
+
+                <!-- 核心数据区域 -->
+                <div class="main-data">
+                    <div class="row-top">
+                        <div class="rating-pill">DX RATING {{rating}}</div>
+                        <img src="{{classRankAsset}}" class="rank-badge">
+                        <div style="font-weight: 900; color: #4a3a42;">★ {{star}}</div>
+                    </div>
+
+                    <div class="name-box">
+                        <div class="user-name">{{name}}</div>
+                        <div class="level-tag">初学者</div>
+                    </div>
+
+                    <div class="title-pill">
+                        {{trophy.name}}
+                    </div>
                 </div>
-                <div class="stat-item star">★{{star}}</div>
             </div>
         </div>
+
+        <!-- 详细装扮列表 -->
+        <div class="cosmetics-grid">
+            <div class="cos-item">
+                <span class="cos-id">#{{icon.id}}</span>
+                <div class="cos-label">Icon</div>
+                <div class="cos-name">{{icon.name}}</div>
+            </div>
+            <div class="cos-item">
+                <span class="cos-id">#{{name_plate.id}}</span>
+                <div class="cos-label">Plate</div>
+                <div class="cos-name">{{name_plate.name}}</div>
+            </div>
+            <div class="cos-item">
+                <span class="cos-id">#{{frame.id}}</span>
+                <div class="cos-label">Frame</div>
+                <div class="cos-name">{{frame.name}}</div>
+            </div>
+            <div class="cos-item">
+                <span class="cos-id">#{{trophy.id}}</span>
+                <div class="cos-label">Trophy</div>
+                <div class="cos-name">{{trophy.name}}</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <span>FRIEND CODE: {{friend_code}}</span>
+            <span>GENERATED AT: {{upload_time}}</span>
+        </div>
     </div>
 
-    <div class="cosmetics">
-        <div class="cosmetic-card">
-            <span class="cosmetic-id">ID:{{icon.id}}</span>
-            <div class="cosmetic-label">Icon</div>
-            <div class="cosmetic-name">{{icon.name}}</div>
-            <div class="cosmetic-genre">{{icon.genre}}</div>
-        </div>
-        <div class="cosmetic-card">
-            <span class="cosmetic-id">ID:{{name_plate.id}}</span>
-            <div class="cosmetic-label">Plate</div>
-            <div class="cosmetic-name">{{name_plate.name}}</div>
-            <div class="cosmetic-genre">{{name_plate.genre}}</div>
-        </div>
-        <div class="cosmetic-card">
-            <span class="cosmetic-id">ID:{{frame.id}}</span>
-            <div class="cosmetic-label">Frame</div>
-            <div class="cosmetic-name">{{frame.name}}</div>
-            <div class="cosmetic-genre">{{frame.genre}}</div>
-        </div>
-        <div class="cosmetic-card">
-            <span class="cosmetic-id">ID:{{trophy.id}}</span>
-            <div class="cosmetic-label">Trophy</div>
-            <div class="cosmetic-name">{{trophy.name}}</div>
-        </div>
-    </div>
-
-    <div class="footer">
-        <span class="friend-code">FC: {{friend_code}}</span>
-        <span class="upload-time">{{upload_time}}</span>
-    </div>
-</div>
 </body>
 </html>
