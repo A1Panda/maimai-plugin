@@ -1,20 +1,16 @@
 import fs from 'node:fs'
-import yaml from 'yaml'
 import assetManager from './AssetManager.js'
+import configManager from './ConfigManager.js'
 
 // 导出水鱼API类 - 完美适配水鱼 diving-fish API
 export default class SYAPI {
     constructor() {
-        // 从配置文件中读取API基础配置
-        const config = yaml.parse(fs.readFileSync('./plugins/maimai-plugin/configs/API_Token.yaml', 'utf8'))
-        // 从配置文件中读取临时文件路径
-        const mainConfig = yaml.parse(fs.readFileSync('./plugins/maimai-plugin/configs/config.yaml', 'utf8'))
-        this.tempPath = mainConfig.tempPath || './plugins/maimai-plugin/temp'
-        this.baseURL = config.SYapi.baseURL || 'https://www.diving-fish.com'
-        this.token = config.SYapi.token || 'xkZf95e2cTwdRAlvrNoHPCq3y70YBKQU'   // 水鱼开发者Token（内置默认）
-        this.assetsURL = config.LXapi.assetsURL || 'https://assets2.lxns.net'    // 曲绘/头像/音频用落雪CDN
-        this.lxBaseURL = config.LXapi.baseURL || 'https://maimai.lxns.net'       // 评级图标等资源用落雪主站
-        this.lxToken = config.LXapi.token || 'O-0yIEngnVsHgid6m5M2wlvQvmoDDLKIwEIfHtt0HEM=' // 落雪token，用于补充数据（内置默认）
+        this.tempPath = configManager.tempPath
+        this.baseURL = configManager.syBaseURL
+        this.token = configManager.syToken
+        this.assetsURL = configManager.lxAssetsURL   // 曲绘/头像/音频用落雪CDN
+        this.lxBaseURL = configManager.lxBaseURL      // 评级图标等资源用落雪主站
+        this.lxToken = configManager.lxToken          // 落雪token，用于补充数据
 
         // 缓存 music_data
         this._musicData = null

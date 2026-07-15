@@ -88,14 +88,14 @@ async function main() {
         showStartupInfo(successCount, loadTime)
     }
 
-    
-    // 初始化别名解析器
-    aliasResolver.init().then(() => {
+    // 初始化别名解析器（阻塞等待确保首次查询前数据就绪）
+    try {
+        await aliasResolver.init()
         logger.mark(logger.green('[maimai-plugin] 别名解析器初始化成功'))
-    }).catch(err => {
+    } catch (err) {
         logger.error('[maimai-plugin] 初始化别名解析器失败')
         logger.error(err)
-    })
+    }
 
     return apps
 }

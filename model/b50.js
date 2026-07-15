@@ -67,7 +67,7 @@ class B50 {
                     jacket_url: jacketDataURI,
                     fc_icon: fcIcon ? `data:image/webp;base64,${fs.readFileSync(fcIcon).toString('base64')}` : '',
                     fs_icon: fsIcon ? `data:image/webp;base64,${fs.readFileSync(fsIcon).toString('base64')}` : '',
-                    rate_icon: `data:image/webp;base64,${fs.readFileSync(rateIcon).toString('base64')}`
+                    rate_icon: rateIcon ? `data:image/webp;base64,${fs.readFileSync(rateIcon).toString('base64')}` : ''
                 }
             }
 

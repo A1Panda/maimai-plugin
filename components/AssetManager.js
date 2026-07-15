@@ -1,5 +1,5 @@
 import fs from 'node:fs'
-import yaml from 'yaml'
+import configManager from './ConfigManager.js'
 
 /**
  * 统一资源管理器 — 负责所有资源的下载、缓存、base64 转换
@@ -7,13 +7,7 @@ import yaml from 'yaml'
  */
 class AssetManager {
     constructor() {
-        // 读取配置
-        let mainConfig = {}
-        try {
-            mainConfig = yaml.parse(fs.readFileSync('./plugins/maimai-plugin/configs/config.yaml', 'utf8')) || {}
-        } catch {}
-
-        this.tempPath = mainConfig.tempPath || './plugins/maimai-plugin/temp'
+        this.tempPath = configManager.tempPath
 
         // 资源定义：类型 → [URL模板, ...]
         // 先尝试 assets2（无WAF），再尝试落雪主站，辅以水鱼 CDN
@@ -144,9 +138,14 @@ class AssetManager {
 
     /** 本地文件 → base64 data URI */
     _fileToBase64(filePath, ext) {
-        const mimeMap = { png: 'image/png', webp: 'image/webp', mp3: 'audio/mpeg' }
-        const mime = mimeMap[ext] || 'image/png'
-        return `data:${mime};base64,${fs.readFileSync(filePath).toString('base64')}`
+        try {
+            const mimeMap = { png: 'image/png', webp: 'image/webp', mp3: 'audio/mpeg' }
+            const mime = mimeMap[ext] || 'image/png'
+            return `data:${mime};base64,${fs.readFileSync(filePath).toString('base64')}`
+        } catch (e) {
+            logger.error(`[AssetManager] 文件转 base64 失败: ${filePath} - ${e.message}`)
+            return ''
+        }
     }
 }
 

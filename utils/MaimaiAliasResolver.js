@@ -7,11 +7,13 @@ class MaimaiAliasResolver {
         this.plateList = null
         this.iconList = null
         this.frameList = null
-        this.songMap = new Map()  // songId -> song
-        this.aliasMap = new Map() // alias -> songId
-        this.plateMap = new Map() // plateId -> plate
-        this.iconMap = new Map()  // iconId -> icon
-        this.frameMap = new Map() // frameId -> frame
+        this.songMap = new Map()     // songId -> song
+        this.aliasMap = new Map()    // alias -> songId
+        this.plateMap = new Map()    // plateId -> plate
+        this.iconById = new Map()    // iconId -> icon (numeric)
+        this.iconByKeyword = new Map() // keyword -> icon (string)
+        this.frameById = new Map()   // frameId -> frame (numeric)
+        this.frameByKeyword = new Map() // keyword -> frame (string)
     }
 
     // 初始化数据
@@ -92,21 +94,19 @@ class MaimaiAliasResolver {
             this.plateMap.set(plate.id, plate)
         }
         
-        // 构建头像映射
+        // 构建头像映射（ID和关键字分开存储，避免类型混用）
         for (const icon of this.iconList) {
-            this.iconMap.set(icon.id, icon)
-            // 将名称和描述也加入搜索映射
-            this.iconMap.set(icon.name.toLowerCase(), icon)
-            this.iconMap.set(icon.description.toLowerCase(), icon)
-            this.iconMap.set(icon.genre.toLowerCase(), icon)
+            this.iconById.set(icon.id, icon)
+            this.iconByKeyword.set(icon.name.toLowerCase(), icon)
+            this.iconByKeyword.set(icon.description.toLowerCase(), icon)
+            this.iconByKeyword.set(icon.genre.toLowerCase(), icon)
         }
         
         // 构建背景框映射
         for (const frame of this.frameList) {
-            this.frameMap.set(frame.id, frame)
-            // 将名称和描述也加入搜索映射
-            this.frameMap.set(frame.name.toLowerCase(), frame)
-            this.frameMap.set(frame.description.toLowerCase(), frame)
+            this.frameById.set(frame.id, frame)
+            this.frameByKeyword.set(frame.name.toLowerCase(), frame)
+            this.frameByKeyword.set(frame.description.toLowerCase(), frame)
         }
     }
 
@@ -164,18 +164,13 @@ class MaimaiAliasResolver {
 
     // 搜索头像
     searchIcon(keyword) {
-        // 确保已初始化
-        if (!this.iconList) {
-            return null
-        }
+        if (!this.iconList) return null
         
         // 1. 尝试通过ID搜索
         if (/^\d+$/.test(keyword)) {
             const id = parseInt(keyword)
-            const icon = this.iconMap.get(id)
-            if (icon) {
-                return icon
-            }
+            const icon = this.iconById.get(id)
+            if (icon) return icon
         }
         
         keyword = keyword.toLowerCase()
@@ -194,15 +189,13 @@ class MaimaiAliasResolver {
 
     // 搜索背景框
     searchFrame(keyword) {
-        // 确保已初始化
-        if (!this.frameList) {
-            return null
-        }
+        if (!this.frameList) return null
         
         // 1. 尝试通过ID搜索
         if (/^\d+$/.test(keyword)) {
             const id = parseInt(keyword)
-            return this.frameMap.get(id)
+            const frame = this.frameById.get(id)
+            if (frame) return frame
         }
         
         keyword = keyword.toLowerCase()

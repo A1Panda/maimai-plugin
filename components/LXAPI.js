@@ -1,20 +1,16 @@
 import fs from 'node:fs'
-import yaml from 'yaml'
 import assetManager from './AssetManager.js'
+import configManager from './ConfigManager.js'
 
 
 // 导出落雪API类
 export default class LXAPI {
     constructor() {
-        // 从配置文件中读取API基础配置
-        const config = yaml.parse(fs.readFileSync('./plugins/maimai-plugin/configs/API_Token.yaml', 'utf8'))
-        // 从配置文件中读取临时文件路径
-        const mainConfig = yaml.parse(fs.readFileSync('./plugins/maimai-plugin/configs/config.yaml', 'utf8'))
-        this.tempPath = mainConfig.tempPath || './plugins/maimai-plugin/temp'
-        this.baseURL = config.LXapi.baseURL || 'https://maimai.lxns.net'
-        this.token = config.LXapi.token || 'O-0yIEngnVsHgid6m5M2wlvQvmoDDLKIwEIfHtt0HEM='
-        this.userToken = config.LXapi.userToken || ''  // 个人 API token
-        this.assetsURL = config.LXapi.assetsURL || 'https://assets2.lxns.net'
+        this.tempPath = configManager.tempPath
+        this.baseURL = configManager.lxBaseURL
+        this.token = configManager.lxToken
+        this.userToken = configManager.lxUserToken
+        this.assetsURL = configManager.lxAssetsURL
     }
 
     // 通用请求头生成
@@ -60,53 +56,72 @@ export default class LXAPI {
                 
                 throw new Error(`API请求失败: ${response.status}`)
             }
-            const rawData = await response.json()
-            const data = {
-                success: true,
-                code: 200,
-                data: {
-                    // 基础信息
-                    name: rawData.data.name || '', // 玩家名
-                    rating: rawData.data.rating || 0, // 玩家rating
-                    friend_code: rawData.data.friend_code || 0, // 好友码
-                    
-                    // 称号信息
-                    trophy: {
-                        id: rawData.data.trophy?.id || 0, // 称号ID
-                        name: rawData.data.trophy?.name || '', // 称号名称
-                        color: rawData.data.trophy?.color || 'Normal' // 称号颜色
-                    },
-                    
-                    // 段位信息
-                    course_rank: rawData.data.course_rank || 0, // 段位等级
-                    class_rank: rawData.data.class_rank || 0, // 阶级等级
-                    star: rawData.data.star || 0, // 累计星数
-                    
-                    // 装扮信息
-                    icon: {
-                        id: rawData.data.icon?.id || 0, // 头像ID
-                        name: rawData.data.icon?.name || '', // 头像名称
-                        genre: rawData.data.icon?.genre || '' // 头像分类
-                    },
-                    name_plate: {
-                        id: rawData.data.name_plate?.id || 0, // 姓名框ID
-                        name: rawData.data.name_plate?.name || '', // 姓名框名称
-                        genre: rawData.data.name_plate?.genre || '' // 姓名框分类
-                    },
-                    frame: {
-                        id: rawData.data.frame?.id || 0, // 背景框ID
-                        name: rawData.data.frame?.name || '', // 背景框名称
-                        genre: rawData.data.frame?.genre || '' // 背景框分类
-                    },
-                    
-                    // 更新时间
-                    upload_time: rawData.data.upload_time || '' // 数据更新时间
-                }
-            }
-            return data
+            return this._mapPlayerData(rawData)
         } catch (error) {
             logger.error(`获取玩家信息失败: ${error}`)
             throw error
+        }
+    }
+
+    // 公共方法：将 API 原始响应映射为统一玩家数据结构
+    _mapPlayerData(rawData) {
+        const d = rawData.data
+        return {
+            success: true,
+            code: 200,
+            data: {
+                name: d.name || '',
+                rating: d.rating || 0,
+                friend_code: d.friend_code || 0,
+                trophy: {
+                    id: d.trophy?.id || 0,
+                    name: d.trophy?.name || '',
+                    color: d.trophy?.color || 'Normal'
+                },
+                course_rank: d.course_rank || 0,
+                class_rank: d.class_rank || 0,
+                star: d.star || 0,
+                icon: {
+                    id: d.icon?.id || 0,
+                    name: d.icon?.name || '',
+                    genre: d.icon?.genre || ''
+                },
+                name_plate: {
+                    id: d.name_plate?.id || 0,
+                    name: d.name_plate?.name || '',
+                    genre: d.name_plate?.genre || ''
+                },
+                frame: {
+                    id: d.frame?.id || 0,
+                    name: d.frame?.name || '',
+                    genre: d.frame?.genre || ''
+                },
+                upload_time: d.upload_time || ''
+            }
+        }
+    }
+
+    // 公共方法：将原始 score 对象映射为统一结构
+    _mapScore(score, simplified = false) {
+        const base = {
+            id: score.id || 0,
+            song_name: score.song_name || '',
+            level: score.level || '',
+            level_index: score.level_index || 0,
+            fc: score.fc || '',
+            fs: score.fs || '',
+            rate: score.rate || '',
+            type: score.type || ''
+        }
+        if (simplified) return base
+        return {
+            ...base,
+            achievements: score.achievements || 0,
+            dx_score: score.dx_score || 0,
+            dx_star: score.dx_star || 0,
+            dx_rating: score.dx_rating || 0,
+            play_time: score.play_time || '',
+            upload_time: score.upload_time || ''
         }
     }
 
@@ -124,50 +139,7 @@ export default class LXAPI {
                 throw new Error(`API请求失败: ${response.status}`)
             }
             const rawData = await response.json()
-            const data = {
-                success: true,
-                code: 200,
-                data: {
-                    // 基础信息
-                    name: rawData.data.name || '', // 玩家名
-                    rating: rawData.data.rating || 0, // 玩家rating
-                    friend_code: rawData.data.friend_code || 0, // 好友码
-                    
-                    // 称号信息
-                    trophy: {
-                        id: rawData.data.trophy?.id || 0, // 称号ID
-                        name: rawData.data.trophy?.name || '', // 称号名称
-                        color: rawData.data.trophy?.color || 'Normal' // 称号颜色
-                    },
-                    
-                    // 段位信息
-                    course_rank: rawData.data.course_rank || 0, // 段位等级
-                    class_rank: rawData.data.class_rank || 0, // 阶级等级
-                    star: rawData.data.star || 0, // 累计星数
-                    
-                    // 装扮信息
-                    icon: {
-                        id: rawData.data.icon?.id || 0, // 头像ID
-                        name: rawData.data.icon?.name || '', // 头像名称
-                        genre: rawData.data.icon?.genre || '' // 头像分类
-                    },
-                    name_plate: {
-                        id: rawData.data.name_plate?.id || 0, // 姓名框ID
-                        name: rawData.data.name_plate?.name || '', // 姓名框名称
-                        genre: rawData.data.name_plate?.genre || '' // 姓名框分类
-                    },
-                    frame: {
-                        id: rawData.data.frame?.id || 0, // 背景框ID
-                        name: rawData.data.frame?.name || '', // 背景框名称
-                        genre: rawData.data.frame?.genre || '' // 背景框分类
-                    },
-                    
-                    // 更新时间
-                    upload_time: rawData.data.upload_time || '' // 数据更新时间
-                }
-            }
-            //logger.info('[maimai-plugin] API响应数据:', JSON.stringify(data))
-            return data
+            return this._mapPlayerData(rawData)
         } catch (error) {
             logger.error(`通过QQ获取玩家信息失败: ${error}`)
             throw error
@@ -218,47 +190,10 @@ export default class LXAPI {
             
             // 如果data为null,返回空数据结构
             if (!rawData.data) {
-                return {
-                    code: 200,
-                    data: {
-                        id: 0,
-                        song_name: '',
-                        achievements: 0,
-                        fc: '',
-                        fs: '',
-                        dx_score: 0,
-                        dx_star: 0,
-                        dx_rating: 0,
-                        rate: '',
-                        play_time: '',
-                        type: '',
-                        level: '',
-                        level_index: 0,
-                        upload_time: ''
-                    }
-                }
+                return { code: 200, data: this._mapScore({}) }
             }
 
-            const data = {
-                code: 200,
-                data: {
-                    id: rawData.data.id || 0,
-                    song_name: rawData.data.song_name || '',
-                    achievements: rawData.data.achievements || 0,
-                    fc: rawData.data.fc || '',
-                    fs: rawData.data.fs || '',
-                    dx_score: rawData.data.dx_score || 0,
-                    dx_star: rawData.data.dx_star || 0,
-                    dx_rating: rawData.data.dx_rating || 0,
-                    rate: rawData.data.rate || '',
-                    play_time: rawData.data.play_time || '',
-                    type: rawData.data.type || '',
-                    level: rawData.data.level || '',
-                    level_index: rawData.data.level_index || 0,
-                    upload_time: rawData.data.upload_time || ''
-                }
-            }
-            return data
+            return { code: 200, data: this._mapScore(rawData.data) }
         } catch (error) {
             logger.error(`获取玩家最佳成绩失败: ${error}`)
             throw error
@@ -284,70 +219,10 @@ export default class LXAPI {
                 data: {
                     standard_total: rawData.data.standard_total || 0,
                     dx_total: rawData.data.dx_total || 0,
-                    standard: (rawData.data.standard || []).map(score => ({
-                        id: score.id || 0,
-                        song_name: score.song_name || '',
-                        level: score.level || '',
-                        level_index: score.level_index || 0,
-                        achievements: score.achievements || 0,
-                        fc: score.fc || '',
-                        fs: score.fs || '',
-                        dx_score: score.dx_score || 0,
-                        dx_star: score.dx_star || 0,
-                        dx_rating: score.dx_rating || 0,
-                        rate: score.rate || '',
-                        type: score.type || '',
-                        play_time: score.play_time || '',
-                        upload_time: score.upload_time || ''
-                    })),
-                    dx: (rawData.data.dx || []).map(score => ({
-                        id: score.id || 0,
-                        song_name: score.song_name || '',
-                        level: score.level || '',
-                        level_index: score.level_index || 0,
-                        achievements: score.achievements || 0,
-                        fc: score.fc || '',
-                        fs: score.fs || '',
-                        dx_score: score.dx_score || 0,
-                        dx_star: score.dx_star || 0,
-                        dx_rating: score.dx_rating || 0,
-                        rate: score.rate || '',
-                        type: score.type || '',
-                        play_time: score.play_time || '',
-                        upload_time: score.upload_time || ''
-                    })),
-                    standard_selections: (rawData.data.standard_selections || []).map(score => ({
-                        id: score.id || 0,
-                        song_name: score.song_name || '',
-                        level: score.level || '',
-                        level_index: score.level_index || 0,
-                        achievements: score.achievements || 0,
-                        fc: score.fc || '',
-                        fs: score.fs || '',
-                        dx_score: score.dx_score || 0,
-                        dx_star: score.dx_star || 0,
-                        dx_rating: score.dx_rating || 0,
-                        rate: score.rate || '',
-                        type: score.type || '',
-                        play_time: score.play_time || '',
-                        upload_time: score.upload_time || ''
-                    })),
-                    dx_selections: (rawData.data.dx_selections || []).map(score => ({
-                        id: score.id || 0,
-                        song_name: score.song_name || '',
-                        level: score.level || '',
-                        level_index: score.level_index || 0,
-                        achievements: score.achievements || 0,
-                        fc: score.fc || '',
-                        fs: score.fs || '',
-                        dx_score: score.dx_score || 0,
-                        dx_star: score.dx_star || 0,
-                        dx_rating: score.dx_rating || 0,
-                        rate: score.rate || '',
-                        type: score.type || '',
-                        play_time: score.play_time || '',
-                        upload_time: score.upload_time || ''
-                    }))
+                    standard: (rawData.data.standard || []).map(s => this._mapScore(s)),
+                    dx: (rawData.data.dx || []).map(s => this._mapScore(s)),
+                    standard_selections: (rawData.data.standard_selections || []).map(s => this._mapScore(s)),
+                    dx_selections: (rawData.data.dx_selections || []).map(s => this._mapScore(s))
                 }
             }
             return data
@@ -377,38 +252,8 @@ export default class LXAPI {
                 data: {
                     standard_total: rawData.data.standard_total || 0,
                     dx_total: rawData.data.dx_total || 0,
-                    standard: (rawData.data.standard || []).map(score => ({
-                        id: score.id || 0,
-                        song_name: score.song_name || '',
-                        level: score.level || '',
-                        level_index: score.level_index || 0,
-                        achievements: score.achievements || 0,
-                        fc: score.fc || '',
-                        fs: score.fs || '',
-                        dx_score: score.dx_score || 0,
-                        dx_star: score.dx_star || 0,
-                        dx_rating: score.dx_rating || 0,
-                        rate: score.rate || '',
-                        type: score.type || '',
-                        play_time: score.play_time || '',
-                        upload_time: score.upload_time || ''
-                    })),
-                    dx: (rawData.data.dx || []).map(score => ({
-                        id: score.id || 0,
-                        song_name: score.song_name || '',
-                        level: score.level || '',
-                        level_index: score.level_index || 0,
-                        achievements: score.achievements || 0,
-                        fc: score.fc || '',
-                        fs: score.fs || '',
-                        dx_score: score.dx_score || 0,
-                        dx_star: score.dx_star || 0,
-                        dx_rating: score.dx_rating || 0,
-                        rate: score.rate || '',
-                        type: score.type || '',
-                        play_time: score.play_time || '',
-                        upload_time: score.upload_time || ''
-                    }))
+                    standard: (rawData.data.standard || []).map(s => this._mapScore(s)),
+                    dx: (rawData.data.dx || []).map(s => this._mapScore(s))
                 }
             }
             return data
@@ -433,22 +278,7 @@ export default class LXAPI {
             const rawData = await response.json()
             return {
                 code: 200,
-                data: (rawData.data || []).map(score => ({
-                    id: score.id || 0,
-                    song_name: score.song_name || '',
-                    level: score.level || '',
-                    level_index: score.level_index || 0,
-                    achievements: score.achievements || 0,
-                    fc: score.fc || '',
-                    fs: score.fs || '',
-                    dx_score: score.dx_score || 0,
-                    dx_star: score.dx_star || 0,
-                    dx_rating: score.dx_rating || 0,
-                    rate: score.rate || '',
-                    type: score.type || '',
-                    play_time: score.play_time || '',
-                    upload_time: score.upload_time || ''
-                }))
+                data: (rawData.data || []).map(s => this._mapScore(s))
             }
         } catch (error) {
             logger.error(`获取玩家单曲所有谱面成绩失败: ${error}`)
@@ -487,22 +317,7 @@ export default class LXAPI {
             const rawData = await response.json()
             return {
                 code: 200,
-                data: (rawData.data || []).map(score => ({
-                    id: score.id || 0,
-                    song_name: score.song_name || '',
-                    level: score.level || '',
-                    level_index: score.level_index || 0,
-                    achievements: score.achievements || 0,
-                    fc: score.fc || '',
-                    fs: score.fs || '',
-                    dx_score: score.dx_score || 0,
-                    dx_star: score.dx_star || 0,
-                    dx_rating: score.dx_rating || 0,
-                    rate: score.rate || '',
-                    type: score.type || '',
-                    play_time: score.play_time || '',
-                    upload_time: score.upload_time || ''
-                }))
+                data: (rawData.data || []).map(s => this._mapScore(s))
             }
         } catch (error) {
             logger.error(`获取玩家Recent 50失败: ${error}`)
@@ -521,16 +336,7 @@ export default class LXAPI {
             const rawData = await response.json()
             return {
                 code: 200,
-                data: (rawData.data || []).map(score => ({
-                    id: score.id || 0,
-                    song_name: score.song_name || '',
-                    level: score.level || '',
-                    level_index: score.level_index || 0,
-                    fc: score.fc || '',
-                    fs: score.fs || '',
-                    rate: score.rate || '',
-                    type: score.type || ''
-                }))
+                data: (rawData.data || []).map(s => this._mapScore(s, true))
             }
         } catch (error) {
             logger.error(`获取玩家所有最佳成绩失败: ${error}`)
@@ -597,22 +403,7 @@ export default class LXAPI {
             const rawData = await response.json()
             return {
                 code: 200,
-                data: (rawData.data || []).map(score => ({
-                    id: score.id || 0,
-                    song_name: score.song_name || '',
-                    level: score.level || '',
-                    level_index: score.level_index || 0,
-                    achievements: score.achievements || 0,
-                    fc: score.fc || '',
-                    fs: score.fs || '',
-                    dx_score: score.dx_score || 0,
-                    dx_star: score.dx_star || 0,
-                    dx_rating: score.dx_rating || 0,
-                    rate: score.rate || '',
-                    type: score.type || '',
-                    play_time: score.play_time || '',
-                    upload_time: score.upload_time || ''
-                }))
+                data: (rawData.data || []).map(s => this._mapScore(s))
             }
         } catch (error) {
             logger.error(`获取玩家成绩历史失败: ${error}`)
@@ -667,39 +458,7 @@ export default class LXAPI {
                 throw new Error(`API请求失败: ${response.status}`)
             }
             const rawData = await response.json()
-            return {
-                success: true,
-                code: 200,
-                data: {
-                    name: rawData.data.name || '',
-                    rating: rawData.data.rating || 0,
-                    friend_code: rawData.data.friend_code || 0,
-                    trophy: {
-                        id: rawData.data.trophy?.id || 0,
-                        name: rawData.data.trophy?.name || '',
-                        color: rawData.data.trophy?.color || 'Normal'
-                    },
-                    course_rank: rawData.data.course_rank || 0,
-                    class_rank: rawData.data.class_rank || 0,
-                    star: rawData.data.star || 0,
-                    icon: {
-                        id: rawData.data.icon?.id || 0,
-                        name: rawData.data.icon?.name || '',
-                        genre: rawData.data.icon?.genre || ''
-                    },
-                    name_plate: {
-                        id: rawData.data.name_plate?.id || 0,
-                        name: rawData.data.name_plate?.name || '',
-                        genre: rawData.data.name_plate?.genre || ''
-                    },
-                    frame: {
-                        id: rawData.data.frame?.id || 0,
-                        name: rawData.data.frame?.name || '',
-                        genre: rawData.data.frame?.genre || ''
-                    },
-                    upload_time: rawData.data.upload_time || ''
-                }
-            }
+            return this._mapPlayerData(rawData)
         } catch (error) {
             logger.error(`获取个人玩家信息失败: ${error}`)
             throw error
@@ -719,22 +478,7 @@ export default class LXAPI {
             const rawData = await response.json()
             return {
                 code: 200,
-                data: (rawData.data || []).map(score => ({
-                    id: score.id || 0,
-                    song_name: score.song_name || '',
-                    level: score.level || '',
-                    level_index: score.level_index || 0,
-                    achievements: score.achievements || 0,
-                    fc: score.fc || '',
-                    fs: score.fs || '',
-                    dx_score: score.dx_score || 0,
-                    dx_star: score.dx_star || 0,
-                    dx_rating: score.dx_rating || 0,
-                    rate: score.rate || '',
-                    type: score.type || '',
-                    play_time: score.play_time || '',
-                    upload_time: score.upload_time || ''
-                }))
+                data: (rawData.data || []).map(s => this._mapScore(s))
             }
         } catch (error) {
             logger.error(`获取个人玩家所有成绩失败: ${error}`)
@@ -779,22 +523,7 @@ export default class LXAPI {
             const rawData = await response.json()
             return {
                 code: 200,
-                data: (rawData.data || []).map(score => ({
-                    id: score.id || 0,
-                    song_name: score.song_name || '',
-                    level: score.level || '',
-                    level_index: score.level_index || 0,
-                    achievements: score.achievements || 0,
-                    fc: score.fc || '',
-                    fs: score.fs || '',
-                    dx_score: score.dx_score || 0,
-                    dx_star: score.dx_star || 0,
-                    dx_rating: score.dx_rating || 0,
-                    rate: score.rate || '',
-                    type: score.type || '',
-                    play_time: score.play_time || '',
-                    upload_time: score.upload_time || ''
-                }))
+                data: (rawData.data || []).map(s => this._mapScore(s))
             }
         } catch (error) {
             logger.error(`获取个人玩家成绩历史失败: ${error}`)
