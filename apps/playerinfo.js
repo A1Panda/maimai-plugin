@@ -29,20 +29,19 @@ export class PlayerInfoHandler extends plugin {
             }
             
             let msg = await e.reply('正在渲染个人信息请稍后...', { at: true })
-            setTimeout(() => {
-                if (msg?.message_id && e.group) e.group.recallMsg(msg.message_id)
-            }, 6000)
             
             const result = await playerInfo.getPlayerInfo(targetId)
             
             // 如果是错误消息，直接返回
             if (!result.isImage) {
                 await e.reply(result.message, { at: true })
+                if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id)
                 return true
             }
             
-            // 发送图片并删除临时文件
+            // 发送图片并撤回等待消息
             await e.reply(segment.image(result.message))
+            if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id)
             if (fs.existsSync(result.message)) {
                 fs.unlinkSync(result.message)
             }

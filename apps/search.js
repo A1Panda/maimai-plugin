@@ -32,9 +32,6 @@ export class PlayerInfoHandler extends plugin {
     async handleSearch(e) {
         try {
             let msg = await e.reply('正在渲染搜索结果请稍后...', { at: true })
-            setTimeout(() => {
-                if (msg?.message_id && e.group) e.group.recallMsg(msg.message_id)
-            }, 6000)
             
             // 获取搜索类型和ID
             const match = e.msg.match(/^#?mai(?:mai)? ?(?:search|搜索|查询) ?(歌曲|歌名|音乐|曲名|歌谱|曲谱|song|姓名框|名字|名字框|name|头像|头像框|avatar|背景|背景框|background|收藏品|title|曲绘) ?(.+)$/)
@@ -80,6 +77,7 @@ export class PlayerInfoHandler extends plugin {
                         }
                     } else {
                         logger.info(`[maimai-plugin] 未找到匹配的歌曲: ${id}`)
+                        if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id)
                         return await e.reply('未找到匹配的歌曲，请检查输入是否正确', { at: true })
                     }
                 }
@@ -107,6 +105,7 @@ export class PlayerInfoHandler extends plugin {
                         }
                     } else {
                         logger.info(`[maimai-plugin] 未找到匹配的姓名框: ${id}`)
+                        if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id)
                         return await e.reply('未找到匹配的姓名框，请检查输入是否正确', { at: true })
                     }
                 }
@@ -134,6 +133,7 @@ export class PlayerInfoHandler extends plugin {
                         }
                     } else {
                         logger.info(`[maimai-plugin] 未找到匹配的头像: ${id}`)
+                        if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id)
                         return await e.reply('未找到匹配的头像，请检查输入是否正确', { at: true })
                     }
                 }
@@ -161,10 +161,12 @@ export class PlayerInfoHandler extends plugin {
                         }
                     } else {
                         logger.info(`[maimai-plugin] 未找到匹配的背景: ${id}`)
+                        if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id)
                         return await e.reply('未找到匹配的背景，请检查输入是否正确', { at: true })
                     }
                 }
             } else if (type === '收藏品') {
+                if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id)
                 return await e.reply('收藏品搜索功能开发中，敬请期待', { at: true })
             } else if (type === '曲绘') {
                                 // 检查是否为纯数字ID
@@ -191,6 +193,7 @@ export class PlayerInfoHandler extends plugin {
                         }
                     } else {
                         logger.info(`[maimai-plugin] 未找到匹配的曲绘: ${id}`)
+                        if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id)
                         return await e.reply('未找到匹配的曲绘，请检查输入是否正确', { at: true })
                     }
                 }
@@ -199,11 +202,13 @@ export class PlayerInfoHandler extends plugin {
             // 如果是错误消息，直接返回
             if (!result.isImage) {
                 await e.reply(result.message, { at: true })
+                if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id)
                 return true
             }
             
-            // 发送图片并删除临时文件
+            // 发送图片并撤回等待消息
             await e.reply(segment.image(result.message))
+            if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id)
             if (fs.existsSync(result.message)) {
                 fs.unlinkSync(result.message)
             }
@@ -228,12 +233,10 @@ export class PlayerInfoHandler extends plugin {
             // 获取搜索类型和ID
             const { type, id, name } = searchHistory[e.user_id]
             let msg = await e.reply(`您最近一次搜索的是:\n名称: ${name}\n类型: ${type}\nID: ${id}\n正在上传...`, { at: true })
-            setTimeout(() => {
-                if (msg?.message_id && e.group) e.group.recallMsg(msg.message_id)
-            }, 6000)
 
             //获取对应的资源
             const result = await uploadAssets.uploadSearch(type, id)
+            if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id)
             if (result) {
                 // 获取文件扩展名
                 const ext = result.split('.').pop().toLowerCase()

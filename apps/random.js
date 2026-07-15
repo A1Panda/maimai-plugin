@@ -25,9 +25,6 @@ export class RandomHandler extends plugin {
     async random(e) {
         try {
             let msg = await e.reply('正在渲染随机数据请稍后...', { at: true })
-            setTimeout(() => {
-                if (msg?.message_id && e.group) e.group.recallMsg(msg.message_id)
-            }, 6000)
             // 从消息中提取类型并标准化
             const typeMatch = e.msg.match(/(歌曲|歌名|音乐|曲名|谱面|song|姓名框|名字框|名牌|plate|头像|头像框|avatar|背景|背景框|皮肤|background|frame|收藏品|称号|title|曲绘|cover)/)[0]
             
@@ -54,6 +51,7 @@ export class RandomHandler extends plugin {
             const id = await random.getRandomId(type, difficulty)
             
             if (!id) {
+                if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id)
                 await e.reply(`随机获取${type}失败，请稍后再试`, { at: true })
                 return false
             }
@@ -78,6 +76,7 @@ export class RandomHandler extends plugin {
                     result = await frameInfo.getFrameInfo(id)
                     break
                 default:
+                    if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id)
                     if (asset) {
                         await e.reply([
                             `随机${type}ID为: ${id}`,
@@ -92,6 +91,7 @@ export class RandomHandler extends plugin {
             
             // 处理结果
             if (result) {
+                if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id)
                 if (type === '歌曲') {
                     // 先发送歌曲详细信息
                     await e.reply([
@@ -115,6 +115,7 @@ export class RandomHandler extends plugin {
                 return true
             }
             
+            if (msg?.message_id && e.group) await e.group.recallMsg(msg.message_id)
             await e.reply(`随机${type}ID为: ${id}，获取资源失败`, { at: true })
             return true
         } catch (err) {
