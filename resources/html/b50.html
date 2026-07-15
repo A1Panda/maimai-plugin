@@ -5,58 +5,52 @@
 <title>B50成绩单</title>
 <style>
 :root {
-    --bg: #0a0a1a;
-    --card-bg: rgba(255,255,255,0.06);
-    --text: #e0e0f0;
-    --sub: #9090b0;
-    --basic: #4caf50;
-    --advanced: #ffc107;
-    --expert: #f44336;
-    --master: #ab47bc;
-    --remaster: #42a5f5;
-    --gold: #ffd740;
+    --bg-main: #f0f4fb;
+    --card-white: rgba(255,255,255,0.92);
+    --text-dark: #4a4a4a;
+    --sub-text: #888;
+    --color-basic: #6fe163;
+    --color-advanced: #f3ca51;
+    --color-expert: #ff737d;
+    --color-master: #9f51dc;
+    --color-remaster: #c5a3f0;
+    --pink: #ff6eb4;
+    --gold: #b8860b;
 }
-* { margin:0; padding:0; box-sizing:border-box; }
+* { margin:0; padding:0; box-sizing:border-box; font-family: "Microsoft YaHei", "PingFang SC", sans-serif; }
 
 body {
-    background: linear-gradient(145deg, #0a0a1a 0%, #13132b 30%, #1a0a2e 55%, #0d1b2a 80%, #0a0a1a 100%);
-    color: var(--text);
-    font-family: "Microsoft YaHei", -apple-system, sans-serif;
-    min-height: 100vh;
-    padding: 30px;
-}
-
-.container { width: 1800px; margin: 0 auto; }
-
-.header {
-    position: relative;
-    border-radius: 24px;
-    padding: 50px 30px;
-    margin-bottom: 30px;
-    background: linear-gradient(145deg, rgba(180,77,255,0.10) 0%, rgba(255,77,166,0.08) 50%, rgba(0,229,255,0.05) 100%);
-    border: 1px solid rgba(255,255,255,0.08);
-    overflow: hidden;
+    background-color: var(--bg-main);
+    background-image: radial-gradient(#dce8f8 2px, transparent 2px);
+    background-size: 28px 28px;
+    padding: 20px;
     display: flex;
-    align-items: center;
     justify-content: center;
 }
-.header::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    background:
-        radial-gradient(ellipse 500px 250px at 50% 50%, rgba(180,77,255,0.12), transparent),
-        radial-gradient(ellipse 400px 200px at 50% 50%, rgba(0,229,255,0.06), transparent);
-    pointer-events: none;
+.container { width: 1200px; }
+
+/* ===== 头部 ===== */
+.header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 32px;
+    margin-bottom: 30px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(160,190,230,0.18);
+    border: 2.5px solid #ffd1e6;
+    overflow: hidden;
+    min-height: 130px;
 }
 .header-frame {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    opacity: 0.14;
+    object-fit: cover;
+    opacity: 0.06;
     pointer-events: none;
     z-index: 0;
 }
@@ -64,197 +58,217 @@ body {
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    width: 680px;
-    opacity: 0.38;
+    width: 550px;
+    opacity: 0.18;
     pointer-events: none;
-    z-index: 1;
+    z-index: 0;
 }
-.user-block {
+
+.user-info-box {
     position: relative;
-    z-index: 2;
+    z-index: 1;
     display: flex;
     align-items: center;
-    gap: 30px;
-    padding: 36px 56px;
-    background: transparent;
-    border-radius: 24px;
+    gap: 18px;
 }
-.user-icon {
-    width: 104px; height: 104px;
-    border-radius: 50%;
-    border: 3px solid rgba(255,255,255,0.25);
-    box-shadow: 0 0 40px rgba(180,77,255,0.3);
+.user-avatar {
+    width: 76px; height: 76px;
+    border-radius: 12px;
+    border: 3px solid #f0e0f0;
+    box-shadow: 0 4px 16px rgba(180,77,255,0.15);
     flex-shrink: 0;
 }
-.user-name {
-    font-size: 42px;
+.user-details { display: flex; flex-direction: column; }
+.rating-badge {
+    display: inline-block;
+    background: #3a3a3a;
+    color: #ffcf4b;
+    padding: 3px 14px;
+    border-radius: 6px;
+    font-size: 15px;
     font-weight: 800;
-    line-height: 1.2;
-    background: linear-gradient(135deg, #e0c3ff, #ffb3d9);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    font-style: italic;
+    letter-spacing: 1px;
     margin-bottom: 8px;
-    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
+    width: fit-content;
 }
-.user-rating {
-    font-size: 26px;
-    font-weight: 700;
-    color: var(--gold);
-    text-shadow: 0 0 20px rgba(255,215,64,0.3), 0 2px 6px rgba(0,0,0,0.5);
+.rating-sub {
+    font-size: 11px;
+    color: #ffcf4b;
+    opacity: 0.7;
+    margin-left: 4px;
+    font-weight: 500;
+}
+.user-name {
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--pink);
+    letter-spacing: 1px;
 }
 
+.header-logo {
+    position: relative;
+    z-index: 1;
+    font-size: 22px;
+    font-weight: 900;
+    color: #ffb3d9;
+    letter-spacing: 3px;
+    text-shadow: 1px 1px 0 #fff, 2px 2px 0 #ffd1e6;
+}
+
+/* ===== 标题栏 ===== */
 .section-title {
-    font-size: 20px;
+    display: inline-block;
+    padding: 6px 28px;
+    border-radius: 50px;
     font-weight: 800;
-    margin-bottom: 18px;
-    padding: 12px 20px;
-    border-radius: 12px;
+    font-size: 15px;
     letter-spacing: 2px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    margin-bottom: 16px;
+    color: #fff;
 }
 .section-title.standard {
-    background: linear-gradient(135deg, rgba(0,229,255,0.08), rgba(0,191,165,0.04));
-    border: 1px solid rgba(0,229,255,0.12);
-    color: #00e5ff;
+    background: #6fe163;
+    box-shadow: 0 3px 0 #4dbb41;
 }
 .section-title.dx {
-    background: linear-gradient(135deg, rgba(255,77,166,0.10), rgba(180,77,255,0.06));
-    border: 1px solid rgba(255,77,166,0.12);
-    color: #ff4da6;
+    background: var(--pink);
+    box-shadow: 0 3px 0 #d44d8b;
 }
 
+/* ===== 歌曲网格 ===== */
 .song-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 12px;
-    margin-bottom: 30px;
+    gap: 10px;
+    margin-bottom: 36px;
 }
 
+/* ===== 歌曲卡片 ===== */
 .song-card {
     position: relative;
-    background: var(--card-bg);
-    backdrop-filter: blur(8px);
-    border-radius: 14px;
-    padding: 12px;
-    border: 1px solid rgba(255,255,255,0.05);
-    transition: all 0.25s ease;
+    background: var(--card-white);
+    border-radius: 9px;
+    height: 102px;
     display: flex;
-    align-items: center;
-    gap: 10px;
+    padding: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #e8e8e8;
     overflow: hidden;
 }
 .song-card:hover {
-    transform: translateY(-2px);
-    border-color: rgba(255,255,255,0.16);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+    border-color: #d0d0d0;
 }
 
-/* 难度左边条 */
-.song-card::before {
-    content: '';
+/* 难度顶部颜色条 */
+.card-border-top {
     position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 4px;
-    border-radius: 4px 0 0 4px;
-    opacity: 0.85;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    border-radius: 9px 9px 0 0;
+    z-index: 1;
 }
-/* BASIC 1-3+ */
-.song-card[data-lvn="1"]::before,
-.song-card[data-lvn="2"]::before,
-.song-card[data-lvn="3"]::before { background: var(--basic); }
-/* ADVANCED 4-6+ */
-.song-card[data-lvn="4"]::before,
-.song-card[data-lvn="5"]::before,
-.song-card[data-lvn="6"]::before { background: var(--advanced); }
-/* EXPERT 7-9+ */
-.song-card[data-lvn="7"]::before,
-.song-card[data-lvn="8"]::before,
-.song-card[data-lvn="9"]::before { background: var(--expert); }
-/* MASTER 10-12+ */
-.song-card[data-lvn="10"]::before,
-.song-card[data-lvn="11"]::before,
-.song-card[data-lvn="12"]::before { background: var(--master); }
-/* Re:MASTER 13-15 */
-.song-card[data-lvn="13"]::before,
-.song-card[data-lvn="14"]::before,
-.song-card[data-lvn="15"]::before { background: var(--remaster); }
+.song-card[data-lvn="1"] .card-border-top,
+.song-card[data-lvn="2"] .card-border-top,
+.song-card[data-lvn="3"] .card-border-top { background: var(--color-basic); }
+.song-card[data-lvn="4"] .card-border-top,
+.song-card[data-lvn="5"] .card-border-top,
+.song-card[data-lvn="6"] .card-border-top { background: var(--color-advanced); }
+.song-card[data-lvn="7"] .card-border-top,
+.song-card[data-lvn="8"] .card-border-top,
+.song-card[data-lvn="9"] .card-border-top { background: var(--color-expert); }
+.song-card[data-lvn="10"] .card-border-top,
+.song-card[data-lvn="11"] .card-border-top,
+.song-card[data-lvn="12"] .card-border-top { background: var(--color-master); }
+.song-card[data-lvn="13"] .card-border-top,
+.song-card[data-lvn="14"] .card-border-top,
+.song-card[data-lvn="15"] .card-border-top { background: var(--color-remaster); }
 
-.song-jacket {
-    width: 70px; height: 70px;
-    border-radius: 10px;
-    object-fit: cover;
-    flex-shrink: 0;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+/* 左侧信息区 */
+.song-info {
+    flex: 1;
+    padding: 10px 6px 4px 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 1;
+    min-width: 0;
 }
-.song-info { flex:1; min-width:0; }
 .song-title {
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 700;
+    color: var(--text-dark);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin-bottom: 4px;
-    color: #f0f0ff;
+    margin-top: 2px;
+}
+.song-achv {
+    font-size: 17px;
+    font-weight: 900;
+    color: #333;
+    line-height: 1;
 }
 .song-meta {
-    font-size: 12px;
-    color: var(--sub);
-    display: flex;
-    gap: 8px;
-    align-items: center;
+    font-size: 10px;
+    color: var(--sub-text);
+    line-height: 1.2;
+}
+.song-meta .ra {
+    color: #b44dff;
+    font-weight: 600;
 }
 
-.song-achv {
+/* 右侧封面 */
+.song-jacket {
+    width: 68px;
+    height: 68px;
+    border-radius: 5px;
+    object-fit: cover;
+    flex-shrink: 0;
+    margin: auto 8px 6px auto;
+    z-index: 1;
+}
+
+/* 左下 rank 标签 */
+.rank-tag {
     position: absolute;
-    top: 10px; right: 12px;
-    font-size: 20px;
-    font-weight: 900;
+    bottom: 4px; left: 10px;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--pink);
+    z-index: 1;
 }
-/* Rate coloring via data-rate attribute */
-.song-card[data-rate="sssp"] .song-achv,
-.song-card[data-rate="sss"] .song-achv { color: #ffd740; text-shadow: 0 0 12px rgba(255,215,64,0.4); }
-.song-card[data-rate="ssp"] .song-achv,
-.song-card[data-rate="ss"] .song-achv { color: #ff9100; }
-.song-card[data-rate="sp"] .song-achv,
-.song-card[data-rate="s"] .song-achv { color: #ef5350; }
-.song-card[data-rate="aaa"] .song-achv,
-.song-card[data-rate="aa"] .song-achv { color: #ab47bc; }
-.song-card[data-rate="a"] .song-achv { color: #42a5f5; }
-.song-card[data-rate="bbb"] .song-achv,
-.song-card[data-rate="bb"] .song-achv,
-.song-card[data-rate="b"] .song-achv { color: #78909c; }
-.song-card[data-rate="c"] .song-achv,
-.song-card[data-rate="d"] .song-achv { color: #546e7a; }
 
+/* 右下编号 */
+.order-num {
+    position: absolute;
+    bottom: 3px; right: 8px;
+    font-size: 10px;
+    color: #ccc;
+    font-weight: 600;
+    z-index: 1;
+}
+
+/* 图标 */
 .song-icons {
     position: absolute;
-    bottom: 8px; right: 10px;
+    top: 6px; right: 6px;
     display: flex;
-    gap: 4px;
+    gap: 3px;
+    z-index: 1;
 }
-.song-icons img { height: 22px; }
+.song-icons img { height: 18px; }
 
-/* DX Rating 数值小标签 */
-.dx-rating-tag {
-    position: absolute;
-    bottom: 8px; left: 86px;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 8px;
-    background: rgba(180,77,255,0.12);
-    color: #b44dff;
-}
-
+/* 页脚 */
 .footer {
     text-align: center;
-    padding: 24px;
-    font-size: 13px;
-    color: rgba(255,255,255,0.16);
+    padding: 20px;
+    font-size: 12px;
+    color: #bbb;
     font-weight: 600;
+    letter-spacing: 1px;
 }
 </style>
 </head>
@@ -264,51 +278,59 @@ body {
         {{#frameAsset}}<img class="header-frame" src="{{frameAsset}}" alt="Frame">{{/frameAsset}}
         <img class="header-plate" src="{{plateAsset}}" alt="Name Plate">
 
-        <div class="user-block">
-            <img class="user-icon" src="{{iconAsset}}" alt="Icon">
-            <div class="user-info">
+        <div class="user-info-box">
+            <img class="user-avatar" src="{{iconAsset}}" alt="Icon">
+            <div class="user-details">
+                <div class="rating-badge">
+                    RATING {{rating}} <span class="rating-sub">{{standard_total}} + {{dx_total}}</span>
+                </div>
                 <div class="user-name">{{nickname}}</div>
-                <div class="user-rating">Rating {{rating}} = {{standard_total}} + {{dx_total}}</div>
             </div>
         </div>
+
+        <div class="header-logo">maimai MiLK</div>
     </div>
 
-    <div class="section-title standard">STANDARD Best 35</div>
+    <div class="section-title standard">STANDARD BEST 35</div>
     <div class="song-grid">
     {{#standard}}
     <div class="song-card" data-lvn="{{level_num}}" data-rate="{{rate}}">
-        <img class="song-jacket" src="{{jacket_url}}" alt="{{song_name}}">
+        <div class="card-border-top"></div>
         <div class="song-info">
             <div class="song-title">{{song_name}}</div>
-            <div class="song-meta">Lv.{{level}} &middot; {{dx_score}}</div>
+            <div class="song-achv">{{achievements}}%</div>
+            <div class="song-meta">Lv.{{level}} <span class="ra">RA:{{dx_rating}}</span></div>
         </div>
-        <div class="song-achv">{{achievements}}%</div>
+        <img class="song-jacket" src="{{jacket_url}}" alt="{{song_name}}">
+        <div class="rank-tag">{{rate}}</div>
+        <div class="order-num">#{{index}}</div>
         <div class="song-icons">
             {{#fc}}<img src="{{fc_icon}}" alt="FC">{{/fc}}
             {{#fs}}<img src="{{fs_icon}}" alt="FS">{{/fs}}
             <img src="{{rate_icon}}" alt="{{rate}}">
         </div>
-        <div class="dx-rating-tag">{{dx_rating}}</div>
     </div>
     {{/standard}}
     </div>
 
-    <div class="section-title dx">DX Best 15</div>
+    <div class="section-title dx">DX BEST 15</div>
     <div class="song-grid">
     {{#dx}}
     <div class="song-card" data-lvn="{{level_num}}" data-rate="{{rate}}">
-        <img class="song-jacket" src="{{jacket_url}}" alt="{{song_name}}">
+        <div class="card-border-top"></div>
         <div class="song-info">
             <div class="song-title">{{song_name}}</div>
-            <div class="song-meta">Lv.{{level}} &middot; {{dx_score}}</div>
+            <div class="song-achv">{{achievements}}%</div>
+            <div class="song-meta">Lv.{{level}} <span class="ra">RA:{{dx_rating}}</span></div>
         </div>
-        <div class="song-achv">{{achievements}}%</div>
+        <img class="song-jacket" src="{{jacket_url}}" alt="{{song_name}}">
+        <div class="rank-tag">{{rate}}</div>
+        <div class="order-num">#{{index}}</div>
         <div class="song-icons">
             {{#fc}}<img src="{{fc_icon}}" alt="FC">{{/fc}}
             {{#fs}}<img src="{{fs_icon}}" alt="FS">{{/fs}}
             <img src="{{rate_icon}}" alt="{{rate}}">
         </div>
-        <div class="dx-rating-tag">{{dx_rating}}</div>
     </div>
     {{/dx}}
     </div>

@@ -67,6 +67,10 @@ class B50 {
             const processedStandard = await Promise.all(response.data.standard.map(processSong))
             const processedDX = await Promise.all(response.data.dx.map(processSong))
 
+            // 添加序号
+            processedStandard.forEach((s, i) => s.index = i + 1)
+            processedDX.forEach((s, i) => s.index = i + 1)
+
             // 准备渲染数据
             const renderData = {
                 // 用户信息
@@ -158,6 +162,7 @@ class B50 {
 
                 songHtml = songHtml.replace(/\{\{rate_icon\}\}/g, song.rate_icon)
                 songHtml = songHtml.replace(/\{\{rate\}\}/g, song.rate)
+                songHtml = songHtml.replace(/\{\{index\}\}/g, song.index)
 
                 standardHtml += songHtml
             })
@@ -188,6 +193,7 @@ class B50 {
 
                 songHtml = songHtml.replace(/\{\{rate_icon\}\}/g, song.rate_icon)
                 songHtml = songHtml.replace(/\{\{rate\}\}/g, song.rate)
+                songHtml = songHtml.replace(/\{\{index\}\}/g, song.index)
 
                 dxHtml += songHtml
             })
