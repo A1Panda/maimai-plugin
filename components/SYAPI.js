@@ -673,9 +673,17 @@ export default class SYAPI {
                 const timeoutId = setTimeout(() => controller.abort(), timeout)
                 const response = await fetch(url, { signal: controller.signal })
                 clearTimeout(timeoutId)
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+                if (!response.ok) {
+                    // 404/403 等客户端错误不重试，直接抛出让调用方 fallback
+                    if (response.status >= 400 && response.status < 500) {
+                        throw Object.assign(new Error(`HTTP ${response.status}`), { status: response.status, noRetry: true })
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`)
+                }
                 return await response.arrayBuffer()
             } catch (error) {
+                // 4xx 错误不重试
+                if (error.noRetry) throw error
                 logger.warn(`[maimai-plugin] 第${i + 1}次获取资源失败: ${url}`)
                 if (i === retries - 1) throw new Error(`获取资源失败: ${url}, 已重试${retries}次`)
                 await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)))
