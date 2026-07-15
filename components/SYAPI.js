@@ -717,23 +717,31 @@ export default class SYAPI {
         const path = `${this.tempPath}/LX_assets/jackets/${songId}.png`
         if (!fs.existsSync(path)) {
             try {
-                // 优先尝试落雪 CDN（旧曲通常在这）
-                let url = `${this.assetsURL}/maimai/jacket/${songId}.png`
+                // 主源：落雪主站（覆盖所有ID，23/23 全命中）
+                let url = `${this.lxBaseURL}/assets/maimai/jacket/${songId}.png`
                 let buffer = await this.fetchAssetWithRetry(url)
                 await fs.promises.mkdir(`${this.tempPath}/LX_assets/jackets`, { recursive: true })
                 await fs.promises.writeFile(path, Buffer.from(buffer))
             } catch (error) {
                 try {
-                    // 落雪 CDN 没有，尝试水鱼 cover CDN（DX新曲在这）
+                    // 备用源1：水鱼 cover CDN（DX新曲）
                     const url = `https://maimai.diving-fish.com/covers/${songId}.png`
                     const buffer = await this.fetchAssetWithRetry(url)
                     await fs.promises.mkdir(`${this.tempPath}/LX_assets/jackets`, { recursive: true })
                     await fs.promises.writeFile(path, Buffer.from(buffer))
                 } catch (error2) {
-                    logger.warn(`[SYAPI] 曲绘资源获取失败(双源均404): ${songId}`)
-                    const defaultPath = './plugins/maimai-plugin/resources/assets/default_jacket.png'
-                    if (fs.existsSync(defaultPath)) return defaultPath
-                    throw error2
+                    try {
+                        // 备用源2：落雪 CDN（旧曲）
+                        const url = `${this.assetsURL}/maimai/jacket/${songId}.png`
+                        const buffer = await this.fetchAssetWithRetry(url)
+                        await fs.promises.mkdir(`${this.tempPath}/LX_assets/jackets`, { recursive: true })
+                        await fs.promises.writeFile(path, Buffer.from(buffer))
+                    } catch (error3) {
+                        logger.warn(`[SYAPI] 曲绘资源获取失败(三源均404): ${songId}`)
+                        const defaultPath = './plugins/maimai-plugin/resources/assets/default_jacket.png'
+                        if (fs.existsSync(defaultPath)) return defaultPath
+                        throw error3
+                    }
                 }
             }
         }
