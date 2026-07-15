@@ -2,7 +2,6 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>玩家信息 - 修复版</title>
 <style>
 :root {
     --bg-main: #fdf2f7;
@@ -19,32 +18,31 @@ body {
     display: flex;
     justify-content: center;
     min-height: 100vh;
-    overflow-x: hidden;
 }
 
-/* ===== 1. 全局大背景：作为 body 的背景层 ===== */
+/* 全局背景图 */
 .full-page-background {
     position: fixed;
     top: 0; left: 0;
-    width: 100vw; height: 100vh;
+    width: 100%; height: 100%;
     z-index: -1;
     object-fit: cover;
-    opacity: 0.6;
+    opacity: 0.5;
 }
 
 .container {
     width: 850px;
-    background: rgba(255, 255, 255, 0.75);
-    backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(15px);
     border-radius: 30px;
     padding: 40px 0;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+    box-shadow: 0 20px 60px rgba(255, 118, 184, 0.2);
     border: 2px solid #fff;
     position: relative;
     z-index: 10;
 }
 
-/* ===== 2. 头部：精准对齐名牌内容 ===== */
+/* 头部：名牌容器 */
 .header {
     position: relative;
     width: 100%;
@@ -55,11 +53,10 @@ body {
     margin-bottom: 20px;
 }
 
-/* 名牌图片作为容器背景 */
 .name-plate-container {
     position: relative;
-    width: 750px;
-    height: 150px;
+    width: 760px;
+    height: 154px;
 }
 
 .plate-img {
@@ -70,7 +67,7 @@ body {
     z-index: 1;
 }
 
-/* 内容层：使用绝对定位参考名牌图片的内部坐标 */
+/* 核心内容对齐层 */
 .plate-content {
     position: absolute;
     inset: 0;
@@ -80,90 +77,88 @@ body {
     padding: 0 45px;
 }
 
-/* 头像：左侧方框内 */
+/* 头像框 */
 .avatar-wrapper {
-    width: 105px; height: 105px;
-    border: 3px solid #444;
+    width: 108px; height: 108px;
+    border: 3.5px solid #444;
     border-radius: 12px;
     overflow: hidden;
     flex-shrink: 0;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    background: #fff;
 }
 .avatar-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 
-/* 核心数据区：头像右侧 */
+/* 用户信息区 */
 .user-main-data {
     flex: 1;
     margin-left: 20px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
     justify-content: center;
+    gap: 8px;
 }
 
-/* 第一行：Rating & 段位 */
+/* Rating 行 */
 .data-row-top {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 15px;
 }
 .rating-badge {
-    background: #333;
+    background: #2b2b2b;
     color: var(--gold-rating);
     padding: 2px 14px;
     border-radius: 6px;
     font-weight: 900;
     font-size: 19px;
     font-style: italic;
-    border-bottom: 3px solid #000;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+    border-bottom: 3.5px solid #000;
 }
-.class-badge { height: 32px; }
-.star-count { font-weight: 900; color: #444; font-size: 16px; }
+.class-badge { height: 35px; }
 
-/* 第二行：白色姓名框 */
+/* 名字框 */
 .name-box {
     background: #fff;
-    border: 2.5px solid #444;
+    border: 3px solid #444;
     border-radius: 8px;
     height: 48px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 15px;
-    width: 380px;
+    width: 400px;
 }
-.player-name { font-size: 26px; font-weight: 900; color: #222; }
+.player-name { font-size: 24px; font-weight: 900; color: #222; }
 .beginner-tag {
     color: #ff4a8d;
-    border: 1.5px solid #ff4a8d;
+    border: 2px solid #ff4a8d;
     border-radius: 20px;
-    padding: 1px 10px;
+    padding: 1px 12px;
     font-size: 14px;
     font-weight: 900;
 }
 
-/* 第三行：称号（悬浮在名牌下方） */
+/* 称号：定位在名牌底部 */
 .trophy-row {
     position: absolute;
     bottom: -15px;
-    left: 170px;
-    background: linear-gradient(180deg, #f0f0f0, #d0d0d0);
-    border: 2px solid #888;
+    left: 175px;
+    background: linear-gradient(180deg, #f8f8f8, #cfcfcf);
+    border: 2.5px solid #888;
     border-radius: 50px;
-    padding: 2px 30px;
+    padding: 2px 35px;
     font-size: 14px;
     font-weight: 800;
-    color: #555;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    color: #4a3a42;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-/* ===== 3. Cosmetics：装扮卡片 ===== */
+/* 下方装饰网格 */
 .cosmetics-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 18px;
-    padding: 30px 45px;
+    gap: 15px;
+    padding: 40px 45px 20px;
 }
 .cos-card {
     background: rgba(255, 255, 255, 0.9);
@@ -172,71 +167,48 @@ body {
     border-bottom: 5px solid #ffcae5;
     position: relative;
 }
-.cos-id-tag {
-    position: absolute;
-    top: 15px; right: 15px;
-    font-size: 11px; color: #ccc; font-family: monospace;
-}
-.cos-label {
-    font-size: 12px;
-    font-weight: 900;
-    color: var(--pink-main);
-    margin-bottom: 6px;
-    text-transform: uppercase;
-}
-.cos-name { font-size: 16px; font-weight: 700; color: var(--text-dark); }
+.cos-id-tag { position: absolute; top: 15px; right: 15px; font-size: 10px; color: #ccc; }
+.cos-label { font-size: 11px; font-weight: 900; color: var(--pink-main); margin-bottom: 5px; text-transform: uppercase; }
+.cos-name { font-size: 15px; font-weight: 700; color: var(--text-dark); }
 
 /* Footer */
 .footer {
     margin-top: 20px;
     padding: 20px 45px;
-    border-top: 2.5px dashed #ffcae5;
+    border-top: 2px dashed #ffcae5;
     display: flex;
     justify-content: space-between;
     color: #b0a0a8;
-    font-size: 13px;
-    font-weight: 700;
+    font-size: 12px;
+    font-weight: bold;
 }
 </style>
 </head>
 <body>
-
-    {{#frameAsset}}
     <img class="full-page-background" src="{{frameAsset}}">
-    {{/frameAsset}}
 
     <div class="container">
-        <!-- Header 区域 -->
         <div class="header">
             <div class="name-plate-container">
                 <img class="plate-img" src="{{plateAsset}}">
-
                 <div class="plate-content">
-                    <div class="avatar-wrapper">
-                        <img src="{{iconAsset}}">
-                    </div>
-
+                    <div class="avatar-wrapper"><img src="{{iconAsset}}"></div>
                     <div class="user-main-data">
                         <div class="data-row-top">
                             <div class="rating-badge">DX RATING {{rating}}</div>
                             <img src="{{classRankAsset}}" class="class-badge">
-                            <span class="star-count">★ {{star}}</span>
+                            <span style="font-weight: 900; color: #444; font-size: 16px;">★ {{star}}</span>
                         </div>
-
                         <div class="name-box">
                             <div class="player-name">{{name}}</div>
                             <div class="beginner-tag">初学者</div>
                         </div>
                     </div>
-
-                    <div class="trophy-row">
-                        {{trophy.name}}
-                    </div>
+                    <div class="trophy-row">{{trophy.name}}</div>
                 </div>
             </div>
         </div>
 
-        <!-- 装饰信息区 -->
         <div class="cosmetics-grid">
             <div class="cos-card">
                 <span class="cos-id-tag">#{{icon.id}}</span>
@@ -265,6 +237,5 @@ body {
             <span>GENERATED AT: {{upload_time}}</span>
         </div>
     </div>
-
 </body>
 </html>

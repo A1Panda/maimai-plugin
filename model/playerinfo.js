@@ -163,7 +163,7 @@ class PlayerInfo {
             
             // 设置视口大小
             await page.setViewport({
-                width: 1200,
+                width: 850,
                 height: 1000
             })
             
@@ -175,8 +175,8 @@ class PlayerInfo {
                 return document.querySelector('.container').offsetHeight
             })
             await page.setViewport({
-                width: 800,
-                height: bodyHeight + 40
+                width: 850,
+                height: bodyHeight + 80
             })
             
             // 确保临时目录存在
