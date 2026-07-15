@@ -168,32 +168,51 @@ export function supportGuoba() {
         }
       },
 
-      // 前端保存配置
+      // 前端保存配置（data 是扁平键值对，如 { "config.defaultAPI": 2, "apiToken.syToken": "xxx" }）
       setConfigData(data, { Result }) {
         try {
+          // 将扁平键值对按前缀分组后写入对应的 YAML 文件
+          // data 格式: { "config.defaultAPI": 2, "apiToken.lxToken": "abc", ... }
+          const configUpdates = {}   // 对应 config.yaml 的键值
+          const apiTokenUpdates = {} // 对应 API_Token.yaml 的键值
+
+          for (const [key, value] of Object.entries(data)) {
+            if (key.startsWith('config.')) {
+              // config.defaultAPI → defaultAPI
+              const configKey = key.slice('config.'.length)
+              configUpdates[configKey] = value
+            } else if (key.startsWith('apiToken.')) {
+              // apiToken.lxToken → lxToken
+              const tokenKey = key.slice('apiToken.'.length)
+              apiTokenUpdates[tokenKey] = value
+            }
+          }
+
           // ---- 写 config.yaml ----
-          const config = readYaml(CONFIG_PATHS.config, CONFIG_PATHS.configDefault)
-          const cfgData = data.config || {}
-          if (cfgData.defaultAPI !== undefined) config.defaultAPI = cfgData.defaultAPI
-          if (cfgData.autoClearCache !== undefined) config.autoClearCache = cfgData.autoClearCache
-          if (cfgData.clearCacheTime !== undefined) config.clearCacheTime = cfgData.clearCacheTime
-          if (cfgData.tempPath !== undefined) config.tempPath = cfgData.tempPath
-          writeYaml(CONFIG_PATHS.config, config)
+          if (Object.keys(configUpdates).length > 0) {
+            const config = readYaml(CONFIG_PATHS.config, CONFIG_PATHS.configDefault)
+            if (configUpdates.defaultAPI !== undefined) config.defaultAPI = configUpdates.defaultAPI
+            if (configUpdates.autoClearCache !== undefined) config.autoClearCache = configUpdates.autoClearCache
+            if (configUpdates.clearCacheTime !== undefined) config.clearCacheTime = configUpdates.clearCacheTime
+            if (configUpdates.tempPath !== undefined) config.tempPath = configUpdates.tempPath
+            writeYaml(CONFIG_PATHS.config, config)
+          }
 
           // ---- 写 API_Token.yaml ----
-          const apiToken = readYaml(CONFIG_PATHS.apiToken, CONFIG_PATHS.apiTokenDefault)
-          const tkData = data.apiToken || {}
-          if (!apiToken.LXapi) apiToken.LXapi = {}
-          if (!apiToken.SYapi) apiToken.SYapi = {}
+          if (Object.keys(apiTokenUpdates).length > 0) {
+            const apiToken = readYaml(CONFIG_PATHS.apiToken, CONFIG_PATHS.apiTokenDefault)
+            if (!apiToken.LXapi) apiToken.LXapi = {}
+            if (!apiToken.SYapi) apiToken.SYapi = {}
 
-          if (tkData.lxToken !== undefined) apiToken.LXapi.token = tkData.lxToken
-          if (tkData.lxUserToken !== undefined) apiToken.LXapi.userToken = tkData.lxUserToken
-          if (tkData.lxBaseURL !== undefined) apiToken.LXapi.baseURL = tkData.lxBaseURL
-          if (tkData.lxAssetsURL !== undefined) apiToken.LXapi.assetsURL = tkData.lxAssetsURL
+            if (apiTokenUpdates.lxToken !== undefined) apiToken.LXapi.token = apiTokenUpdates.lxToken
+            if (apiTokenUpdates.lxUserToken !== undefined) apiToken.LXapi.userToken = apiTokenUpdates.lxUserToken
+            if (apiTokenUpdates.lxBaseURL !== undefined) apiToken.LXapi.baseURL = apiTokenUpdates.lxBaseURL
+            if (apiTokenUpdates.lxAssetsURL !== undefined) apiToken.LXapi.assetsURL = apiTokenUpdates.lxAssetsURL
 
-          if (tkData.syToken !== undefined) apiToken.SYapi.token = tkData.syToken
-          if (tkData.syBaseURL !== undefined) apiToken.SYapi.baseURL = tkData.syBaseURL
-          writeYaml(CONFIG_PATHS.apiToken, apiToken)
+            if (apiTokenUpdates.syToken !== undefined) apiToken.SYapi.token = apiTokenUpdates.syToken
+            if (apiTokenUpdates.syBaseURL !== undefined) apiToken.SYapi.baseURL = apiTokenUpdates.syBaseURL
+            writeYaml(CONFIG_PATHS.apiToken, apiToken)
+          }
 
           logger.mark('[maimai-plugin][Guoba] 配置已通过锅巴面板更新')
           return Result.ok({}, '配置保存成功~')
