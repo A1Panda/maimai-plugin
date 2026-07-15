@@ -69,7 +69,7 @@ class B50 {
             }
             return `data:${contentType};base64,${buf.toString('base64')}`
         } catch (e) {
-            logger.warn(`[b50] 下载图片失败: ${url} - ${e.message}`)
+            logger.debug(`[b50] 下载图片失败: ${url} - ${e.message}`)
             return ''
         }
     }
@@ -91,11 +91,11 @@ class B50 {
             const response = await adapter.getPlayerBest50(userData[userId].friendCode)
             const playerInfo = await adapter.getPlayerInfo(userData[userId].friendCode)
 
-            // 预下载头像/姓名框/背景框为 base64 data URI（避免 Puppeteer 网络问题）
+            // 预下载头像/姓名框/背景框为 base64 data URI（避免 Puppeteer 网络问题 + 本地缓存）
             const [iconDataURI, plateDataURI, frameDataURI] = await Promise.all([
-                playerInfo.data.icon?.id ? this._fetchImageAsDataURI(`${adapter.getAssetsBaseURL()}/icon/${playerInfo.data.icon.id}.png`) : Promise.resolve(''),
-                playerInfo.data.name_plate?.id ? this._fetchImageAsDataURI(`${adapter.getAssetsBaseURL()}/plate/${playerInfo.data.name_plate.id}.png`) : Promise.resolve(''),
-                playerInfo.data.frame?.id ? this._fetchImageAsDataURI(`${adapter.getAssetsBaseURL()}/frame/${playerInfo.data.frame.id}.png`) : Promise.resolve('')
+                playerInfo.data.icon?.id ? this._fetchImageAsDataURI(`${adapter.getAssetsBaseURL()}/icon/${playerInfo.data.icon.id}.png`, `icon_${playerInfo.data.icon.id}`) : Promise.resolve(''),
+                playerInfo.data.name_plate?.id ? this._fetchImageAsDataURI(`${adapter.getAssetsBaseURL()}/plate/${playerInfo.data.name_plate.id}.png`, `plate_${playerInfo.data.name_plate.id}`) : Promise.resolve(''),
+                playerInfo.data.frame?.id ? this._fetchImageAsDataURI(`${adapter.getAssetsBaseURL()}/frame/${playerInfo.data.frame.id}.png`, `frame_${playerInfo.data.frame.id}`) : Promise.resolve('')
             ])
             
             // 处理标准谱和DX谱的数据（jacket 下载为 base64）
@@ -193,7 +193,7 @@ class B50 {
             if (data.plateAsset?.startsWith('data:')) embeddedCount++
             data.standard.forEach(s => s.jacket_url?.startsWith('data:') ? embeddedCount++ : emptyCount++)
             data.dx.forEach(s => s.jacket_url?.startsWith('data:') ? embeddedCount++ : emptyCount++)
-            logger.info(`[b50] 图片嵌入: ${embeddedCount}/${embeddedCount + emptyCount} base64, ${emptyCount} 缺失`)
+            logger.debug(`[b50] 图片嵌入: ${embeddedCount}/${embeddedCount + emptyCount} base64, ${emptyCount} 缺失`)
             
             // 读取HTML模板
             let template = fs.readFileSync('./plugins/maimai-plugin/resources/html/b50.html', 'utf8')
@@ -278,7 +278,7 @@ class B50 {
             const htmlDir = path.dirname(htmlPath)
             if (!fs.existsSync(htmlDir)) fs.mkdirSync(htmlDir, { recursive: true })
             fs.writeFileSync(htmlPath, template, 'utf8')
-            logger.info(`[b50] 调试HTML已保存: ${htmlPath} (${(template.length / 1024).toFixed(0)}KB)`)
+            logger.debug(`[b50] 调试HTML已保存: ${htmlPath} (${(template.length / 1024).toFixed(0)}KB)`)
             
             // 用 file:// 加载 HTML（内容已是 base64，无网络依赖）
             await page.goto(`file:///${htmlPath.replace(/\\/g, '/')}`, { waitUntil: 'domcontentloaded', timeout: 30000 })
@@ -297,13 +297,13 @@ class B50 {
                 })
                 return { total: imgs.length, ok, fail }
             })
-            logger.info(`[b50] 图片渲染: ${imgStats.total}个, 成功${imgStats.ok}, 失败${imgStats.fail}`)
+            logger.debug(`[b50] 图片渲染: ${imgStats.total}个, 成功${imgStats.ok}, 失败${imgStats.fail}`)
             
             // 直接对 .container 元素截图
             const container = await page.$('.container')
             await container.screenshot({ path: imagePath, type: 'png' })
             
-            logger.info(`[b50] 渲染完成: ${imagePath}`)
+            logger.debug(`[b50] 渲染完成: ${imagePath}`)
             return imagePath
             
         } finally {
