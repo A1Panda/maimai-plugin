@@ -42,8 +42,8 @@ class B50 {
             const playerInfo = await adapter.getPlayerInfo(userData[userId].friendCode)
 
             const assetsBase = adapter.getAssetsBaseURL()
-            const iconAsset = `${assetsBase}/icon/${playerInfo.data.icon.id}.png`
-            const plateAsset = `${assetsBase}/plate/${playerInfo.data.name_plate.id}.png`
+            const iconAsset = playerInfo.data.icon?.id ? `${assetsBase}/icon/${playerInfo.data.icon.id}.png` : ''
+            const plateAsset = playerInfo.data.name_plate?.id ? `${assetsBase}/plate/${playerInfo.data.name_plate.id}.png` : ''
             const frameAsset = playerInfo.data.frame?.id ? `${assetsBase}/frame/${playerInfo.data.frame.id}.png` : ''
             
             // 处理标准谱和DX谱的数据
@@ -52,12 +52,13 @@ class B50 {
                 const fsIcon = song.fs ? await adapter.getMusicIconAsset(song.fs) : null
                 const rateIcon = await adapter.getMusicRateAsset(song.rate)
                 const levelNum = String(song.level || '0').replace(/[^0-9]/g, '') || '0'
+                const jacketPath = await adapter.getJacketAsset(song.id)
 
                 return {
                     ...song,
                     song_id: String(song.id).padStart(5, '0'),
                     level_num: levelNum,
-                    jacket_url: `${assetsBase}/jacket/${song.id}.png`,
+                    jacket_url: jacketPath ? `file:///${jacketPath.replace(/\\/g, '/')}` : '',
                     fc_icon: fcIcon ? `data:image/webp;base64,${fs.readFileSync(fcIcon).toString('base64')}` : '',
                     fs_icon: fsIcon ? `data:image/webp;base64,${fs.readFileSync(fsIcon).toString('base64')}` : '',
                     rate_icon: `data:image/webp;base64,${fs.readFileSync(rateIcon).toString('base64')}`
