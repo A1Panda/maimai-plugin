@@ -75,7 +75,8 @@ class FrameInfo {
                         requirement.songs = req.songs.map(song => ({
                             id: song.id.toString().padStart(4, '0'),
                             title: song.title,
-                            type: song.type === 'standard' ? '标准谱面' : 'DX谱面'
+                            type: song.type === 'standard' ? 'STD' : 'DX',
+                            typeClass: song.type === 'standard' ? 'type-std' : 'type-dx'
                         }))
                     }
                     
@@ -90,8 +91,8 @@ class FrameInfo {
                 name: response.name,
                 description: response.description,
                 genre: response.genre,
-                // 背景图片转base64
-                frame: null,  // 暂时禁用背景图片显示
+                // 背景图片
+                frame: `${adapter.getAssetsBaseURL()}/frame/${response.id}.png`,
                 // 获取条件
                 hasRequirements: requirements.length > 0,
                 requirements: requirements
